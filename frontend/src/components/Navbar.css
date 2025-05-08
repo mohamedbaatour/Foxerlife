@@ -1,0 +1,114 @@
+.navbar-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 40px;
+    background-color: #181A1C;
+    border-bottom: 1px solid #232526;
+    z-index: 10;
+    width: 50%;
+    border-radius: 999px;
+    margin-top: 40px;
+    height: 86px;
+}
+
+.navbar-left-section {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.logo {
+    width: 34px;
+    height: 28px;
+}
+
+.navbar-brand-name {
+    text-decoration: none;
+    color: #f1f1f1;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+a {
+    text-decoration: none;
+}
+
+.navbar-center-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 64px;
+    text-decoration: none; 
+    color: #f1f1f1;
+}
+
+.navbar-menu-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.navbar-menu-icon {
+    height: 20px;
+    width: 20px;
+    margin-right: 8px;
+    transition: fill 0.2s ease-in-out;
+}
+
+.navbar-menu-link {
+  text-decoration: none;
+  color: #595959;
+  font-weight: 600;
+  font-size: 14px;
+  transition: color 0.2s ease-in-out, font-weight 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-menu-link .navbar-menu-icon path,
+.navbar-menu-link .navbar-menu-icon circle,
+.navbar-menu-link .navbar-menu-icon rect {
+  fill: #595959;
+}
+
+.navbar-menu-link.active {
+  color: #f1f1f1;
+  font-weight: 800;
+}
+
+.navbar-menu-link.active .navbar-menu-icon path,
+.navbar-menu-link.active .navbar-menu-icon circle,
+.navbar-menu-link.active .navbar-menu-icon rect {
+  fill: #f1f1f1;
+}
+
+li {
+    list-style: none;
+    text-decoration: none;
+}
+
+.navbar-current-time {
+    color: #C4C4C4;
+    font-weight: 800;
+    font-size: 16px;
+}
+
+.navbar-current-location {
+    color: #595959;
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.navbar-right-section {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.navbar-time-details {
+}
