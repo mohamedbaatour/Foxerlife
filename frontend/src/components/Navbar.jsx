@@ -10,6 +10,7 @@ import LogoGIF from "../icones/iconGIF.gif"; // Changed import
 import { ReactComponent as CloudIcon } from "../icones/cloud.svg";
 import { ReactComponent as RainIcon } from "../icones/rain.svg";
 import { ReactComponent as SunIcon } from "../icones/sun.svg";
+import { ReactComponent as SnowIcon } from "../icones/snow.svg";
 // You might want to add more icons like Snow, Thunderstorm, etc.
 
 const Navbar = () => {
@@ -42,14 +43,15 @@ const Navbar = () => {
           data.current_weather.weathercode !== undefined
         ) {
           const weatherCode = data.current_weather.weathercode;
-          setWeatherDescription(getWeatherDescriptionForCode(weatherCode)); // Optional: set a text description
+          setWeatherDescription(getWeatherDescriptionForCode(weatherCode));
 
           // Map WMO weather codes to icons
           // This is a simplified mapping. Refer to Open-Meteo docs for full WMO code list.
           // WMO Weather interpretation codes (WW)
           // Code | Description
           // 0    | Clear sky
-          // 1, 2, 3 | Mainly clear, partly cloudy, and overcast
+          // 1, 2 | Mainly clear, partly cloudy
+          // 3    | Overcast
           // 45, 48 | Fog and depositing rime fog
           // 51, 53, 55 | Drizzle: Light, moderate, and dense intensity
           // 56, 57 | Freezing Drizzle: Light and dense intensity
@@ -63,11 +65,11 @@ const Navbar = () => {
           // 96, 99 * | Thunderstorm with slight and heavy hail
           // (* WMO code 95, 96, 99 are usually for thunderstorms)
 
-          if (weatherCode === 0) {
-            // Clear sky
+          if (weatherCode === 0) { // Clear sky
             setWeatherIcon(<SunIcon className="weather-icon-svg" />);
-          } else if ([1, 2, 3].includes(weatherCode)) {
-            // Mainly clear, partly cloudy, overcast
+          } else if ([1, 2].includes(weatherCode)) { // Mainly clear, partly cloudy
+            setWeatherIcon(<SunIcon className="weather-icon-svg" />);
+          } else if (weatherCode === 3) { // Overcast
             setWeatherIcon(<CloudIcon className="weather-icon-svg" />);
           } else if (
             [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(
@@ -78,21 +80,14 @@ const Navbar = () => {
             setWeatherIcon(<RainIcon className="weather-icon-svg" />);
           } else if ([45, 48].includes(weatherCode)) {
             // Fog
-            setWeatherIcon(<CloudIcon className="weather-icon-svg" />); // Using CloudIcon for Fog, you might want a specific Fog icon
+            setWeatherIcon(<CloudIcon className="weather-icon-svg" />); 
           } else if ([71, 73, 75, 77, 85, 86].includes(weatherCode)) {
             // Snow related
-            // You'll need to import a SnowIcon for this
-            // import { ReactComponent as SnowIcon } from "../icones/snow.svg";
-            // setWeatherIcon(<SnowIcon className="weather-icon-svg" />);
-            setWeatherIcon(<CloudIcon className="weather-icon-svg" />); // Fallback to Cloud if no SnowIcon
+            setWeatherIcon(<SnowIcon className="weather-icon-svg" />);
           } else if ([95, 96, 99].includes(weatherCode)) {
-            // Thunderstorm
-            // You'll need to import a ThunderstormIcon for this
-            // import { ReactComponent as ThunderstormIcon } from "../icones/thunderstorm.svg";
-            // setWeatherIcon(<ThunderstormIcon className="weather-icon-svg" />);
-            setWeatherIcon(<RainIcon className="weather-icon-svg" />); // Fallback to Rain if no ThunderstormIcon
+            setWeatherIcon(<RainIcon className="weather-icon-svg" />); 
           } else {
-            setWeatherIcon(<CloudIcon className="weather-icon-svg" />); // Default/fallback
+            setWeatherIcon(<CloudIcon className="weather-icon-svg" />); 
           }
         } else {
           // Fallback if weathercode is not available
