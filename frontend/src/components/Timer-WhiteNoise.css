@@ -1,0 +1,178 @@
+.tasks-page-container {
+  display: flex;
+  justify-content: center; /* Center the left column if it's narrower than page */
+  padding-top: 80px;
+  background-color: #121212; 
+  color: #e0e0e0; 
+  width: 100%; 
+  min-height: calc(100vh - 86px - 40px - 40px); /* Full height minus navbar, its margin, and page padding */
+  box-sizing: border-box;
+}
+
+/* This will now be the container for the left column (Timer + White Noise) */
+.tasks-main-content-left-column {
+  display: flex;
+  flex-direction: column; /* Stack timer and white noise player vertically */
+  gap: 30px; /* Gap between Timer and White Noise Player */
+  /* max-width: 410px; /* Width of the components */
+  /* If you want to center this column in the page if there's extra space: */
+  /* margin: 0 auto; */ 
+}
+
+/* Timer Section Styles (mostly from previous response, ensure they are here) */
+.timer-section {
+  background-color: #131517;
+  border: 1px solid #232526;
+  border-radius: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 410px; 
+  height: 473px; 
+  justify-content: center; 
+}
+
+.timer-display-container {
+  position: relative;
+  width: 270px;  
+  height: 270px; 
+}
+
+.timer-progress-ring__background,
+.timer-progress-ring__progress {
+  fill: none;
+}
+
+.timer-progress-ring__background {
+  stroke: #181A1C; 
+  stroke-width: 10px; 
+}
+
+.timer-progress-ring__progress {
+  stroke: url(#timerGradient); 
+  stroke-linecap: round; 
+  stroke-width: 10px; 
+}
+
+.timer-text-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.timer-remaining-label {
+  font-size: 14px; 
+  color: #999999;
+  margin-bottom: 24px; 
+  font-weight: 500; 
+}
+
+.timer-time {
+  font-size: 42px;
+  font-weight: 800;
+  color: #f1f1f1;
+  letter-spacing: -9%;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+}
+
+.timer-time .minutes,
+.timer-time .seconds {
+  letter-spacing: -9%;
+}
+
+.timer-time .separator {
+  font-size: 24px;
+  font-weight: 800;
+  color: #999999;
+  letter-spacing: -9%;
+  margin: 0 2px;
+}
+
+.timer-controls {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  gap: 24px; 
+  width: 100%;
+  margin-top: 64px; 
+}
+
+.timer-button {
+
+  border: 1px solid #232526;
+  border-radius: 10px; 
+  cursor: pointer;
+  font-size: 14px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px; 
+  transition: background-color 0.2s ease;
+  font-weight: 500;
+  color: #999999;
+  padding: 12px 16px; 
+  background-color: #181A1C; 
+  font-family: "Manrope" , "Roboto",sans-serif;
+}
+
+.timer-button:hover {
+  background-color: #383838; 
+}
+
+.start-pause-button {
+  padding: 10px 24px 10px 20px; 
+  box-shadow: inset 0px 0px 24px -7px white;
+      font-weight: 500;
+      color: #f1f1f1;
+      font-size: 18px;
+      border-radius: 10px;
+      border: 1px solid #232526;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+        font-family: "Manrope" , "Roboto",sans-serif;
+}
+
+.start-icon {
+  width: 32px;
+  height: 32px;
+  fill: white ;
+}
+
+.end-icon,.reset-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.start-pause-button.start {
+  background-color: #119DFF;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.start-pause-button.start:hover {
+  background-color: #0056b3;
+  transform: scale(1.02);
+}
+
+.start-pause-button.pause {
+  background-color: #119DFF;
+    transition: all 0.2s ease;
+}
+
+.start-pause-button.pause:hover {
+  background-color: #0056b3;
+    transform: scale(1.02);
+}
+
+
+/* Remove .tasks-list-section, .tasks-now, .tasks-later, .task-item, etc. for now */
+/* Or comment them out if you plan to add them back later */

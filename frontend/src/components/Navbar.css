@@ -9,7 +9,8 @@
     width: 50%;
     border-radius: 999px;
     margin-top: 40px;
-    height: 86px;
+    min-height: 86px;
+    max-height: 86px;
 }
 
 .navbar-left-section {
@@ -68,9 +69,7 @@ a {
   align-items: center;
 }
 
-.navbar-menu-link .navbar-menu-icon path,
-.navbar-menu-link .navbar-menu-icon circle,
-.navbar-menu-link .navbar-menu-icon rect {
+.navbar-menu-link{
   fill: #595959;
 }
 
