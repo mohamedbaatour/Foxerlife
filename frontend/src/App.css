@@ -7,3 +7,9 @@ height: 100vh;
 background-color: #101213;
 flex-direction: column;
 }
+
+p {
+  text-wrap: pretty;
+    overflow-wrap: break-word;
+    margin: 0px;
+}

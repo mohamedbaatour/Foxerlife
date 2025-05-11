@@ -176,3 +176,308 @@
 
 /* Remove .tasks-list-section, .tasks-now, .tasks-later, .task-item, etc. for now */
 /* Or comment them out if you plan to add them back later */
+
+
+.white-noise-player {
+  background-color: #131517;
+  border: 1px solid #232526;
+  border-radius: 30px;
+  padding: 48px 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 410px;
+  justify-content: space-between; 
+  --white-noise-progress-color: #119DFF; /* Define the CSS variable here */
+}
+
+.white-noise-player-hero {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: start;
+  align-items: center;
+  gap: 16px;
+    margin-bottom: 40px;
+}
+
+.white-noise-player-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #f1f1f1;
+}
+
+.white-noise-player-playing {
+  font-size: 16px;
+  font-weight: 500;
+  color: #999999;
+  margin-top: 6px;
+}
+
+.white-noise-player-text {
+  margin: 0;
+  padding: 0;
+}
+
+.white-noise-player-icon {
+  width: 40px;
+  height: 40px;
+  fill: white ;
+}
+
+
+.white-noise-options-button {
+  background: none;
+  border: 1px solid #4F4F4F; /* Grey border like in image */
+  color: #A0A0A0; /* Greyish text */
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+  line-height: 28px; /* Center dots vertically */
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.white-noise-options-button:hover {
+  border-color: #777;
+}
+
+.white-noise-progress-bar-container {
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.white-noise-progress-bar {
+  width: 100%;
+  height: 8px;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 3px;
+  cursor: pointer;
+  background: none; /* Remove static background so gradient shows */
+}
+
+.white-noise-progress-bar::-webkit-slider-runnable-track {
+  height: 8.5px;
+  background: transparent; /* Let the input's background (gradient) show through */
+  border-radius: 5px;
+  border: 1.5px solid #232526;
+  position: relative;
+  z-index: 0;
+}
+
+.white-noise-progress-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--white-noise-progress-color);
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -3px;
+  position: relative;
+  z-index: 1;
+  border: 1px solid #181A1C; /* Optional: makes thumb stand out */
+}
+
+/* Firefox */
+.white-noise-progress-bar::-moz-range-thumb {
+  width: 12px; /* Consistent with Webkit */
+  height: 12px; /* Consistent with Webkit */
+  background: var(--white-noise-progress-color); /* Use CSS variable */
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+}
+
+.white-noise-progress-bar::-moz-range-track {
+  width: 100%;
+  height: 8px; /* Consistent with Webkit */
+  background: #181A1C; /* Inactive part of the track */
+  border-radius: 3px;
+  cursor: pointer;
+  border: 1px solid #232526; /* Consistent with Webkit */
+}
+
+.white-noise-progress-bar::-moz-range-progress {
+  background-color: var(--white-noise-progress-color); /* Use CSS variable for the filled part */
+  height: 8px; /* Consistent with Webkit */
+  border-radius: 3px;
+}
+
+/* Styling the filled part of the progress bar is tricky and often done by layering elements or using pseudo-elements */
+/* For a simple visual, we can try to color the track up to the thumb using a gradient if supported, or accept the thumb's position as the indicator */
+
+.white-noise-controls {
+  display: flex;
+  justify-content: space-around; /* Distribute controls evenly */
+  align-items: center;
+  gap: 20px;
+  margin-top: 10px; /* Space from progress bar */
+  position: relative; /* Add this to help manage z-index for children if needed */
+}
+
+.white-noise-controls .control-button{
+  background: none;
+  border: none;
+  color: #A0A0A0; /* Icon color */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* Important for z-index context */
+  z-index: 1; /* Default z-index for control buttons */
+}
+
+.white-noise-controls .control-button svg{
+  background: none;
+  border: none;
+  color: #A0A0A0; /* Icon color */
+  cursor: pointer;
+  width: 24px; /* Icon size */
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* Important for z-index context */
+  z-index: 1; /* Default z-index for control buttons */
+}
+
+
+/* Volume Control Specific Styles */
+.volume-control-container {
+  display: flex; /* Use flex to align icon and slider */
+  align-items: center;
+  position: relative; /* Crucial for absolute positioning of slider within */
+  /* min-width: 32px; /* Minimum width of the icon */
+  /* transition: min-width 0.3s ease; /* Transition for container expansion */
+  z-index: 10; /* Ensure this container is above other sibling controls when active */
+}
+
+.volume-control-container .sound-icon-wrapper {
+  /* This wrapper will hold the icon and allow it to be 'pushed' by the slider */
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px; /* Match control-button size */
+  height: 32px;
+  transition: transform 0.3s ease; /* For the icon 'moving left' effect */
+  z-index: 2; /* Icon above slider */
+}
+
+.volume-slider {
+  position: absolute;
+  left: -80px; /* Move slider to the left of the icon */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 5px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #232526;
+  border-radius: 3px;
+  cursor: pointer;
+  outline: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: width 0.3s ease 0.1s, opacity 0.3s ease 0.1s, visibility 0s 0.4s, left 0.3s ease; /* Delay appearance slightly */
+  z-index: 1; /* Slider behind icon wrapper */
+  margin-left: 5px; /* Small gap between icon and slider start */
+}
+
+.volume-control-container:hover .sound-icon-wrapper {
+  transform: none; /* Don't move the icon, or adjust as needed */
+}
+
+.volume-control-container:hover .volume-slider {
+  width: 80px;
+  opacity: 1;
+  visibility: visible;
+  left: -80px; /* Keep slider to the left when visible */
+  transition: width 0.3s ease, opacity 0.3s ease, visibility 0s 0s, left 0.3s ease;
+}
+
+/* Ensure other controls don't get overlapped by giving them a default z-index */
+.white-noise-controls > *:not(.volume-control-container) {
+    position: relative; /* Needed for z-index to apply */
+    z-index: 1;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  background: var(--white-noise-progress-color, #119DFF); /* Blue thumb */
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1px solid #131517;
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  background: var(--white-noise-progress-color, #119DFF);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1px solid #131517;
+}
+
+.volume-slider::-moz-range-track {
+  width: 100%;
+  height: 5px;
+  background: #232526;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+/* Optional: Style for the filled part of the volume slider (WebKit) */
+/* This requires a bit more finesse, often using a gradient on the input itself */
+/* For simplicity, the above styles the track and thumb. */
+/* If you want a dynamic fill for the volume slider like the progress bar, */
+/* you'd apply a similar linear-gradient technique to .volume-slider's background style in JS. */
+
+
+.white-noise-controls .play-pause-main-button {
+  background-color: #FFF; /* White background */
+  border-radius: 50%;
+  width: 40px; /* Larger button */
+  height: 40px;
+  padding: 0; /* Reset padding for icon centering */
+}
+
+.white-noise-controls .play-pause-main-button svg {
+  background-color: #FFF; /* White background */
+  border-radius: 50%;
+  width: 28px; /* Larger button */
+  height: 28px;
+  padding: 0;
+  color: #131517;
+}
+
+
+.white-noise-controls .play-pause-main-button:hover {
+  background-color: #f0f0f0; /* Slightly off-white on hover */
+  color: #131517;
+}
+
+/* Specific styling for shuffle/repeat if they are active */
+.control-button.active svg {
+  fill: #119DFF; /* Blue when active */
+  stroke: #119DFF;
+}
+
+.control-button {}
+
+.control-button-secondary{
+  color: #c4c4c4;
+  border-radius: 50%;
+  width: 20px; /* Larger button */
+  height: 20px;
+  padding: 0; /* Reset padding for icon centering */
+}
