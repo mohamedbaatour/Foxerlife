@@ -101,13 +101,13 @@ const TimerWhiteNoises = () => {
   };
 
 
+  // This effect only handles setting up the audio source and progress tracking
   useEffect(() => {
     const audioElement = audioRef.current;
     if (audioElement) {
       // Set the current sound source
       audioElement.src = sounds[currentSoundIndex].src;
       audioElement.load();
-      // Don't set volume here, we'll handle it separately
     }
     
     const updateProgress = () => {
@@ -116,29 +116,50 @@ const TimerWhiteNoises = () => {
         setAudioDuration(audioElement.duration);
       }
     };
-
-    const handleAudioEnd = () => {
-      if (isRepeatOn) {
-        audioElement.currentTime = 0;
-        audioElement.play();
-        setIsNoisePlaying(true); // Keep playing state if repeating
-      } else {
-        setIsNoisePlaying(false);
-        setAudioProgress(0); // Reset progress if not repeating
-      }
-    };
-
+  
     if (audioElement) {
       audioElement.addEventListener("timeupdate", updateProgress);
       audioElement.addEventListener("loadedmetadata", updateProgress);
-      audioElement.addEventListener("ended", handleAudioEnd);
       return () => {
         audioElement.removeEventListener("timeupdate", updateProgress);
         audioElement.removeEventListener("loadedmetadata", updateProgress);
-        audioElement.removeEventListener("ended", handleAudioEnd);
       };
     }
-  }, [isRepeatOn, currentSoundIndex]); // Remove volume from dependencies
+  }, [currentSoundIndex]); // Only depend on sound changes
+  
+  // Separate effect to handle the repeat functionality
+  useEffect(() => {
+    const audioElement = audioRef.current;
+    if (!audioElement) return;
+    
+    const handleAudioEnd = () => {
+      if (isRepeatOn) {
+        audioElement.currentTime = 0;
+        const playPromise = audioElement.play();
+        
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              // Playback started successfully
+            })
+            .catch(error => {
+              console.log("Play error on repeat:", error);
+              setIsNoisePlaying(false);
+            });
+        }
+        setIsNoisePlaying(true);
+      } else {
+        setIsNoisePlaying(false);
+        setAudioProgress(0);
+      }
+    };
+    
+    audioElement.addEventListener("ended", handleAudioEnd);
+    
+    return () => {
+      audioElement.removeEventListener("ended", handleAudioEnd);
+    };
+  }, [isRepeatOn]); // Only depend on repeat changes
   
   // Add a separate effect to handle volume changes
   useEffect(() => {
@@ -195,6 +216,7 @@ const TimerWhiteNoises = () => {
   
   // Toggle repeat functionality
   const handleRepeat = () => {
+    // Simply update the state without affecting audio playback
     setIsRepeatOn(!isRepeatOn);
     console.log("Repeat clicked, state:", !isRepeatOn);
   };
