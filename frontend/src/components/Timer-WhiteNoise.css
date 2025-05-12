@@ -209,8 +209,8 @@
 
 .white-noise-player-playing {
   font-size: 16px;
-  font-weight: 500;
-  color: #999999;
+  font-weight: 400;
+  color: #c4c4c4;
   margin-top: 6px;
 }
 
@@ -222,7 +222,7 @@
 .white-noise-player-icon {
   width: 40px;
   height: 40px;
-  fill: white ;
+  color: #808080 ;
 }
 
 
@@ -446,17 +446,20 @@
 .white-noise-controls .play-pause-main-button {
   background-color: #FFF; /* White background */
   border-radius: 50%;
-  width: 40px; /* Larger button */
-  height: 40px;
+  width: 35px; /* Larger button */
+  height: 35px;
   padding: 0; /* Reset padding for icon centering */
 }
 
 .white-noise-controls .play-pause-main-button svg {
   background-color: #FFF; /* White background */
   border-radius: 50%;
-  width: 28px; /* Larger button */
-  height: 28px;
+  width: 24px; /* Larger button */
+  height: 24px;
   padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #131517;
 }
 

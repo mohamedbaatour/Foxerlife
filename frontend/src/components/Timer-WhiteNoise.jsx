@@ -7,6 +7,9 @@ import { ReactComponent as PauseIcon } from "../icones/pause.svg";
 
 import { ReactComponent as RainIcon } from "../icones/rain.svg";
 import { ReactComponent as ForestIcon } from "../icones/forest.svg";
+import { ReactComponent as PlaneIcon } from "../icones/plane.svg";
+import { ReactComponent as FireIcon } from "../icones/fire.svg";
+import { ReactComponent as MoonIcon } from "../icones/moon.svg";
 
 import { ReactComponent as SkipForwardIcon } from "../icones/skip-forward.svg";
 import { ReactComponent as SkipBackwardIcon } from "../icones/skip-backward.svg";
@@ -14,20 +17,21 @@ import { ReactComponent as SkipBackwardIcon } from "../icones/skip-backward.svg"
 import { ReactComponent as SoundIcon } from "../icones/sound.svg";
 import { ReactComponent as SoundLowIcon } from "../icones/sound-low.svg";
 
-// Assuming you might add these or have them:
-// import { ReactComponent as ShuffleIcon } from "../icones/shuffle.svg";
-// import { ReactComponent as RepeatIcon } from "../icones/repeat.svg";
-
 // Import the audio file
-import lightRainSound from "../../src/white-noises/calming-rain-257596.mp3";
-import forestSound from "../../src/white-noises/forest-ambience-296528.mp3";
+import lightRainSound from "../../src/white-noises/rain.mp3";
+import forestSound from "../../src/white-noises/forest.mp3";
 import airportSound from "../../src/white-noises/airport.mp3";
+import fireplace from "../../src/white-noises/fireplace.mp3";
+import cricket from "../../src/white-noises/cricket.mp3";
 
-// import WhiteNoisePlayer from '../components/WhiteNoisePlayer'; // Import the new component
-
-// Timer Icons (same as before)
-
-// const EndIcon = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+// Define sounds array with their properties
+const sounds = [
+  { name: "Light rain", src: lightRainSound, Icon: RainIcon },
+  { name: "Forest ambience", src: forestSound, Icon: ForestIcon },
+  { name: "Night cricket", src: cricket, Icon: MoonIcon },
+  { name: "Fireplace", src: fireplace, Icon: FireIcon },
+  { name: "Airport buzz", src: airportSound, Icon: PlaneIcon },
+];
 
 const TimerWhiteNoises = () => {
   const initialTime = 4 * 60 + 32; // Example: 4 min 32 seconds
@@ -43,9 +47,8 @@ const TimerWhiteNoises = () => {
   const [audioDuration, setAudioDuration] = useState(0);
   const [volume, setVolume] = useState(1); // Initial volume: 100%
   const [isVolumeSliderVisible, setIsVolumeSliderVisible] = useState(false);
-  // Add state for shuffle and repeat if needed, e.g.:
-  // const [isShuffleOn, setIsShuffleOn] = useState(false);
-  // const [isRepeatOn, setIsRepeatOn] = useState(false);
+  const [isRepeatOn, setIsRepeatOn] = useState(false); // State for repeat functionality
+  const [currentSoundIndex, setCurrentSoundIndex] = useState(0); // Track current sound
 
   const strokeWidth = 10;
   const ringSize = 270;
@@ -67,6 +70,7 @@ const TimerWhiteNoises = () => {
     return () => clearInterval(timerIntervalRef.current);
   }, [isActive, timeRemaining]);
 
+  // Timer functions
   const toggleTimer = () => {
     setIsActive(!isActive);
   };
@@ -96,7 +100,185 @@ const TimerWhiteNoises = () => {
     );
   };
 
-  // White Noise Player Functions with Fade In/Out
+
+  useEffect(() => {
+    const audioElement = audioRef.current;
+    if (audioElement) {
+      // Set the current sound source
+      audioElement.src = sounds[currentSoundIndex].src;
+      audioElement.load();
+      // Don't set volume here, we'll handle it separately
+    }
+    
+    const updateProgress = () => {
+      if (audioElement && !isNaN(audioElement.duration)) {
+        setAudioProgress(audioElement.currentTime);
+        setAudioDuration(audioElement.duration);
+      }
+    };
+
+    const handleAudioEnd = () => {
+      if (isRepeatOn) {
+        audioElement.currentTime = 0;
+        audioElement.play();
+        setIsNoisePlaying(true); // Keep playing state if repeating
+      } else {
+        setIsNoisePlaying(false);
+        setAudioProgress(0); // Reset progress if not repeating
+      }
+    };
+
+    if (audioElement) {
+      audioElement.addEventListener("timeupdate", updateProgress);
+      audioElement.addEventListener("loadedmetadata", updateProgress);
+      audioElement.addEventListener("ended", handleAudioEnd);
+      return () => {
+        audioElement.removeEventListener("timeupdate", updateProgress);
+        audioElement.removeEventListener("loadedmetadata", updateProgress);
+        audioElement.removeEventListener("ended", handleAudioEnd);
+      };
+    }
+  }, [isRepeatOn, currentSoundIndex]); // Remove volume from dependencies
+  
+  // Add a separate effect to handle volume changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  const handleProgressChange = (event) => {
+    if (audioRef.current) {
+      const newTime = Number(event.target.value);
+      audioRef.current.currentTime = newTime;
+      setAudioProgress(newTime);
+    }
+  };
+
+  const handleVolumeChange = (event) => {
+    const newVolume = parseFloat(event.target.value);
+    setVolume(newVolume);
+    
+    if (audioRef.current) {
+      // Store the current playing state and position before changing volume
+      const wasPlaying = !audioRef.current.paused;
+      const currentTime = audioRef.current.currentTime;
+      
+      // Set the new volume without affecting playback
+      audioRef.current.volume = newVolume;
+      
+      // If it was playing but somehow paused due to volume change, restart it from the same position
+      if (wasPlaying && audioRef.current.paused) {
+        // Restore the playback position
+        audioRef.current.currentTime = currentTime;
+        
+        // Play with promise handling
+        const playPromise = audioRef.current.play();
+        
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              // Playback successfully resumed at the same position
+              console.log("Playback resumed after volume change");
+            })
+            .catch(error => {
+              // Auto-play was prevented or another error occurred
+              console.log("Play error after volume change:", error);
+              // Update UI to reflect that audio isn't playing
+              setIsNoisePlaying(false);
+            });
+        }
+      }
+    }
+  };
+
+  
+  // Toggle repeat functionality
+  const handleRepeat = () => {
+    setIsRepeatOn(!isRepeatOn);
+    console.log("Repeat clicked, state:", !isRepeatOn);
+  };
+
+  // Change to next sound
+  const handleNextSound = () => {
+    // Store the next index
+    const nextIndex = (currentSoundIndex + 1) % sounds.length;
+    
+    // If currently playing, we need to handle the promise properly
+    if (isNoisePlaying && audioRef.current) {
+      // First pause the current audio
+      audioRef.current.pause();
+      // Update the index
+      setCurrentSoundIndex(nextIndex);
+      // Set the new source
+      audioRef.current.src = sounds[nextIndex].src;
+      // Load the audio
+      audioRef.current.load();
+      // Play with promise handling
+      const playPromise = audioRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            // Playback started successfully
+          })
+          .catch(error => {
+            // Auto-play was prevented or another error occurred
+            console.log("Play error:", error);
+            // Update UI to reflect that audio isn't playing
+            setIsNoisePlaying(false);
+          });
+      }
+    } else {
+      // If not playing, just update the source
+      setCurrentSoundIndex(nextIndex);
+      if (audioRef.current) {
+        audioRef.current.src = sounds[nextIndex].src;
+        audioRef.current.load();
+      }
+    }
+  };
+
+  const handlePreviousSound = () => {
+    // Store the previous index
+    const prevIndex = (currentSoundIndex - 1 + sounds.length) % sounds.length;
+    
+    // If currently playing, we need to handle the promise properly
+    if (isNoisePlaying && audioRef.current) {
+      // First pause the current audio
+      audioRef.current.pause();
+      // Update the index
+      setCurrentSoundIndex(prevIndex);
+      // Set the new source
+      audioRef.current.src = sounds[prevIndex].src;
+      // Load the audio
+      audioRef.current.load();
+      // Play with promise handling
+      const playPromise = audioRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            // Playback started successfully
+          })
+          .catch(error => {
+            // Auto-play was prevented or another error occurred
+            console.log("Play error:", error);
+            // Update UI to reflect that audio isn't playing
+            setIsNoisePlaying(false);
+          });
+      }
+    } else {
+      // If not playing, just update the source
+      setCurrentSoundIndex(prevIndex);
+      if (audioRef.current) {
+        audioRef.current.src = sounds[prevIndex].src;
+        audioRef.current.load();
+      }
+    }
+  };
+
+  // Also update the toggleWhiteNoise function to handle promises
   const toggleWhiteNoise = () => {
     if (audioRef.current) {
       clearInterval(fadeIntervalRef.current);
@@ -118,78 +300,41 @@ const TimerWhiteNoises = () => {
         if (audioRef.current.volume !== volume) {
             audioRef.current.volume = volume; 
         }
-        audioRef.current.play();
-        let currentVolumeSetting = audioRef.current.volume; // Target volume for fade-in
-        let actualVolume = 0; // Start fade from 0
-        audioRef.current.volume = actualVolume; // Set audio element to 0 before starting fade
+        
+        // Play with promise handling
+        const playPromise = audioRef.current.play();
+        
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              // Start the fade-in once playback has successfully started
+              let currentVolumeSetting = volume; // Target volume for fade-in
+              let actualVolume = 0; // Start fade from 0
+              audioRef.current.volume = actualVolume;
 
-        fadeIntervalRef.current = setInterval(() => {
-          actualVolume += 0.05;
-          if (actualVolume >= currentVolumeSetting) {
-            audioRef.current.volume = currentVolumeSetting;
-            clearInterval(fadeIntervalRef.current);
-          } else {
-            audioRef.current.volume = actualVolume;
-          }
-        }, 30);
+              fadeIntervalRef.current = setInterval(() => {
+                actualVolume += 0.05;
+                if (actualVolume >= currentVolumeSetting) {
+                  audioRef.current.volume = currentVolumeSetting;
+                  clearInterval(fadeIntervalRef.current);
+                } else {
+                  audioRef.current.volume = actualVolume;
+                }
+              }, 30);
+            })
+            .catch(error => {
+              // Auto-play was prevented or another error occurred
+              console.log("Play error:", error);
+              // Update UI to reflect that audio isn't playing
+              setIsNoisePlaying(false);
+              return; // Don't proceed with state update
+            });
+        }
       }
       setIsNoisePlaying(!isNoisePlaying);
     }
   };
 
-  useEffect(() => {
-    const audioElement = audioRef.current;
-    if (audioElement) {
-      audioElement.volume = volume; // Set initial volume when component mounts or audioRef changes
-    }
-    const updateProgress = () => {
-      if (audioElement) {
-        setAudioProgress(audioElement.currentTime);
-        setAudioDuration(audioElement.duration);
-      }
-    };
-
-    if (audioElement) {
-      audioElement.addEventListener("timeupdate", updateProgress);
-      audioElement.addEventListener("loadedmetadata", updateProgress); // For initial duration
-      const handleAudioEnd = () => {
-        setIsNoisePlaying(false);
-        // If repeat is on, play again, otherwise reset progress
-        // if (isRepeatOn) { audioRef.current.play(); setIsNoisePlaying(true); } else { setAudioProgress(0); }
-        setAudioProgress(0); // Simplified for now
-      };
-      audioElement.addEventListener("ended", handleAudioEnd);
-      return () => {
-        audioElement.removeEventListener("timeupdate", updateProgress);
-        audioElement.removeEventListener("loadedmetadata", updateProgress);
-        audioElement.removeEventListener("ended", handleAudioEnd);
-      };
-    }
-  }, [volume]); // Add volume to dependency array if you want to react to its changes elsewhere, though direct set is fine.
-
-  const handleProgressChange = (event) => {
-    if (audioRef.current) {
-      const newTime = Number(event.target.value);
-      audioRef.current.currentTime = newTime;
-      setAudioProgress(newTime);
-    }
-  };
-
-  const handleVolumeChange = (event) => {
-    const newVolume = parseFloat(event.target.value);
-    setVolume(newVolume);
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume;
-    }
-  };
-
-  // Placeholder handlers for other controls
-  // const handleShuffle = () => console.log("Shuffle clicked"); // We are removing shuffle
-  const handleSkipBackward = () => console.log("Skip backward clicked");
-  const handleSkipForward = () => console.log("Skip forward clicked");
-  const handleRepeat = () => console.log("Repeat clicked");
-
-  // Cleanup interval on component unmount
   useEffect(() => {
     return () => {
       clearInterval(fadeIntervalRef.current);
@@ -203,6 +348,9 @@ const TimerWhiteNoises = () => {
       background: `linear-gradient(to right, #119DFF 0%, #119DFF ${percentage}%, #181A1C ${percentage}%, #181A1C 100%)`,
     };
   };
+
+  // Get current sound icon component
+  const CurrentSoundIcon = sounds[currentSoundIndex].Icon;
 
   return (
     <div className="tasks-main-content-left-column">
@@ -249,7 +397,7 @@ const TimerWhiteNoises = () => {
               style={{
                 strokeDasharray: circumference,
                 strokeDashoffset:
-                  circumference * (1 - timeRemaining / initialTime), // Use initialTime here
+                  circumference * (1 - timeRemaining / initialTime),
                 transform: "rotate(-90deg)",
                 transformOrigin: "50% 50%",
                 transition: "stroke-dashoffset 0.35s linear",
@@ -271,7 +419,6 @@ const TimerWhiteNoises = () => {
           >
             {isActive ? <PauseIcon /> : <StartIcon className="start-icon" />}{" "}
             {isActive ? "Pause" : "Start"}{" "}
-            {/* Changed Pause to Start as per image */}
           </button>
           <button onClick={endTimer} className="timer-button end-button">
             <EndIcon className="end-icon" /> End
@@ -281,13 +428,11 @@ const TimerWhiteNoises = () => {
 
       <div className="white-noise-player">
         <div className="white-noise-player-hero">
-          <RainIcon className="white-noise-player-icon" />
+          <CurrentSoundIcon className="white-noise-player-icon" />
           <div className="white-noise-player-text">
             <p className="white-noise-player-title">White noises</p>
-            <p className="white-noise-player-playing">Light rain</p>
+            <p className="white-noise-player-playing">{sounds[currentSoundIndex].name}</p>
           </div>
-          {/* Three-dot icon (placeholder) */}
-          {/* <button className="white-noise-options-button">···</button> */}
         </div>
         <div className="white-noise-progress-bar-container">
           <input
@@ -303,8 +448,8 @@ const TimerWhiteNoises = () => {
         <div className="white-noise-controls">
           <div
             className="control-button volume-control-container"
-            onMouseEnter={() => setIsVolumeSliderVisible(true)} // Keep for JS logic if needed, but CSS handles visual
-            onMouseLeave={() => setIsVolumeSliderVisible(false)} // Keep for JS logic if needed
+            onMouseEnter={() => setIsVolumeSliderVisible(true)}
+            onMouseLeave={() => setIsVolumeSliderVisible(false)}
           >
             <div className="sound-icon-wrapper">
               {volume < 0.4 ? (
@@ -313,7 +458,6 @@ const TimerWhiteNoises = () => {
                 <SoundIcon className="control-button-secondary" />
               )}
             </div>
-            {/* Slider is always in DOM for CSS transitions, visibility controlled by CSS */}
             <input
               type="range"
               min="0"
@@ -324,7 +468,7 @@ const TimerWhiteNoises = () => {
               className="volume-slider"
             />
           </div>
-          <button onClick={handleSkipBackward} className="control-button">
+          <button onClick={handlePreviousSound} className="control-button">
             <SkipBackwardIcon />
           </button>
           <button
@@ -337,16 +481,15 @@ const TimerWhiteNoises = () => {
               <StartIcon className="pause-play-icon" />
             )}
           </button>
-          <button onClick={handleSkipForward} className="control-button">
+          <button onClick={handleNextSound} className="control-button">
             <SkipForwardIcon />
           </button>
-            <ResetIcon
-              onClick={handleRepeat}
-              className="control-button-secondary"
-            />
+          <ResetIcon
+            onClick={handleRepeat}
+            className={`control-button-secondary ${isRepeatOn ? 'active' : ''}`}
+          />
         </div>
-        <audio ref={audioRef} src={lightRainSound} />{" "}
-        {/* Set initial volume via useEffect or directly */}
+        <audio ref={audioRef} />
       </div>
     </div>
   );
