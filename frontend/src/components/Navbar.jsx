@@ -178,7 +178,7 @@ const Navbar = () => {
         onMouseEnter={() => setIsLogoHovered(true)}
         onMouseLeave={() => setIsLogoHovered(false)}
       >
-        {isLogoHovered ? <img src={LogoGIF} alt="Foxerlife Animated Logo" className="logo" /> : <LogoIcon className="logo" />}
+        {isLogoHovered ? <img src={LogoGIF} alt="Foxerlife Animated Logo" className="animated-logo" /> : <LogoIcon className="logo" />}
         <div className="navbar-brand-name">Foxerlife</div>
       </div>
 
@@ -203,7 +203,7 @@ const Navbar = () => {
         </li>
       </ul>
 
-      <div className="navbar-right-section">
+      <div className="navbar-right-section navbar-hide-mobile">
         {weatherIcon}
         <div className="navbar-time-details">
           <span className="navbar-current-time">{currentTime || "N/A"}</span>{" "}

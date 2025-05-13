@@ -3,19 +3,18 @@ import './Tasks.css';
 import TimerWhiteNoises from '../components/Timer-WhiteNoise.jsx';
 
 const Tasks = () => {
-    const initialTime = 12 * 60 + 32; // 12 min 32 seconds from image
-    const [timeRemaining, setTimeRemaining] = useState(initialTime);
-    const [isActive, setIsActive] = useState(false);
-    const timerIntervalRef = useRef(null);
+const [tasks, setTasks] = useState([]);
 
-    const strokeWidth = 12;
-    const ringSize = 270;
-
-    return (
-      <div>
+  return (
+    <div className="tasks-page-container">
+      <div className="left-section">
         <TimerWhiteNoises />
       </div>
-    );
+      <div className="right-section">
+        <h1>Now</h1>
+      </div>
+    </div>
+  );
 }
 
 export default Tasks;

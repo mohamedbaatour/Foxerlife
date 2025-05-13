@@ -1,0 +1,11 @@
+.tasks-page-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100vw;
+  margin-top: 90px;
+}
+
+.left-section {
+  margin-right: 500px;
+}
