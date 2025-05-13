@@ -37,6 +37,9 @@ const TimerWhiteNoises = () => {
   const initialTime = 4 * 60 + 32; // Example: 4 min 32 seconds
   const [timeRemaining, setTimeRemaining] = useState(initialTime);
   const [isActive, setIsActive] = useState(false);
+
+    const [notifications, setNotifications] = useState([]);
+    const notificationTimeoutsRef = useRef({});
   const timerIntervalRef = useRef(null);
 
   // White Noise Player State
@@ -49,7 +52,10 @@ const TimerWhiteNoises = () => {
   const [isVolumeSliderVisible, setIsVolumeSliderVisible] = useState(false);
   const [isRepeatOn, setIsRepeatOn] = useState(false); // State for repeat functionality
   const [currentSoundIndex, setCurrentSoundIndex] = useState(0); // Track current sound
-
+  
+  // Add new states for the notification popup
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
   const strokeWidth = 10;
   const ringSize = 270;
   const radius = ringSize / 2 - strokeWidth / 2;
@@ -149,8 +155,31 @@ const TimerWhiteNoises = () => {
         }
         setIsNoisePlaying(true);
       } else {
-        setIsNoisePlaying(false);
-        setAudioProgress(0);
+        // Skip to the next sound when repeat is off
+        const nextIndex = (currentSoundIndex + 1) % sounds.length;
+        setCurrentSoundIndex(nextIndex);
+        
+        // Set the new source
+        audioElement.src = sounds[nextIndex].src;
+        audioElement.load();
+        
+        // Play the next sound
+        const playPromise = audioElement.play();
+        
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              // Playback started successfully
+            })
+            .catch(error => {
+              console.log("Play error on next sound:", error);
+              setIsNoisePlaying(false);
+              return; // Don't proceed with state update
+            });
+        }
+        
+        // Update playing state to true
+        setIsNoisePlaying(true);
       }
     };
     
@@ -159,7 +188,7 @@ const TimerWhiteNoises = () => {
     return () => {
       audioElement.removeEventListener("ended", handleAudioEnd);
     };
-  }, [isRepeatOn]); // Only depend on repeat changes
+  }, [isRepeatOn, currentSoundIndex, sounds]); // Added dependencies for the next sound functionality
   
   // Add a separate effect to handle volume changes
   useEffect(() => {
@@ -216,9 +245,42 @@ const TimerWhiteNoises = () => {
   
   // Toggle repeat functionality
   const handleRepeat = () => {
-    // Simply update the state without affecting audio playback
-    setIsRepeatOn(!isRepeatOn);
-    console.log("Repeat clicked, state:", !isRepeatOn);
+    // Update repeat state
+    const newRepeatState = !isRepeatOn;
+    setIsRepeatOn(newRepeatState);
+    
+    // Create a new notification with unique ID
+    const notificationId = Date.now();
+    const newNotification = {
+      id: notificationId,
+      message: newRepeatState ? "Repeat Activated" : "Repeat Deactivated"
+    };
+    
+    // Add the new notification to the array (limit to 3)
+    setNotifications(prevNotifications => {
+      // If we already have 3 notifications, remove the oldest one
+      const updatedNotifications = [...prevNotifications];
+      if (updatedNotifications.length >= 3) {
+        const oldestId = updatedNotifications[0].id;
+        // Clear the timeout for the oldest notification
+        if (notificationTimeoutsRef.current[oldestId]) {
+          clearTimeout(notificationTimeoutsRef.current[oldestId]);
+          delete notificationTimeoutsRef.current[oldestId];
+        }
+        updatedNotifications.shift(); // Remove the oldest notification
+      }
+      return [...updatedNotifications, newNotification];
+    });
+    
+    // Set timeout to remove this specific notification
+    notificationTimeoutsRef.current[notificationId] = setTimeout(() => {
+      setNotifications(prevNotifications => 
+        prevNotifications.filter(notification => notification.id !== notificationId)
+      );
+      delete notificationTimeoutsRef.current[notificationId];
+    }, 2000);
+    
+    console.log("Repeat clicked, state:", newRepeatState);
   };
 
   // Change to next sound
@@ -376,6 +438,13 @@ const TimerWhiteNoises = () => {
 
   return (
     <div className="tasks-main-content-left-column">
+      {/* Show notification popup when showNotification is true */}
+      {showNotification && (
+        <div className="notification-popup">
+          {notificationMessage}
+        </div>
+      )}
+      
       <div className="timer-section">
         <div className="timer-display-container">
           <svg
@@ -513,9 +582,28 @@ const TimerWhiteNoises = () => {
         </div>
         <audio ref={audioRef} />
       </div>
+        <div className="tasks-main-content-left-column">
+    {/* Render stacked notifications */}
+    <div className="notifications-container">
+      {notifications.map((notification, index) => (
+        <div 
+          key={notification.id} 
+          className="notification-popup"
+          style={{ bottom: `${30 + index * 50}px` }} // Stack notifications with 50px spacing
+        >
+          {notification.message}
+        </div>
+      ))}
+    </div>
+    
+    {/* ... rest of your existing JSX ... */}
+  </div>
     </div>
   );
 };
 
 export default TimerWhiteNoises;
+
+// Update the JSX to render multiple notifications
+
 

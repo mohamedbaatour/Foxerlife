@@ -483,4 +483,33 @@
   width: 20px; /* Larger button */
   height: 20px;
   padding: 0; /* Reset padding for icon centering */
+  cursor: pointer;
+}
+
+.control-button-secondary.active {
+color: #119DFF;
+}
+
+/* Notification Popup Styles */
+.notification-popup {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  background-color: #131517; /* Blue with transparency */
+  color: white;
+  padding: 12px 20px;
+  border-radius: 99px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid #232526;
+  z-index: 1000;
+  animation: fadeInOut 2s ease-in-out;
+  pointer-events: none; /* Allows clicking through the notification */
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(20px); }
+  15% { opacity: 1; transform: translateY(0); }
+  85% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
 }
