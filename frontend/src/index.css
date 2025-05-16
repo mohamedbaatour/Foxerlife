@@ -12,7 +12,15 @@ body {
   
 }
 
+::selection {
+  background-color: #2f3236;
+  color: #f1f1f1;
+}
 
+::-moz-selection {
+  background-color: #2f3236;
+  color: #f1f1f1;
+}
 
 
 body::-webkit-scrollbar {
