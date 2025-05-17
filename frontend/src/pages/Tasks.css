@@ -6,9 +6,19 @@
   gap: 80px;
   width: 100vw;
   margin-top: 100px;
+color: white;
 }
 
 .right-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  height: 100vh;
+    padding-top: 5rem;
+}
+
+.left-section {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -84,7 +94,7 @@
 }
 
 .now-tasks-card-description {
-  color: #C4C4C4;
+  color: #999;
   font-size: 14px;
   font-weight: 500;
   margin-top: 14px;
@@ -125,11 +135,12 @@
   align-items: center;
   justify-content: space-between;
   border: 1px solid #232526;
-  padding: 38px 40px 38px 24px;
+  padding: 38px 40px 38px 8px;
   border-radius: 24px;
   width: 514px;
   height: 48px;
   margin-bottom: 24px;
+  cursor: grab;
 }
 
 .later-tasks-card-emoji-text-container {
@@ -144,6 +155,20 @@
   flex-direction: row;
   align-items: end;
   gap: 8px;
+}
+
+.later-tasks-card-emoji-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;  
+  justify-content: center;
+  gap: 4px;
+}
+
+.later-tasks-card-emoji-dots {
+  width: 32px;
+  height: 32px;
+  color: #232526;
 }
 
 .later-tasks-card-emoji {
@@ -165,7 +190,7 @@
 }
 
 .later-tasks-card-description {
-  color: #C4C4C4;
+  color: #999;
   font-size: 14px;
   font-weight: 500;
   margin-top: 14px;
@@ -547,4 +572,17 @@ textarea.modal-input {
 .add-task-popup-icon {
   width: 24px;
   height: 24px;
+}
+
+/* Error styles */
+.input-error {
+  border-color: #e53e3e !important;
+  box-shadow: 0 0 0 1px #e53e3e;
+}
+
+.error-message {
+  color: #e53e3e;
+  font-size: 12px;
+  margin-top: 4px;
+  font-weight: 500;
 }

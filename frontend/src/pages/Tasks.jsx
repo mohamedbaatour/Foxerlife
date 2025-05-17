@@ -7,6 +7,23 @@ import { ReactComponent as LaterIcon } from "../icones/later.svg";
 import { ReactComponent as SearchIcon } from "../icones/search.svg";
 import { ReactComponent as FilterIcon } from "../icones/filter.svg";
 import { ReactComponent as PlusIcon } from "../icones/plus.svg";
+import { ReactComponent as SixDotsIcon } from "../icones/six-dots.svg";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
 
 const Tasks = () => {
   // State for form inputs
@@ -17,12 +34,12 @@ const Tasks = () => {
   const [taskEmoji, setTaskEmoji] = useState("😃");
   const [taskTag, setTaskTag] = useState({
     name: "Personal life",
-    color: "#6366F1"
+    color: "#6366F1",
   });
 
   // Load tasks from localStorage on component mount
   const [laterTasks, setLaterTasks] = useState(() => {
-    const savedTasks = localStorage.getItem('laterTasks');
+    const savedTasks = localStorage.getItem("laterTasks");
     if (savedTasks) {
       return JSON.parse(savedTasks);
     } else {
@@ -32,35 +49,69 @@ const Tasks = () => {
           title: "Second Task",
           description: "My second task's description is long is so long...",
           time: "2h 30m",
-          emoji: "https://em-content.zobj.net/source/apple/419/beaming-face-with-smiling-eyes_1f601.png",
+          emoji:
+            "https://em-content.zobj.net/source/apple/419/beaming-face-with-smiling-eyes_1f601.png",
           priority: "Medium",
-          tag: { name: "Personal life", color: "#6366F1" }
+          tag: { name: "Personal life", color: "#6366F1" },
         },
         {
           id: 3,
           title: "Third Task",
           description: "My third task's description is long is so long...",
           time: "1h 23m",
-          emoji: "https://em-content.zobj.net/source/apple/419/beaming-face-with-smiling-eyes_1f601.png",
+          emoji:
+            "https://em-content.zobj.net/source/apple/419/beaming-face-with-smiling-eyes_1f601.png",
           priority: "Low",
-          tag: { name: "Personal life", color: "#6366F1" }
+          tag: { name: "Personal life", color: "#6366F1" },
         },
         {
           id: 4,
           title: "Fourth Task",
           description: "My fourth task's description is long is so long...",
           time: "1h 23m",
-          emoji: "https://em-content.zobj.net/source/apple/419/beaming-face-with-smiling-eyes_1f601.png",
+          emoji:
+            "https://em-content.zobj.net/source/apple/419/beaming-face-with-smiling-eyes_1f601.png",
           priority: "High",
-          tag: { name: "Personal life", color: "#6366F1" }
+          tag: { name: "Personal life", color: "#6366F1" },
         },
       ];
     }
   });
 
+  const SortableItem = ({ task }) => {
+    const { attributes, listeners, setNodeRef, transform, transition } =
+      useSortable({ id: task.id });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      cursor: "grab",
+    };
+
+    return (
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        {renderTaskCard(task)}
+      </div>
+    );
+  };
+
+  // 2. In your component body, below states:
+  const sensors = useSensors(useSensor(PointerSensor));
+
+  // 3. Handle drag end:
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = laterTasks.findIndex((task) => task.id === active.id);
+      const newIndex = laterTasks.findIndex((task) => task.id === over?.id);
+      setLaterTasks((tasks) => arrayMove(tasks, oldIndex, newIndex));
+    }
+  };
+
   // Save tasks to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('laterTasks', JSON.stringify(laterTasks));
+    localStorage.setItem("laterTasks", JSON.stringify(laterTasks));
   }, [laterTasks]);
 
   const [showModal, setShowModal] = useState(false);
@@ -72,6 +123,7 @@ const Tasks = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const searchInputRef = useRef(null);
+  const searchButtonRef = useRef(null);
   const searchContainerRef = useRef(null);
 
   const openModal = () => {
@@ -82,7 +134,7 @@ const Tasks = () => {
     setTaskPriority("Low");
     setTaskEmoji("😃");
     setTaskTag({ name: "Personal life", color: "#6366F1" });
-    
+
     setShowModal(true);
     setIsClosing(false);
   };
@@ -96,21 +148,65 @@ const Tasks = () => {
   };
 
   // Add new task
+  // Add these state variables at the top with your other state declarations
+  const [errors, setErrors] = useState({
+    title: "",
+    description: "",
+  });
+
+  // Add a state to track if form has been submitted
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  // Modify the addTask function
   const addTask = () => {
+    // Set form as submitted to activate validation display
+    setFormSubmitted(true);
+
+    // Reset errors first
+    const newErrors = {
+      title: "",
+      description: "",
+    };
+
+    // Validate fields
+    let isValid = true;
+
+    if (!taskTitle.trim()) {
+      newErrors.title = "Please enter a task title";
+      isValid = false;
+    }
+
+    if (!taskDescription.trim()) {
+      newErrors.description = "Please enter a task description";
+      isValid = false;
+    }
+
+    // Update error state
+    setErrors(newErrors);
+
+    // If validation fails, return early
+    if (!isValid) return;
+
     // Create new task object
     const newTask = {
       id: Date.now(), // Use timestamp as unique ID
       title: taskTitle,
       description: taskDescription,
       time: taskDuration,
-      emoji: taskEmoji === "😃" ? "https://em-content.zobj.net/source/apple/419/beaming-face-with-smiling-eyes_1f601.png" : taskEmoji,
+      emoji:
+        taskEmoji === "😃"
+          ? "https://em-content.zobj.net/source/apple/419/beaming-face-with-smiling-eyes_1f601.png"
+          : taskEmoji,
       priority: taskPriority,
-      tag: taskTag
+      tag: taskTag,
     };
 
     // Add to tasks array
-    setLaterTasks(prevTasks => [...prevTasks, newTask]);
-    
+    setLaterTasks((prevTasks) => [...prevTasks, newTask]);
+
+    // Reset form submitted state
+    setFormSubmitted(false);
+
     // Close modal
     closeModal();
   };
@@ -186,19 +282,19 @@ const Tasks = () => {
 
   // Handle click outside search
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClick = (event) => {
       if (
         isSearchExpanded &&
-        searchContainerRef.current &&
-        !searchContainerRef.current.contains(event.target)
+        searchInputRef.current &&
+        searchInputRef.current === event.target
       ) {
         closeSearch();
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("click", handleClick);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("click", handleClick);
     };
   }, [isSearchExpanded]);
 
@@ -206,7 +302,14 @@ const Tasks = () => {
   const renderTaskCard = (task) => (
     <div className="later-tasks-card" key={task.id}>
       <div className="later-tasks-card-emoji-text-container">
-        <img className="later-tasks-card-emoji" src={task.emoji} alt="emoji" />
+        <div className="later-tasks-card-emoji-container">
+          <SixDotsIcon className="later-tasks-card-emoji-dots" />
+          <img
+            className="later-tasks-card-emoji"
+            src={task.emoji}
+            alt="emoji"
+          />
+        </div>
         <div className="later-tasks-card-text">
           <div className="later-tasks-card-title-div">
             <p className="later-tasks-card-title">{task.title}</p>
@@ -260,6 +363,7 @@ const Tasks = () => {
               <div className="search-filter-container">
                 <div className="search-container" ref={searchContainerRef}>
                   <button
+                    ref={searchButtonRef}
                     className={`search-button ${
                       isSearchExpanded ? "expanded" : ""
                     }`}
@@ -298,7 +402,20 @@ const Tasks = () => {
             <div className="no-results">No tasks found</div>
           ) : (
             // Regular tasks (only shown when not searching)
-            laterTasks.map((task) => renderTaskCard(task))
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={laterTasks.map((task) => task.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {laterTasks.map((task) => (
+                  <SortableItem key={task.id} task={task} />
+                ))}
+              </SortableContext>
+            </DndContext>
           )}
         </div>
       </div>
@@ -325,21 +442,31 @@ const Tasks = () => {
                 <input
                   type="text"
                   placeholder="My first task..."
-                  className="modal-input"
+                  className={`modal-input ${
+                    formSubmitted && errors.title ? "input-error" : ""
+                  }`}
                   value={taskTitle}
                   onChange={(e) => setTaskTitle(e.target.value)}
                 />
+                {formSubmitted && errors.title && (
+                  <p className="error-message">{errors.title}</p>
+                )}
               </div>
 
               <div className="form-group">
                 <label>Description</label>
                 <textarea
                   placeholder="My first task's description..."
-                  className="modal-input"
-                  rows="3"
+                  className={`modal-input ${
+                    formSubmitted && errors.description ? "input-error" : ""
+                  }`}
+                  rows="2"
                   value={taskDescription}
                   onChange={(e) => setTaskDescription(e.target.value)}
                 ></textarea>
+                {formSubmitted && errors.description && (
+                  <p className="error-message">{errors.description}</p>
+                )}
               </div>
 
               <div className="form-row">
@@ -359,9 +486,9 @@ const Tasks = () => {
 
                 <div className="form-group half">
                   <label>Duration</label>
-                  <input 
-                    type="text" 
-                    className="modal-input" 
+                  <input
+                    type="text"
+                    className="modal-input"
                     value={taskDuration}
                     onChange={(e) => setTaskDuration(e.target.value)}
                   />
@@ -371,7 +498,7 @@ const Tasks = () => {
               <div className="form-row">
                 <div className="form-group half">
                   <label>Priority</label>
-                  <select 
+                  <select
                     className="modal-input"
                     value={taskPriority}
                     onChange={(e) => setTaskPriority(e.target.value)}
@@ -384,9 +511,7 @@ const Tasks = () => {
 
                 <div className="form-group half">
                   <label>Emoji</label>
-                  <button className="emoji-selector">
-                    {taskEmoji}
-                  </button>
+                  <button className="emoji-selector">{taskEmoji}</button>
                 </div>
               </div>
             </div>
