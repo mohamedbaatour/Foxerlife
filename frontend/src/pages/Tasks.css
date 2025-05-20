@@ -131,23 +131,59 @@ color: white;
 
 .later-tasks-card {
   display: flex;
-  flex-direction: row;
+  flex-direction: row; /* Change from column to row */
   align-items: center;
   justify-content: space-between;
   border: 1px solid #232526;
-  padding: 38px 40px 38px 8px;
+  padding: 38px 40px 38px 8px; /* Adjust padding */
   border-radius: 24px;
   width: 514px;
-  height: 48px;
+  height: 48px; /* Initial height */
   margin-bottom: 24px;
-  cursor: grab;
+  position: relative; /* Keep for menu positioning */
+  transition: all 1s ease-in-out; /* Transition all properties */
 }
 
+.later-tasks-card.expanded {
+  height: auto; /* Allow height to adjust based on content */
+  max-height: 300px;
+  flex-direction: column; /* Change to column when expanded */
+  align-items: flex-start; /* Align items to the start in column layout */
+  padding-bottom: 16px; /* Reduce bottom padding */
+}
+
+/* Adjust the container for emoji and text */
 .later-tasks-card-emoji-text-container {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 24px;
+  width: 100%; /* Take full width in expanded mode */
+}
+
+/* Add styles for the top row that contains content and arrow */
+.later-tasks-card-top-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Styles for the task card menu */
+
+/* Adjust layout when menu is open */
+.later-tasks-card.expanded .later-tasks-card-emoji-text-container {
+  margin-bottom: 0; /* Remove margin as we're using the parent's padding */
+}
+
+.tasks-arrow-down-icon {
+  cursor: pointer;
+  transition: transform 0.3s ease; /* Smooth rotation */
+}
+
+.tasks-arrow-down-icon.rotated {
+  transform: rotate(180deg); /* Rotate 180 degrees */
 }
 
 .later-tasks-card-title-div {
@@ -310,8 +346,13 @@ color: white;
   font-size: 14px;
   width: 100%;
   opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.later-tasks-card.expanded .task-card-menu {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .search-input.visible {
@@ -585,4 +626,73 @@ textarea.modal-input {
   font-size: 12px;
   margin-top: 4px;
   font-weight: 500;
+}
+
+.tasks-arrow-down-icon {
+  cursor: pointer;
+}
+
+.tasks-arrow-down-icon.rotated {
+  transform: rotate(180deg); /* Rotate 180 degrees */
+  margin-bottom: 20px;
+}
+
+/* Styles for the task card menu */
+
+
+.task-card-menu {
+  margin-top: 0px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: row; /* Arrange buttons horizontally */
+  gap: 16px; /* Space between buttons */
+  padding: 8px 16px; /* Padding inside the menu */
+  z-index: 10; /* Ensure menu is above other elements */
+  align-self: center; /* Center horizontally in the parent */
+  margin-left: auto; /* These two margin properties help with centering */
+  margin-right: auto;
+  justify-content: center; /* Center the buttons within the menu */
+}
+
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #f1f1f1; /* Text color */;
+  background-color: #181A1C; /* Text color */
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 24px;
+  font-family: "Manrope", sans-serif;
+  transition: background-color 0.2s ease;
+  padding: 6px 16px;
+}
+
+.menu-item:hover {
+  background-color: #232526; /* Highlight on hover */
+}
+
+.menu-item .menu-icon {
+    width: 16px;
+    height: 16px;
+    color: #f1f1f1; /* Icon color */
+}
+
+.menu-item.delete {
+    color: #e53e3e; /* Red color for delete */
+}
+
+.menu-item.delete .menu-icon {
+    color: #e53e3e; /* Red color for delete icon */
+}
+
+/* Adjust layout when menu is open */
+.later-tasks-card.expanded .later-tasks-card-emoji-text-container {
+    width: 100%; /* Allow text container to take full width */
+    margin-bottom: 16px; /* Add space between text and menu */
 }

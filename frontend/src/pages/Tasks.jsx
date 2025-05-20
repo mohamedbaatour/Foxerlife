@@ -8,6 +8,10 @@ import { ReactComponent as SearchIcon } from "../icones/search.svg";
 import { ReactComponent as FilterIcon } from "../icones/filter.svg";
 import { ReactComponent as PlusIcon } from "../icones/plus.svg";
 import { ReactComponent as SixDotsIcon } from "../icones/six-dots.svg";
+
+import { ReactComponent as ArchiveIcon } from "../icones/archive.svg";
+import { ReactComponent as BinIcon } from "../icones/bin.svg";
+
 import {
   DndContext,
   closestCenter,
@@ -23,7 +27,6 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
 
 const Tasks = () => {
   // State for form inputs
@@ -85,12 +88,71 @@ const Tasks = () => {
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
-      cursor: "grab",
+      // Remove cursor: "grab" from here, it will be applied to the handle
+    };
+
+    // Add state for menu visibility
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    // Toggle menu visibility
+    const toggleMenu = () => {
+      setIsMenuOpen(!isMenuOpen);
     };
 
     return (
-      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-        {renderTaskCard(task)}
+      // Apply attributes to the main div
+      <div ref={setNodeRef} style={style} {...attributes}>
+        {/* Integrate renderTaskCard logic here */}
+        <div
+          className={`later-tasks-card ${isMenuOpen ? "expanded" : ""}`}
+          key={task.id}
+        >
+          <div className="later-tasks-card-top-row">
+            <div className="later-tasks-card-emoji-text-container">
+              <div className="later-tasks-card-emoji-container">
+                {/* Apply listeners and cursor style to the SixDotsIcon */}
+                <SixDotsIcon
+                  className="later-tasks-card-emoji-dots"
+                  {...listeners} // Apply listeners here
+                  style={{ cursor: "grab" }} // Add grab cursor style
+                />
+                <img
+                  className="later-tasks-card-emoji"
+                  src={task.emoji}
+                  alt="emoji"
+                />
+              </div>
+              <div className="later-tasks-card-text">
+                <div className="later-tasks-card-title-div">
+                  <p className="later-tasks-card-title">{task.title}</p>
+                  <p className="later-tasks-card-time">{task.time}</p>
+                </div>
+                <p className="later-tasks-card-description">
+                  {task.description}
+                </p>
+              </div>
+            </div>
+            <ArrowDownIcon
+              className={`tasks-arrow-down-icon ${isMenuOpen ? "rotated" : ""}`}
+              onClick={toggleMenu}
+            />
+          </div>
+
+          {/* Conditionally render the menu */}
+          {isMenuOpen && (
+            <div className="task-card-menu">
+              <button className="menu-item">
+                <NowIcon className="menu-icon" /> move to Now
+              </button>
+              <button className="menu-item">
+                <ArchiveIcon className="menu-icon" /> archive
+              </button>
+              <button className="menu-item delete">
+                <BinIcon className="menu-icon" /> Delete
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     );
   };
@@ -202,7 +264,7 @@ const Tasks = () => {
     };
 
     // Add to tasks array
-    setLaterTasks((prevTasks) => [...prevTasks, newTask]);
+    setLaterTasks((prevTasks) => [newTask, ...prevTasks]);
 
     // Reset form submitted state
     setFormSubmitted(false);
@@ -298,30 +360,6 @@ const Tasks = () => {
     };
   }, [isSearchExpanded]);
 
-  // Render task card
-  const renderTaskCard = (task) => (
-    <div className="later-tasks-card" key={task.id}>
-      <div className="later-tasks-card-emoji-text-container">
-        <div className="later-tasks-card-emoji-container">
-          <SixDotsIcon className="later-tasks-card-emoji-dots" />
-          <img
-            className="later-tasks-card-emoji"
-            src={task.emoji}
-            alt="emoji"
-          />
-        </div>
-        <div className="later-tasks-card-text">
-          <div className="later-tasks-card-title-div">
-            <p className="later-tasks-card-title">{task.title}</p>
-            <p className="later-tasks-card-time">{task.time}</p>
-          </div>
-          <p className="later-tasks-card-description">{task.description}</p>
-        </div>
-      </div>
-      <ArrowDownIcon className="tasks-arrow-down-icon" />
-    </div>
-  );
-
   return (
     <div className="tasks-page-container">
       <div className="left-section">
@@ -396,7 +434,10 @@ const Tasks = () => {
           {/* Display search results or regular tasks */}
           {searchQuery.trim() !== "" && searchResults.length > 0 ? (
             <div className="search-results-container">
-              {searchResults.map((task) => renderTaskCard(task))}
+              {/* Use SortableItem for search results as well for consistency */}
+              {searchResults.map((task) => (
+                <SortableItem key={task.id} task={task} />
+              ))}
             </div>
           ) : searchQuery.trim() !== "" && searchResults.length === 0 ? (
             <div className="no-results">No tasks found</div>

@@ -11,6 +11,8 @@ import { ReactComponent as PlaneIcon } from "../icones/plane.svg";
 import { ReactComponent as FireIcon } from "../icones/fire.svg";
 import { ReactComponent as MoonIcon } from "../icones/moon.svg";
 
+import { ReactComponent as LogoIcon } from "../icones/icon.svg";
+
 import { ReactComponent as SkipForwardIcon } from "../icones/skip-forward.svg";
 import { ReactComponent as SkipBackwardIcon } from "../icones/skip-backward.svg";
 
@@ -24,6 +26,9 @@ import airportSound from "../../src/white-noises/airport.mp3";
 import fireplace from "../../src/white-noises/fireplace.mp3";
 import cricket from "../../src/white-noises/cricket.mp3";
 
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
+
 // Define sounds array with their properties
 const sounds = [
   { name: "Light rain", src: lightRainSound, Icon: RainIcon },
@@ -34,9 +39,12 @@ const sounds = [
 ];
 
 const TimerWhiteNoises = () => {
-  const initialTime = 4 * 60 + 32; // Example: 4 min 32 seconds
+  const initialTime = 0 * 60 + 10; // Example: 4 min 32 seconds
   const [timeRemaining, setTimeRemaining] = useState(initialTime);
   const [isActive, setIsActive] = useState(false);
+  // Add new state for overtime tracking
+  const [isOvertime, setIsOvertime] = useState(false);
+  const [overtimeSeconds, setOvertimeSeconds] = useState(0);
 
   const [notifications, setNotifications] = useState([]);
   const notificationTimeoutsRef = useRef({});
@@ -61,23 +69,74 @@ const TimerWhiteNoises = () => {
   const radius = ringSize / 2 - strokeWidth / 2;
   const circumference = 2 * Math.PI * radius;
 
+  // Request notification permission on component mount
+  useEffect(() => {
+    if (!("Notification" in window)) {
+      console.log("This browser does not support desktop notification");
+    } else if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  // Modify the existing useEffect for timer countdown
   useEffect(() => {
     if (isActive && timeRemaining > 0) {
       timerIntervalRef.current = setInterval(() => {
         setTimeRemaining((prevTime) => prevTime - 1);
       }, 1000);
-    } else if (timeRemaining === 0 || !isActive) {
+    } else if (timeRemaining === 0 && isActive) {
+      // Timer reached zero - switch to overtime mode
       clearInterval(timerIntervalRef.current);
-      if (timeRemaining === 0 && isActive) {
-        console.log("Timer finished!");
-        setIsActive(false);
+      setIsOvertime(true);
+
+      // Trigger desktop notification
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("Timer Finished!", {
+          body: "Your timer has reached zero.",
+          icon: "../icones/icon.svg", // Optional: Add a path to an icon for the notification
+        });
+      } else if (
+        "Notification" in window &&
+        Notification.permission !== "denied"
+      ) {
+        // If permission hasn't been granted or denied yet, request it
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            new Notification("Timer Finished!", {
+              body: "Your timer has reached zero.",
+              icon: "../icones/icon.svg", // Optional: Add a path to an icon for the notification
+            });
+          }
+        });
       }
+
+      // Start the overtime counter
+      timerIntervalRef.current = setInterval(() => {
+        setOvertimeSeconds((prevSeconds) => {
+          const newSeconds = prevSeconds + 1;
+          // Check if overtime reaches 5 minutes (300 seconds)
+          if (newSeconds >= 300) {
+            clearInterval(timerIntervalRef.current);
+            setIsActive(false); // Stop the timer
+            setIsOvertime(false); // Exit overtime mode
+            setOvertimeSeconds(0); // Reset overtime counter
+            // Optionally, you might want to reset the main timer or show a message here
+            // setTimeRemaining(initialTime); // Example: reset to initial time
+          }
+          return newSeconds;
+        });
+      }, 1000);
+    } else if (!isActive) {
+      clearInterval(timerIntervalRef.current);
     }
+
     return () => clearInterval(timerIntervalRef.current);
-  }, [isActive, timeRemaining]);
+  }, [isActive, timeRemaining, isOvertime]);
 
   // Timer functions
   const toggleTimer = () => {
+    // Prevent toggling if in overtime
+    if (isOvertime) return;
     setIsActive(!isActive);
   };
 
@@ -91,17 +150,31 @@ const TimerWhiteNoises = () => {
     clearInterval(timerIntervalRef.current);
     setIsActive(false);
     setTimeRemaining(0);
+    setIsOvertime(false);
+    setOvertimeSeconds(0);
   };
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
+    const isOvertimeDisplay = isOvertime;
+
     return (
       <>
-        <span className="minutes">{String(minutes)}</span>
-        <span className="separator"> min </span>
-        <span className="seconds">{String(secs).padStart(2, "0")}</span>
-        <span className="separator"> s</span>
+        <span className={`minutes ${isOvertimeDisplay ? "overtime" : ""}`}>
+          {String(minutes)}
+        </span>
+        <span className={`separator ${isOvertimeDisplay ? "overtime" : ""}`}>
+          {" "}
+          min{" "}
+        </span>
+        <span className={`seconds ${isOvertimeDisplay ? "overtime" : ""}`}>
+          {String(secs).padStart(2, "0")}
+        </span>
+        <span className={`separator ${isOvertimeDisplay ? "overtime" : ""}`}>
+          {" "}
+          s
+        </span>
       </>
     );
   };
@@ -449,25 +522,41 @@ const TimerWhiteNoises = () => {
             className="timer-progress-ring"
             width={ringSize}
             height={ringSize}
+            viewBox={`0 0 ${ringSize} ${ringSize}`}
           >
             <defs>
-              <linearGradient
-                id="timerGradient"
-                x1="0%"
-                y1="0%"
-                x2="0%"
-                y2="100%"
-              >
+              {/* Create gradient for the progress arc */}
+              <linearGradient id="arcGradient" gradientUnits="userSpaceOnUse">
                 <stop
                   offset="0%"
-                  style={{ stopColor: "#119DFF", stopOpacity: 1 }}
+                  stopColor={
+                    isOvertime
+                      ? "rgba(255, 59, 48, 0)"
+                      : "rgba(17, 157, 255, 0)"
+                  }
+                />
+                <stop
+                  offset="70%"
+                  stopColor={
+                    isOvertime
+                      ? "rgba(255, 59, 48, 0.5)"
+                      : "rgba(17, 157, 255, 0.5)"
+                  }
                 />
                 <stop
                   offset="100%"
-                  style={{ stopColor: "#0056b3", stopOpacity: 1 }}
+                  stopColor={isOvertime ? "#FF3B30" : "#119DFF"}
                 />
               </linearGradient>
+
+              {/* Add filter for glow effect */}
+              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
             </defs>
+
+            {/* Background circle */}
             <circle
               className="timer-progress-ring__background"
               strokeWidth={strokeWidth}
@@ -476,6 +565,8 @@ const TimerWhiteNoises = () => {
               cx={ringSize / 2}
               cy={ringSize / 2}
             />
+
+            {/* Main progress circle */}
             <circle
               className="timer-progress-ring__progress"
               strokeWidth={strokeWidth}
@@ -484,18 +575,57 @@ const TimerWhiteNoises = () => {
               cx={ringSize / 2}
               cy={ringSize / 2}
               style={{
+                stroke: "url(#arcGradient)",
+                strokeLinecap: "round",
                 strokeDasharray: circumference,
-                strokeDashoffset:
-                  circumference * (1 - timeRemaining / initialTime),
+                strokeDashoffset: isOvertime
+                  ? 0
+                  : circumference * (1 - timeRemaining / initialTime),
                 transform: "rotate(-90deg)",
                 transformOrigin: "50% 50%",
                 transition: "stroke-dashoffset 0.35s linear",
+                filter: "url(#glow)",
               }}
+            />
+
+            {/* The dot at the end of the progress */}
+            <circle
+              className={`timer-progress-dot ${isOvertime ? "overtime" : ""}`}
+              r={6}
+              fill={isOvertime ? "#FF3B30" : "#119DFF"}
+              style={{
+                filter: `drop-shadow(0 0 5px ${
+                  isOvertime
+                    ? "rgba(255, 59, 48, 0.8)"
+                    : "rgba(17, 157, 255, 0.8)"
+                })`,
+                transform: isOvertime
+                  ? `rotate(${
+                      (360 * (overtimeSeconds % 60)) / 60 - 90
+                    }deg) translate(${radius}px, 0)`
+                  : `rotate(${
+                      360 * (timeRemaining / initialTime) - 90
+                    }deg) translate(${radius}px, 0)`,
+                transformOrigin: "center",
+                transition: "transform 0.35s linear",
+              }}
+              cx={ringSize / 2}
+              cy={ringSize / 2}
             />
           </svg>
           <div className="timer-text-content">
-            <div className="timer-remaining-label">Remaining</div>
-            <div className="timer-time">{formatTime(timeRemaining)}</div>
+            <div
+              className={`timer-remaining-label ${
+                isOvertime ? "overtime" : ""
+              }`}
+            >
+              {isOvertime ? "Overtime" : "Remaining"}
+            </div>
+            <div className="timer-time">
+              {isOvertime
+                ? formatTime(overtimeSeconds)
+                : formatTime(timeRemaining)}
+            </div>
           </div>
         </div>
         <div className="timer-controls">
@@ -504,13 +634,22 @@ const TimerWhiteNoises = () => {
           </button>
           <button
             onClick={toggleTimer}
-            className={`start-pause-button ${isActive ? "pause" : "start"}`}
+            className={`start-pause-button ${isActive ? "pause" : "start"} ${
+              isOvertime ? "disabled" : ""
+            }`}
+            disabled={isOvertime}
           >
             {isActive ? <PauseIcon /> : <StartIcon className="start-icon" />}{" "}
             {isActive ? "Pause" : "Start"}{" "}
           </button>
-          <button onClick={endTimer} className="timer-button end-button">
-            <EndIcon className="end-icon" /> End
+          <button
+            onClick={endTimer}
+            className={`timer-button end-button ${
+              isOvertime ? "overtime" : ""
+            }`}
+          >
+            <EndIcon className={`end-icon ${isOvertime ? "overtime" : ""}`} />{" "}
+            End
           </button>
         </div>
       </div>
@@ -595,8 +734,6 @@ const TimerWhiteNoises = () => {
             </div>
           ))}
         </div>
-
-        {/* ... rest of your existing JSX ... */}
       </div>
     </div>
   );

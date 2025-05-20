@@ -44,9 +44,19 @@
 }
 
 .timer-progress-ring__progress {
-  stroke: url(#timerGradient);
-  stroke-linecap: round;
-  stroke-width: 10px;
+  display: block; /* Make the progress circle visible */
+}
+
+.timer-progress-ring__colored-segment {
+  display: none; /* Hide the segment that moves around */
+}
+
+.timer-progress-dot {
+  filter: drop-shadow(0 0 8px rgba(17, 157, 255, 0.7));
+}
+
+.timer-progress-track {
+  opacity: 0;
 }
 
 .timer-text-content {
@@ -144,6 +154,10 @@
 .end-icon, .reset-icon {
   width: 1rem;
   height: 1rem;
+}
+
+.end-icon.overtime {
+color: white;
 }
 
 .start-pause-button.start {
@@ -480,4 +494,77 @@
   15% { opacity: 1; transform: translateY(0); }
   85% { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(-0.625rem); }
+}
+
+.timer-progress-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.progress-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #119DFF;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0 0;
+  box-shadow: 0 0 8px rgba(17, 157, 255, 0.8);
+  transition: transform 0.35s linear;
+}
+
+/* Override library styles */
+.CircularProgressbar .CircularProgressbar-path {
+  filter: drop-shadow(0 0 3px rgba(17, 157, 255, 0.5));
+}
+
+/* You can comment out or remove this if you're not using the progress arc */
+.timer-progress-ring__progress {
+  display: none; /* Hide the original progress circle */
+}
+
+.timer-progress-dot {
+  filter: drop-shadow(0 0 8px rgba(17, 157, 255, 0.7));
+}
+
+/* Optional subtle track - adjust opacity or remove if not needed */
+.timer-progress-track {
+  opacity: 0;
+}
+
+
+
+.timer-time .minutes.overtime,
+.timer-time .seconds.overtime,
+.timer-time .separator.overtime {
+  color: #FF3B30;
+}
+
+.timer-progress-dot.overtime {
+  filter: drop-shadow(0 0 8px rgba(255, 59, 48, 0.7));
+}
+
+.start-pause-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #555555;
+  color: #999999;
+}
+
+.start-pause-button.disabled:hover {
+  background-color: #555555;
+  transform: none;
+}
+
+.timer-button.end-button.overtime {
+  background-color: #119DFF;
+  box-shadow: inset 0px 0px 1.5rem -0.4375rem white;
+  color: white;
+}
+
+
+.timer-button.end-button.overtime:hover {
+  background-color: #0056b3;
 }
