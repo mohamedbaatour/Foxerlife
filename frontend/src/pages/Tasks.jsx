@@ -28,6 +28,9 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
+// Import the EmojiPicker component
+import EmojiPicker, { EmojiStyle } from 'emoji-picker-react';
+
 const Tasks = () => {
   // State for form inputs
   const [taskTitle, setTaskTitle] = useState("");
@@ -39,6 +42,14 @@ const Tasks = () => {
     name: "Personal life",
     color: "#6366F1",
   });
+
+      const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+      // Handle emoji selection
+      const onEmojiClick = (emojiObject) => {
+        setTaskEmoji(emojiObject.emoji);
+        setShowEmojiPicker(false); // Hide the picker after selection
+      };
 
   // Add state for the currently active "Now" task
   // Initialize nowTask directly from localStorage
@@ -106,23 +117,28 @@ const Tasks = () => {
       setIsMenuOpen(!isMenuOpen);
     };
 
+    // Add state for emoji picker visibility
+
+
     // Handle moving a task to "Now"
     const handleMoveToNow = (taskId) => {
       // Find the task to move
-      const taskToMove = laterTasks.find(task => task.id === taskId);
+      const taskToMove = laterTasks.find((task) => task.id === taskId);
 
       if (taskToMove) {
         // Check if there is an existing task in "Now"
         if (nowTask) {
           // If yes, move the current "Now" task back to "Later" tasks
-          setLaterTasks(prevTasks => [nowTask, ...prevTasks]); // Add it to the beginning of the later tasks list
+          setLaterTasks((prevTasks) => [nowTask, ...prevTasks]); // Add it to the beginning of the later tasks list
         }
 
         // Set the selected task as the new "Now" task
         setNowTask(taskToMove);
 
         // Remove the selected task from "Later" tasks
-        setLaterTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+        setLaterTasks((prevTasks) =>
+          prevTasks.filter((task) => task.id !== taskId)
+        );
 
         // Close the menu
         setIsMenuOpen(false);
@@ -132,12 +148,15 @@ const Tasks = () => {
     // Add the handleDeleteTask function
     const handleDeleteTask = (taskId) => {
       // Remove the task from laterTasks
-      setLaterTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
-      
+      setLaterTasks((prevTasks) =>
+        prevTasks.filter((task) => task.id !== taskId)
+      );
+
       // Close the menu
       setIsMenuOpen(false);
     };
 
+    // In the SortableItem component
     return (
       // Apply attributes to the main div
       <div ref={setNodeRef} style={style} {...attributes}>
@@ -152,14 +171,18 @@ const Tasks = () => {
                 {/* Apply listeners and cursor style to the SixDotsIcon */}
                 <SixDotsIcon
                   className="later-tasks-card-emoji-dots"
-                  {...listeners} // Apply listeners here
-                  style={{ cursor: "grab" }} // Add grab cursor style
+                  {...listeners}
+                  style={{ cursor: "grab" }}
                 />
-                <img
-                  className="later-tasks-card-emoji"
-                  src={task.emoji}
-                  alt="emoji"
-                />
+                {typeof task.emoji === 'string' && task.emoji.startsWith('http') ? (
+                  <img
+                    className="later-tasks-card-emoji"
+                    src={task.emoji}
+                    alt="emoji"
+                  />
+                ) : (
+                  <span className="later-tasks-card-emoji-text">{task.emoji}</span>
+                )}
               </div>
               <div className="later-tasks-card-text">
                 <div className="later-tasks-card-title-div">
@@ -181,13 +204,19 @@ const Tasks = () => {
           {isMenuOpen && (
             <div className="task-card-menu">
               {/* Add onClick handler to the "move to Now" button */}
-              <button className="menu-item" onClick={() => handleMoveToNow(task.id)}>
+              <button
+                className="menu-item"
+                onClick={() => handleMoveToNow(task.id)}
+              >
                 <NowIcon className="menu-icon" /> move to Now
               </button>
               <button className="menu-item">
                 <ArchiveIcon className="menu-icon" /> archive
               </button>
-              <button className="menu-item delete" onClick={() => handleDeleteTask(task.id)}>
+              <button
+                className="menu-item delete"
+                onClick={() => handleDeleteTask(task.id)}
+              >
                 <BinIcon className="menu-icon" /> Delete
               </button>
             </div>
@@ -422,11 +451,15 @@ const Tasks = () => {
           {nowTask ? (
             <div className="now-tasks-card">
               <div className="now-tasks-card-emoji-text-container">
-                <img
-                  className="now-tasks-card-emoji"
-                  src={nowTask.emoji} // Use emoji from nowTask
-                  alt="emoji"
-                />
+                {typeof nowTask.emoji === 'string' && nowTask.emoji.startsWith('http') ? (
+                  <img
+                    className="now-tasks-card-emoji"
+                    src={nowTask.emoji}
+                    alt="emoji"
+                  />
+                ) : (
+                  <span className="now-tasks-card-emoji-text">{nowTask.emoji}</span>
+                )}
                 <div className="now-tasks-card-text">
                   <div className="now-tasks-card-title-div">
                     <p className="now-tasks-card-title">{nowTask.title}</p>
@@ -608,7 +641,35 @@ const Tasks = () => {
 
                 <div className="form-group half">
                   <label>Emoji</label>
-                  <button className="emoji-selector">{taskEmoji}</button>
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      className="emoji-selector"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowEmojiPicker(!showEmojiPicker);
+                      }}
+                    >
+                      {taskEmoji}
+                    </button>
+
+                    {showEmojiPicker && (
+                      <div style={{
+                        position: 'absolute',
+                        zIndex: 1000,
+                        // Change 'top' to 'bottom' and adjust the value
+                        bottom: '45px', // Adjust this value as needed for spacing
+                        right: '0px'
+                      }}>
+                        <EmojiPicker
+                          onEmojiClick={onEmojiClick}
+                          emojiStyle={EmojiStyle.APPLE} // Ensure iOS/Apple emoji style
+                          width={300}
+                          height={400}
+                          searchPlaceholder="Search emoji..."
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -629,3 +690,4 @@ const Tasks = () => {
 };
 
 export default Tasks;
+
