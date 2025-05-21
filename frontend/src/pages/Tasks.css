@@ -335,6 +335,7 @@ color: white;
 .search-button.expanded {
   width: 200px;
   padding-left: 48px; /* make room for the icon */
+  display: flex;
   
 }
 

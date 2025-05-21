@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './Tasks.css'; 
+import './Tasks.css';
 import TimerWhiteNoises from '../components/Timer-WhiteNoise.jsx';
 import { ReactComponent as NowIcon } from "../icones/now.svg";
 import { ReactComponent as ArrowDownIcon } from "../icones/arrow-down.svg";
@@ -38,6 +38,13 @@ const Tasks = () => {
   const [taskTag, setTaskTag] = useState({
     name: "Personal life",
     color: "#6366F1",
+  });
+
+  // Add state for the currently active "Now" task
+  // Initialize nowTask directly from localStorage
+  const [nowTask, setNowTask] = useState(() => {
+    const savedNowTask = localStorage.getItem("nowTask");
+    return savedNowTask ? JSON.parse(savedNowTask) : null;
   });
 
   // Load tasks from localStorage on component mount
@@ -99,6 +106,38 @@ const Tasks = () => {
       setIsMenuOpen(!isMenuOpen);
     };
 
+    // Handle moving a task to "Now"
+    const handleMoveToNow = (taskId) => {
+      // Find the task to move
+      const taskToMove = laterTasks.find(task => task.id === taskId);
+
+      if (taskToMove) {
+        // Check if there is an existing task in "Now"
+        if (nowTask) {
+          // If yes, move the current "Now" task back to "Later" tasks
+          setLaterTasks(prevTasks => [nowTask, ...prevTasks]); // Add it to the beginning of the later tasks list
+        }
+
+        // Set the selected task as the new "Now" task
+        setNowTask(taskToMove);
+
+        // Remove the selected task from "Later" tasks
+        setLaterTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+
+        // Close the menu
+        setIsMenuOpen(false);
+      }
+    };
+
+    // Add the handleDeleteTask function
+    const handleDeleteTask = (taskId) => {
+      // Remove the task from laterTasks
+      setLaterTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+      
+      // Close the menu
+      setIsMenuOpen(false);
+    };
+
     return (
       // Apply attributes to the main div
       <div ref={setNodeRef} style={style} {...attributes}>
@@ -141,13 +180,14 @@ const Tasks = () => {
           {/* Conditionally render the menu */}
           {isMenuOpen && (
             <div className="task-card-menu">
-              <button className="menu-item">
+              {/* Add onClick handler to the "move to Now" button */}
+              <button className="menu-item" onClick={() => handleMoveToNow(task.id)}>
                 <NowIcon className="menu-icon" /> move to Now
               </button>
               <button className="menu-item">
                 <ArchiveIcon className="menu-icon" /> archive
               </button>
-              <button className="menu-item delete">
+              <button className="menu-item delete" onClick={() => handleDeleteTask(task.id)}>
                 <BinIcon className="menu-icon" /> Delete
               </button>
             </div>
@@ -175,6 +215,12 @@ const Tasks = () => {
   useEffect(() => {
     localStorage.setItem("laterTasks", JSON.stringify(laterTasks));
   }, [laterTasks]);
+
+  // Keep the useEffect to save nowTask whenever it changes
+  useEffect(() => {
+    localStorage.setItem("nowTask", JSON.stringify(nowTask));
+  }, [nowTask]); // Save whenever nowTask changes
+
 
   const [showModal, setShowModal] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -362,8 +408,9 @@ const Tasks = () => {
 
   return (
     <div className="tasks-page-container">
+      {/* Pass the nowTask to the TimerWhiteNoises component */}
       <div className="left-section">
-        <TimerWhiteNoises />
+        <TimerWhiteNoises nowTask={nowTask} />
       </div>
       <div className="right-section">
         <div className="now-tasks-container">
@@ -371,25 +418,34 @@ const Tasks = () => {
             <NowIcon className="now-icon" />
             <p className="now-tasks">Now</p>
           </div>
-          <div className="now-tasks-card">
-            <div className="now-tasks-card-emoji-text-container">
-              <img
-                className="now-tasks-card-emoji"
-                src="https://em-content.zobj.net/source/apple/419/beaming-face-with-smiling-eyes_1f601.png"
-                alt="emoji"
-              />
-              <div className="now-tasks-card-text">
-                <div className="now-tasks-card-title-div">
-                  <p className="now-tasks-card-title">First Task</p>
-                  <p className="now-tasks-card-time">1h 05m</p>
+          {/* Conditionally render the Now task card based on nowTask state */}
+          {nowTask ? (
+            <div className="now-tasks-card">
+              <div className="now-tasks-card-emoji-text-container">
+                <img
+                  className="now-tasks-card-emoji"
+                  src={nowTask.emoji} // Use emoji from nowTask
+                  alt="emoji"
+                />
+                <div className="now-tasks-card-text">
+                  <div className="now-tasks-card-title-div">
+                    <p className="now-tasks-card-title">{nowTask.title}</p>
+                    <p className="now-tasks-card-time">{nowTask.time}</p>
+                  </div>
+                  <p className="now-tasks-card-description">
+                    {nowTask.description}
+                  </p>
                 </div>
-                <p className="now-tasks-card-description">
-                  My first task's description is long is so long...
-                </p>
               </div>
+              {/* Add a button or icon to clear the Now task if needed */}
+              {/* <button onClick={() => setNowTask(null)}>Clear</button> */}
+              <ArrowDownIcon className="tasks-arrow-down-icon" /> {/* Keep the arrow if needed */}
             </div>
-            <ArrowDownIcon className="tasks-arrow-down-icon" />
-          </div>
+          ) : (
+            <div className="now-tasks-card">
+              <p className="now-tasks-card-title">No task set for Now</p>
+            </div>
+          )}
         </div>
         <div className="later-tasks-container">
           <div className="later-tasks-text-CTA">
@@ -511,7 +567,7 @@ const Tasks = () => {
               </div>
 
               <div className="form-row">
-                <div className="form-group half">
+                {/* <div className="form-group half">
                   <label>Tag</label>
                   <div className="tag-selector">
                     <div className="selected-tag">
@@ -523,7 +579,7 @@ const Tasks = () => {
                     </div>
                     <PlusIcon className="add-tag-button" />
                   </div>
-                </div>
+                </div> */}
 
                 <div className="form-group half">
                   <label>Duration</label>
@@ -537,7 +593,7 @@ const Tasks = () => {
               </div>
 
               <div className="form-row">
-                <div className="form-group half">
+                {/* <div className="form-group half">
                   <label>Priority</label>
                   <select
                     className="modal-input"
@@ -548,7 +604,7 @@ const Tasks = () => {
                     <option>Medium</option>
                     <option>High</option>
                   </select>
-                </div>
+                </div> */}
 
                 <div className="form-group half">
                   <label>Emoji</label>

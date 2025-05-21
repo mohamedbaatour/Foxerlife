@@ -55,8 +55,11 @@
     height: 20px;
     width: 20px;
     margin-right: 0.5rem;
+
     transition: fill 0.2s ease-in-out;
 }
+
+
 
 .navbar-menu-link {
   text-decoration: none;

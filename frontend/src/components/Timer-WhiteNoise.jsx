@@ -38,8 +38,40 @@ const sounds = [
   { name: "Airport buzz", src: airportSound, Icon: PlaneIcon },
 ];
 
-const TimerWhiteNoises = () => {
-  const initialTime = 0 * 60 + 10; // Example: 4 min 32 seconds
+
+
+// Update the JSX to render multiple notifications
+
+// Add a helper function to parse time string (e.g., "3h 45m") to seconds
+const parseDurationToSeconds = (timeString) => {
+  if (!timeString) return 0;
+  
+  let totalSeconds = 0;
+  const hourMatch = timeString.match(/(\d+)h/);
+  const minuteMatch = timeString.match(/(\d+)m/);
+  
+  if (hourMatch && hourMatch[1]) {
+    totalSeconds += parseInt(hourMatch[1]) * 3600;
+  }
+  
+  if (minuteMatch && minuteMatch[1]) {
+    totalSeconds += parseInt(minuteMatch[1]) * 60;
+  }
+  
+  return totalSeconds;
+};
+
+// Update the component to accept nowTask prop
+const TimerWhiteNoises = ({ nowTask }) => {
+  // Initialize timer based on nowTask duration if available, otherwise use a default
+  const getInitialTime = () => {
+    if (nowTask && nowTask.time) {
+      return parseDurationToSeconds(nowTask.time);
+    }
+    return 10; // Default 10 seconds if no task is set
+  };
+
+  const [initialTime, setInitialTime] = useState(getInitialTime());
   const [timeRemaining, setTimeRemaining] = useState(initialTime);
   const [isActive, setIsActive] = useState(false);
   // Add new state for overtime tracking
@@ -509,6 +541,18 @@ const TimerWhiteNoises = () => {
   // Get current sound icon component
   const CurrentSoundIcon = sounds[currentSoundIndex].Icon;
 
+  // Add a new useEffect to update the timer when nowTask changes
+  useEffect(() => {
+    const newInitialTime = getInitialTime();
+    setInitialTime(newInitialTime);
+
+    // Only update timeRemaining if the timer is not active
+    // This prevents resetting an ongoing timer
+    if (!isActive && !isOvertime) {
+      setTimeRemaining(newInitialTime);
+    }
+  }, [nowTask]); // This effect runs whenever nowTask changes
+
   return (
     <div className="tasks-main-content-left-column">
       {/* Show notification popup when showNotification is true */}
@@ -741,4 +785,3 @@ const TimerWhiteNoises = () => {
 
 export default TimerWhiteNoises;
 
-// Update the JSX to render multiple notifications

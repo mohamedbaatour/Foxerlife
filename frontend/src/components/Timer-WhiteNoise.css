@@ -157,7 +157,8 @@
 }
 
 .end-icon.overtime {
-color: white;
+stroke: white;
+stroke-width: 1px;
 }
 
 .start-pause-button.start {
