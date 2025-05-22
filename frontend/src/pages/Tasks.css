@@ -141,7 +141,11 @@ color: white;
   height: 48px; /* Initial height */
   margin-bottom: 24px;
   position: relative; /* Keep for menu positioning */
-  transition: all 1s ease-in-out; /* Transition all properties */
+backdrop-filter: blur(8px);
+}
+
+.is-dragging {
+  z-index: 2000; /* Set a high z-index */
 }
 
 .later-tasks-card.expanded {
@@ -157,7 +161,7 @@ color: white;
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
   width: 100%; /* Take full width in expanded mode */
 }
 
@@ -198,12 +202,12 @@ color: white;
   flex-direction: row;
   align-items: center;  
   justify-content: center;
-  gap: 4px;
+  gap: -2px;
 }
 
 .later-tasks-card-emoji-dots {
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   color: #232526;
 }
 
@@ -243,7 +247,7 @@ color: white;
 .search-filter-container {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: center !important;
   gap: 16px;
 }
 
@@ -274,12 +278,14 @@ color: white;
 
 }
 
+
+
 .add-task-icon {
   width: 24px;
   height: 24px;
 }
 
-.search-button, .filter-button {
+.filter-button {
   color: white;
   background-color: #181A1C;
   border: 1px solid #232526;
@@ -293,11 +299,7 @@ color: white;
   height: 48px;
 }
 
-.search-icon, .filter-icon {
-  width: 24px;
-  height: 24px;
-  color: #f1f1f1; /* Make icon more visible */
-}
+
 
 /* Expandable Search Styles */
 .search-container {
@@ -310,7 +312,7 @@ color: white;
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   width: 48px;
   height: 48px;
   padding: 12px;
@@ -320,11 +322,16 @@ color: white;
   transition: all 0.3s ease;
   overflow: hidden;
 }
+.search-icon, .filter-icon {
+  width: 24px;
+  height: 24px;
+  color: #f1f1f1; /* Make icon more visible */
+  z-index: 0;
+}
 
 .search-icon {
   position: absolute;
   left: 16px; /* fixed position */
-  z-index: 2;
   width: 24px;
   height: 24px;
   translate: -5px;
@@ -346,9 +353,15 @@ color: white;
   font-family: "Manrope", sans-serif;
   font-size: 14px;
   width: 100%;
+  padding-top: 0;
+  padding-bottom: 0;
+  height: 100%;
+  line-height: 1;
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(0); /* <--- remove vertical offset */
   transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  box-sizing: border-box;
 }
 
 .later-tasks-card.expanded .task-card-menu {
@@ -359,6 +372,10 @@ color: white;
 .search-input.visible {
   opacity: 1;
   pointer-events: auto;
+    display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
 }
 
 .search-results-container {
@@ -639,7 +656,27 @@ textarea.modal-input {
 }
 
 /* Styles for the task card menu */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
 
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    filter: blur(0px);
+  }
+  to {
+    opacity: 0;
+    filter: blur(8px);
+  }
+}
 
 .task-card-menu {
   margin-top: 0px;
@@ -653,8 +690,13 @@ textarea.modal-input {
   margin-left: auto; /* These two margin properties help with centering */
   margin-right: auto;
   justify-content: center; /* Center the buttons within the menu */
+  animation: fadeIn 0.3s ease-out forwards;
 }
 
+/* Add this new class for fading out */
+.task-card-menu.fading-out {
+  animation: fadeOut 0.3s ease-out forwards;
+}
 
 .menu-item {
   display: flex;
@@ -699,19 +741,36 @@ textarea.modal-input {
 }
 
 .later-tasks-card-emoji-text {
-  font-size: 24px;
+  font-size: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
+  margin-right: -7px;
 }
 
 .now-tasks-card-emoji-text {
-  font-size: 24px;
+  font-size: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+}
+/* Archive */
+
+.archive-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+}
+
+
+.archive-header-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: #999;
+  margin-bottom: 16px;
+  cursor: pointer;
 }

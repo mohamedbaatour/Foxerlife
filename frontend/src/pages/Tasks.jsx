@@ -8,9 +8,9 @@ import { ReactComponent as SearchIcon } from "../icones/search.svg";
 import { ReactComponent as FilterIcon } from "../icones/filter.svg";
 import { ReactComponent as PlusIcon } from "../icones/plus.svg";
 import { ReactComponent as SixDotsIcon } from "../icones/six-dots.svg";
-
 import { ReactComponent as ArchiveIcon } from "../icones/archive.svg";
 import { ReactComponent as BinIcon } from "../icones/bin.svg";
+import { ReactComponent as LogoIcon } from "../icones/icon.svg";
 
 import {
   DndContext,
@@ -29,10 +29,11 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 // Import the EmojiPicker component
-import EmojiPicker, { EmojiStyle } from 'emoji-picker-react';
+import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 
 const Tasks = () => {
   // State for form inputs
+  const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [taskDuration, setTaskDuration] = useState("3h 45m");
@@ -43,13 +44,13 @@ const Tasks = () => {
     color: "#6366F1",
   });
 
-      const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
-      // Handle emoji selection
-      const onEmojiClick = (emojiObject) => {
-        setTaskEmoji(emojiObject.emoji);
-        setShowEmojiPicker(false); // Hide the picker after selection
-      };
+  // Handle emoji selection
+  const onEmojiClick = (emojiObject) => {
+    setTaskEmoji(emojiObject.emoji);
+    setShowEmojiPicker(false); // Hide the picker after selection
+  };
 
   // Add state for the currently active "Now" task
   // Initialize nowTask directly from localStorage
@@ -66,32 +67,29 @@ const Tasks = () => {
     } else {
       return [
         {
+          id: 1,
+          title: "First Task",
+          description: "My first task's description is long, so long...",
+          time: "0h 40m",
+          emoji: "😃",
+          priority: "Medium",
+          tag: { name: "Personal life", color: "#6366F1" },
+        },
+        {
           id: 2,
           title: "Second Task",
-          description: "My second task's description is long is so long...",
-          time: "2h 30m",
-          emoji:
-            "https://em-content.zobj.net/source/apple/419/beaming-face-with-smiling-eyes_1f601.png",
-          priority: "Medium",
+          description: "My second task's description is long, so long...",
+          time: "0h 10m",
+          emoji: "🤔",
+          priority: "Low",
           tag: { name: "Personal life", color: "#6366F1" },
         },
         {
           id: 3,
           title: "Third Task",
-          description: "My third task's description is long is so long...",
-          time: "1h 23m",
-          emoji:
-            "https://em-content.zobj.net/source/apple/419/beaming-face-with-smiling-eyes_1f601.png",
-          priority: "Low",
-          tag: { name: "Personal life", color: "#6366F1" },
-        },
-        {
-          id: 4,
-          title: "Fourth Task",
-          description: "My fourth task's description is long is so long...",
-          time: "1h 23m",
-          emoji:
-            "https://em-content.zobj.net/source/apple/419/beaming-face-with-smiling-eyes_1f601.png",
+          description: "My third task's description is long, so long...",
+          time: "1h 20m",
+          emoji: "😎",
           priority: "High",
           tag: { name: "Personal life", color: "#6366F1" },
         },
@@ -99,13 +97,27 @@ const Tasks = () => {
     }
   });
 
+  // Add state for archived tasks
+  const [archivedTasks, setArchivedTasks] = useState(() => {
+    const savedArchivedTasks = localStorage.getItem("archivedTasks");
+    return savedArchivedTasks ? JSON.parse(savedArchivedTasks) : [];
+  });
+
   const SortableItem = ({ task }) => {
-    const { attributes, listeners, setNodeRef, transform, transition } =
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = // Add isDragging here
       useSortable({ id: task.id });
 
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
+      zIndex: isDragging ? 3000 : 0, // Set a high z-index when dragging
       // Remove cursor: "grab" from here, it will be applied to the handle
     };
 
@@ -113,12 +125,29 @@ const Tasks = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     // Toggle menu visibility
+    // For SortableItem component
     const toggleMenu = () => {
-      setIsMenuOpen(!isMenuOpen);
+      if (isMenuOpen) {
+        // Get the menu element
+        const menuElement = document.querySelector(
+          `#task-${task.id} .task-card-menu`
+        );
+        if (menuElement) {
+          // Add the fading-out class
+          menuElement.classList.add("fading-out");
+          // Wait for the animation to complete before hiding the menu
+          setTimeout(() => {
+            setIsMenuOpen(false);
+          }, 300); // Match this with the animation duration (0.3s)
+        } else {
+          setIsMenuOpen(false);
+        }
+      } else {
+        setIsMenuOpen(true);
+      }
     };
 
     // Add state for emoji picker visibility
-
 
     // Handle moving a task to "Now"
     const handleMoveToNow = (taskId) => {
@@ -146,24 +175,70 @@ const Tasks = () => {
     };
 
     // Add the handleDeleteTask function
+    // Example for handleDeleteTask in SortableItem
     const handleDeleteTask = (taskId) => {
-      // Remove the task from laterTasks
-      setLaterTasks((prevTasks) =>
-        prevTasks.filter((task) => task.id !== taskId)
+      // Get the menu element
+      const menuElement = document.querySelector(
+        `#task-${taskId} .task-card-menu`
       );
-
-      // Close the menu
-      setIsMenuOpen(false);
+      if (menuElement) {
+        // Add the fading-out class
+        menuElement.classList.add("fading-out");
+        // Wait for the animation to complete before removing the task
+        setTimeout(() => {
+          // Remove the task from laterTasks
+          setLaterTasks((prevTasks) =>
+            prevTasks.filter((task) => task.id !== taskId)
+          );
+          // Close the menu
+          setIsMenuOpen(false);
+        }, 200); // Match this with the animation duration (0.3s)
+      } else {
+        // Remove the task from laterTasks
+        setLaterTasks((prevTasks) =>
+          prevTasks.filter((task) => task.id !== taskId)
+        );
+        // Close the menu
+        setIsMenuOpen(false);
+      }
     };
+
+    // Add the handleArchiveTask function
+    const handleArchiveTask = (taskId) => {
+      // Find the task to archive
+      const taskToArchive = laterTasks.find((task) => task.id === taskId);
+
+      if (taskToArchive) {
+        // Add to archived tasks
+        setArchivedTasks((prevTasks) => [taskToArchive, ...prevTasks]);
+
+        // Remove from later tasks
+        setLaterTasks((prevTasks) =>
+          prevTasks.filter((task) => task.id !== taskId)
+        );
+
+        // Close the menu
+        setIsMenuOpen(false);
+      }
+    };
+
+    // Define the maximum length for the truncated description
+    const maxDescriptionLength =
+      "My second task's description is long is so long".length;
 
     // In the SortableItem component
     return (
       // Apply attributes to the main div
-      <div ref={setNodeRef} style={style} {...attributes}>
-        {/* Integrate renderTaskCard logic here */}
+      <div
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        className={isDragging ? "is-dragging" : ""} // Add class when dragging
+      >
         <div
           className={`later-tasks-card ${isMenuOpen ? "expanded" : ""}`}
           key={task.id}
+          id={`task-${task.id}`}
         >
           <div className="later-tasks-card-top-row">
             <div className="later-tasks-card-emoji-text-container">
@@ -174,14 +249,17 @@ const Tasks = () => {
                   {...listeners}
                   style={{ cursor: "grab" }}
                 />
-                {typeof task.emoji === 'string' && task.emoji.startsWith('http') ? (
+                {typeof task.emoji === "string" &&
+                task.emoji.startsWith("http") ? (
                   <img
                     className="later-tasks-card-emoji"
                     src={task.emoji}
                     alt="emoji"
                   />
                 ) : (
-                  <span className="later-tasks-card-emoji-text">{task.emoji}</span>
+                  <span className="later-tasks-card-emoji-text">
+                    {task.emoji}
+                  </span>
                 )}
               </div>
               <div className="later-tasks-card-text">
@@ -190,7 +268,12 @@ const Tasks = () => {
                   <p className="later-tasks-card-time">{task.time}</p>
                 </div>
                 <p className="later-tasks-card-description">
-                  {task.description}
+                  {isMenuOpen || task.description.length <= maxDescriptionLength
+                    ? task.description
+                    : `${task.description.substring(
+                        0,
+                        maxDescriptionLength
+                      )}...`}
                 </p>
               </div>
             </div>
@@ -210,7 +293,10 @@ const Tasks = () => {
               >
                 <NowIcon className="menu-icon" /> move to Now
               </button>
-              <button className="menu-item">
+              <button
+                className="menu-item"
+                onClick={() => handleArchiveTask(task.id)}
+              >
                 <ArchiveIcon className="menu-icon" /> archive
               </button>
               <button
@@ -230,13 +316,39 @@ const Tasks = () => {
   const sensors = useSensors(useSensor(PointerSensor));
 
   // 3. Handle drag end:
+  // Update the handleDragEnd function
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      const oldIndex = laterTasks.findIndex((task) => task.id === active.id);
-      const newIndex = laterTasks.findIndex((task) => task.id === over?.id);
-      setLaterTasks((tasks) => arrayMove(tasks, oldIndex, newIndex));
+      // Check if the task is in laterTasks
+      const laterTaskIndex = laterTasks.findIndex(
+        (task) => task.id === active.id
+      );
+      const overLaterTaskIndex = laterTasks.findIndex(
+        (task) => task.id === over?.id
+      );
+
+      // Check if the task is in archivedTasks
+      const archivedTaskIndex = archivedTasks.findIndex(
+        (task) => task.id === active.id
+      );
+      const overArchivedTaskIndex = archivedTasks.findIndex(
+        (task) => task.id === over?.id
+      );
+
+      // If both tasks are in laterTasks, reorder laterTasks
+      if (laterTaskIndex !== -1 && overLaterTaskIndex !== -1) {
+        setLaterTasks((tasks) =>
+          arrayMove(tasks, laterTaskIndex, overLaterTaskIndex)
+        );
+      }
+      // If both tasks are in archivedTasks, reorder archivedTasks
+      else if (archivedTaskIndex !== -1 && overArchivedTaskIndex !== -1) {
+        setArchivedTasks((tasks) =>
+          arrayMove(tasks, archivedTaskIndex, overArchivedTaskIndex)
+        );
+      }
     }
   };
 
@@ -249,7 +361,6 @@ const Tasks = () => {
   useEffect(() => {
     localStorage.setItem("nowTask", JSON.stringify(nowTask));
   }, [nowTask]); // Save whenever nowTask changes
-
 
   const [showModal, setShowModal] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -330,10 +441,7 @@ const Tasks = () => {
       title: taskTitle,
       description: taskDescription,
       time: taskDuration,
-      emoji:
-        taskEmoji === "😃"
-          ? "https://em-content.zobj.net/source/apple/419/beaming-face-with-smiling-eyes_1f601.png"
-          : taskEmoji,
+      emoji: taskEmoji,
       priority: taskPriority,
       tag: taskTag,
     };
@@ -435,6 +543,200 @@ const Tasks = () => {
     };
   }, [isSearchExpanded]);
 
+  // Save archived tasks to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("archivedTasks", JSON.stringify(archivedTasks));
+  }, [archivedTasks]);
+
+  const toggleArchive = () => {
+    setIsArchiveOpen(!isArchiveOpen);
+  };
+
+  // Add ArchivedTaskItem component for archived tasks
+  // Replace the ArchivedTaskItem with SortableArchiveItem
+  const SortableArchiveItem = ({ task }) => {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = // Add isDragging here
+      useSortable({ id: task.id });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+    };
+
+    // Add state for menu visibility
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    // Toggle menu visibility
+    // For SortableArchiveItem component
+    const toggleMenu = () => {
+      if (isMenuOpen) {
+        // Get the menu element
+        const menuElement = document.querySelector(
+          `#archive-task-${task.id} .task-card-menu`
+        );
+        if (menuElement) {
+          // Add the fading-out class
+          menuElement.classList.add("fading-out");
+          // Wait for the animation to complete before hiding the menu
+          setTimeout(() => {
+            setIsMenuOpen(false);
+          }, 300); // Match this with the animation duration (0.3s)
+        } else {
+          setIsMenuOpen(false);
+        }
+      } else {
+        setIsMenuOpen(true);
+      }
+    };
+
+    // Handle restoring a task to Later
+    const handleRestoreToLater = (taskId) => {
+      // Find the task to restore
+      const taskToRestore = archivedTasks.find((task) => task.id === taskId);
+
+      if (taskToRestore) {
+        // Add to later tasks
+        setLaterTasks((prevTasks) => [taskToRestore, ...prevTasks]);
+
+        // Remove from archived tasks
+        setArchivedTasks((prevTasks) =>
+          prevTasks.filter((task) => task.id !== taskId)
+        );
+
+        // Close the menu
+        setIsMenuOpen(false);
+      }
+    };
+
+    // Handle moving a task from Archive to Now
+    const handleMoveToNowFromArchive = (taskId) => {
+      // Find the task to move
+      const taskToMove = archivedTasks.find((task) => task.id === taskId);
+
+      if (taskToMove) {
+        // Check if there is an existing task in "Now"
+        if (nowTask) {
+          // If yes, move the current "Now" task back to "Later" tasks
+          setLaterTasks((prevTasks) => [nowTask, ...prevTasks]); // Add it to the beginning of the later tasks list
+        }
+
+        // Set the selected task as the new "Now" task
+        setNowTask(taskToMove);
+
+        // Remove the selected task from archived tasks
+        setArchivedTasks((prevTasks) =>
+          prevTasks.filter((task) => task.id !== taskId)
+        );
+
+        // Close the menu
+        setIsMenuOpen(false);
+      }
+    };
+
+    // Handle deleting a task from Archive
+    const handleDeleteFromArchive = (taskId) => {
+      // Remove the task from archivedTasks
+      setArchivedTasks((prevTasks) =>
+        prevTasks.filter((task) => task.id !== taskId)
+      );
+
+      // Close the menu
+      setIsMenuOpen(false);
+    };
+
+    // Define the maximum length for the truncated description
+    const maxDescriptionLength = " task's description is long, so long..."
+      .length;
+
+    return (
+      <div
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        className={isDragging ? "is-dragging" : ""} // Add class when dragging
+      >
+        <div
+          className={`later-tasks-card ${isMenuOpen ? "expanded" : ""}`}
+          key={task.id}
+          id={`archive-task-${task.id}`}
+        >
+          <div className="later-tasks-card-top-row">
+            <div className="later-tasks-card-emoji-text-container">
+              <div className="later-tasks-card-emoji-container">
+                <SixDotsIcon
+                  className="later-tasks-card-emoji-dots"
+                  {...listeners}
+                  style={{ cursor: "grab" }}
+                />
+                {typeof task.emoji === "string" &&
+                task.emoji.startsWith("http") ? (
+                  <img
+                    className="later-tasks-card-emoji"
+                    src={task.emoji}
+                    alt="emoji"
+                  />
+                ) : (
+                  <span className="later-tasks-card-emoji-text">
+                    {task.emoji}
+                  </span>
+                )}
+              </div>
+              <div className="later-tasks-card-text">
+                <div className="later-tasks-card-title-div">
+                  <p className="later-tasks-card-title">{task.title}</p>
+                  <p className="later-tasks-card-time">{task.time}</p>
+                </div>
+                <p className="later-tasks-card-description">
+                  {isMenuOpen || task.description.length <= maxDescriptionLength
+                    ? task.description
+                    : `${task.description.substring(
+                        0,
+                        maxDescriptionLength
+                      )}...`}
+                </p>
+              </div>
+            </div>
+            <ArrowDownIcon
+              className={`tasks-arrow-down-icon ${isMenuOpen ? "rotated" : ""}`}
+              onClick={toggleMenu}
+            />
+          </div>
+
+          {/* Conditionally render the menu */}
+          {isMenuOpen && (
+            <div className="task-card-menu">
+              <button
+                className="menu-item"
+                onClick={() => handleMoveToNowFromArchive(task.id)}
+              >
+                <NowIcon className="menu-icon" /> Move to Now
+              </button>
+              <button
+                className="menu-item"
+                onClick={() => handleRestoreToLater(task.id)}
+              >
+                <LaterIcon className="menu-icon" /> Restore to Later
+              </button>
+              <button
+                className="menu-item delete"
+                onClick={() => handleDeleteFromArchive(task.id)}
+              >
+                <BinIcon className="menu-icon" /> Delete
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="tasks-page-container">
       {/* Pass the nowTask to the TimerWhiteNoises component */}
@@ -451,14 +753,17 @@ const Tasks = () => {
           {nowTask ? (
             <div className="now-tasks-card">
               <div className="now-tasks-card-emoji-text-container">
-                {typeof nowTask.emoji === 'string' && nowTask.emoji.startsWith('http') ? (
+                {typeof nowTask.emoji === "string" &&
+                nowTask.emoji.startsWith("http") ? (
                   <img
                     className="now-tasks-card-emoji"
                     src={nowTask.emoji}
                     alt="emoji"
                   />
                 ) : (
-                  <span className="now-tasks-card-emoji-text">{nowTask.emoji}</span>
+                  <span className="now-tasks-card-emoji-text">
+                    {nowTask.emoji}
+                  </span>
                 )}
                 <div className="now-tasks-card-text">
                   <div className="now-tasks-card-title-div">
@@ -472,7 +777,8 @@ const Tasks = () => {
               </div>
               {/* Add a button or icon to clear the Now task if needed */}
               {/* <button onClick={() => setNowTask(null)}>Clear</button> */}
-              <ArrowDownIcon className="tasks-arrow-down-icon" /> {/* Keep the arrow if needed */}
+              <ArrowDownIcon className="tasks-arrow-down-icon" />{" "}
+              {/* Keep the arrow if needed */}
             </div>
           ) : (
             <div className="now-tasks-card">
@@ -548,6 +854,40 @@ const Tasks = () => {
             </DndContext>
           )}
         </div>
+        {/* Archive section */}
+        <div className="archive-section" style={{ marginTop: "24px" }}>
+          <div
+            className="archive-header"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginBottom: "20px",
+            }}
+          >
+            <p className="archive-header-text" onClick={toggleArchive}>
+              Archive ({archivedTasks.length})
+            </p>
+          </div>
+
+          {archivedTasks.length > 0 && isArchiveOpen ? (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={archivedTasks.map((task) => task.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {archivedTasks.map((task) => (
+                  <SortableArchiveItem key={task.id} task={task} />
+                ))}
+              </SortableContext>
+            </DndContext>
+          ) : (
+            <p></p>
+          )}
+        </div>
       </div>
 
       {/* Task Modal */}
@@ -591,6 +931,7 @@ const Tasks = () => {
                     formSubmitted && errors.description ? "input-error" : ""
                   }`}
                   rows="2"
+                  maxLength={60} // Limit description length to 150 characters
                   value={taskDescription}
                   onChange={(e) => setTaskDescription(e.target.value)}
                 ></textarea>
@@ -641,7 +982,7 @@ const Tasks = () => {
 
                 <div className="form-group half">
                   <label>Emoji</label>
-                  <div style={{ position: 'relative' }}>
+                  <div style={{ position: "relative" }}>
                     <button
                       className="emoji-selector"
                       onClick={(e) => {
@@ -653,13 +994,15 @@ const Tasks = () => {
                     </button>
 
                     {showEmojiPicker && (
-                      <div style={{
-                        position: 'absolute',
-                        zIndex: 1000,
-                        // Change 'top' to 'bottom' and adjust the value
-                        bottom: '45px', // Adjust this value as needed for spacing
-                        right: '0px'
-                      }}>
+                      <div
+                        style={{
+                          position: "absolute",
+                          zIndex: 1000,
+                          // Change 'top' to 'bottom' and adjust the value
+                          bottom: "45px", // Adjust this value as needed for spacing
+                          right: "0px",
+                        }}
+                      >
                         <EmojiPicker
                           onEmojiClick={onEmojiClick}
                           emojiStyle={EmojiStyle.APPLE} // Ensure iOS/Apple emoji style
@@ -690,4 +1033,6 @@ const Tasks = () => {
 };
 
 export default Tasks;
+
+
 

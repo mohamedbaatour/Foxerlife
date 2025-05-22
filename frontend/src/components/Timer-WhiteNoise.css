@@ -251,7 +251,6 @@ stroke-width: 1px;
 
 .white-noise-progress-bar-container {
   width: 100%;
-  margin-bottom: 2rem;
 }
 
 .white-noise-progress-bar {
@@ -316,7 +315,7 @@ stroke-width: 1px;
   justify-content: space-around;
   align-items: center;
   gap: 1.25rem;
-  margin-top: 0.625rem;
+  margin-top: 2rem;
   position: relative;
 }
 
