@@ -43,6 +43,10 @@ const Tasks = () => {
     name: "Personal life",
     color: "#6366F1",
   });
+  
+  // Add these new states and refs for notifications
+  const [notifications, setNotifications] = useState([]);
+  const notificationTimeoutsRef = useRef({});
 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
@@ -169,58 +173,86 @@ const Tasks = () => {
           prevTasks.filter((task) => task.id !== taskId)
         );
 
+        // Show notification
+        showNotification("Task moved to Now");
+
         // Close the menu
         setIsMenuOpen(false);
       }
     };
 
-    // Add the handleDeleteTask function
-    // Example for handleDeleteTask in SortableItem
-    const handleDeleteTask = (taskId) => {
-      // Get the menu element
-      const menuElement = document.querySelector(
-        `#task-${taskId} .task-card-menu`
-      );
-      if (menuElement) {
-        // Add the fading-out class
-        menuElement.classList.add("fading-out");
-        // Wait for the animation to complete before removing the task
-        setTimeout(() => {
-          // Remove the task from laterTasks
-          setLaterTasks((prevTasks) =>
-            prevTasks.filter((task) => task.id !== taskId)
-          );
-          // Close the menu
-          setIsMenuOpen(false);
-        }, 200); // Match this with the animation duration (0.3s)
-      } else {
+    // Add state for delete confirmation popup
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [isConfirmationClosing, setIsConfirmationClosing] = useState(false);
+
+    // Function to show delete confirmation
+    const showDeleteConfirm = (e) => {
+      e.stopPropagation(); // Prevent event bubbling
+      setShowDeleteConfirmation(true);
+    };
+
+    // Function to hide delete confirmation
+    const hideDeleteConfirm = () => {
+      setIsConfirmationClosing(true);
+      setTimeout(() => {
+        setShowDeleteConfirmation(false);
+        setIsConfirmationClosing(false);
+      }, 300); // Match with animation duration
+    };
+
+    // Function to confirm deletion
+  const confirmDelete = (taskId) => {
+    // Get the menu element
+    const menuElement = document.querySelector(
+      `#task-${taskId} .task-card-menu`
+    );
+    if (menuElement) {
+      // Add the fading-out class
+      menuElement.classList.add("fading-out");
+      // Wait for the animation to complete before removing the task
+      setTimeout(() => {
         // Remove the task from laterTasks
         setLaterTasks((prevTasks) =>
           prevTasks.filter((task) => task.id !== taskId)
         );
+        // Show notification
+        showNotification("Task deleted");
         // Close the menu
         setIsMenuOpen(false);
-      }
+      }, 300); // Match this with the animation duration
+    } else {
+      // Remove the task from laterTasks
+      setLaterTasks((prevTasks) =>
+        prevTasks.filter((task) => task.id !== taskId)
+      );
+      // Show notification
+      showNotification("Task deleted");
+      // Close the menu
+      setIsMenuOpen(false);
+    }
     };
 
     // Add the handleArchiveTask function
-    const handleArchiveTask = (taskId) => {
-      // Find the task to archive
-      const taskToArchive = laterTasks.find((task) => task.id === taskId);
+  const handleArchiveTask = (taskId) => {
+    // Find the task to archive
+    const taskToArchive = laterTasks.find((task) => task.id === taskId);
 
-      if (taskToArchive) {
-        // Add to archived tasks
-        setArchivedTasks((prevTasks) => [taskToArchive, ...prevTasks]);
+    if (taskToArchive) { 
+      // Add to archived tasks
+      setArchivedTasks((prevTasks) => [taskToArchive, ...prevTasks]);
 
-        // Remove from later tasks
-        setLaterTasks((prevTasks) =>
-          prevTasks.filter((task) => task.id !== taskId)
-        );
+      // Remove from later tasks
+      setLaterTasks((prevTasks) =>
+        prevTasks.filter((task) => task.id !== taskId)
+      );
 
-        // Close the menu
-        setIsMenuOpen(false);
-      }
-    };
+      // Show notification
+      showNotification("Task archived");
+
+      // Close the menu
+      setIsMenuOpen(false);
+    }
+  };
 
     // Define the maximum length for the truncated description
     const maxDescriptionLength =
@@ -299,12 +331,39 @@ const Tasks = () => {
               >
                 <ArchiveIcon className="menu-icon" /> archive
               </button>
-              <button
-                className="menu-item delete"
-                onClick={() => handleDeleteTask(task.id)}
-              >
-                <BinIcon className="menu-icon" /> Delete
-              </button>
+              <div style={{ position: "relative" }}>
+                <button
+                  className="menu-item delete"
+                  onClick={showDeleteConfirm}
+                >
+                  <BinIcon className="menu-icon" /> Delete
+                </button>
+
+                {/* Delete confirmation popup */}
+                {showDeleteConfirmation && (
+                  <div
+                    className={`delete-confirmation-popup ${
+                      isConfirmationClosing ? "fading-out" : ""
+                    }`}
+                  >
+                    <p className="delete-confirmation-text">Are you sure?</p>
+                    <div className="delete-confirmation-buttons">
+                      <button
+                        className="cancel-delete-button"
+                        onClick={hideDeleteConfirm}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="confirm-delete-button"
+                        onClick={() => confirmDelete(task.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -395,6 +454,52 @@ const Tasks = () => {
     }, 300); // Match this with the animation duration (0.3s)
   };
 
+  // Add a function to show notifications
+  const showNotification = (message) => {
+    // Create a new notification with unique ID
+    const notificationId = Date.now();
+    const newNotification = {
+      id: notificationId,
+      message: message,
+    };
+
+    // Add the new notification to the array (limit to 3)
+    setNotifications((prevNotifications) => {
+      // If we already have 3 notifications, remove the oldest one
+      const updatedNotifications = [...prevNotifications];
+      if (updatedNotifications.length >= 3) {
+        const oldestId = updatedNotifications[0].id;
+        // Clear the timeout for the oldest notification
+        if (notificationTimeoutsRef.current[oldestId]) {
+          clearTimeout(notificationTimeoutsRef.current[oldestId]);
+          delete notificationTimeoutsRef.current[oldestId];
+        }
+        updatedNotifications.shift(); // Remove the oldest notification
+      }
+      return [...updatedNotifications, newNotification];
+    });
+
+    // Set timeout to remove this specific notification
+    notificationTimeoutsRef.current[notificationId] = setTimeout(() => {
+      setNotifications((prevNotifications) =>
+        prevNotifications.filter(
+          (notification) => notification.id !== notificationId
+        )
+      );
+      delete notificationTimeoutsRef.current[notificationId];
+    }, 2000);
+  };
+
+  // Clean up timeouts when component unmounts
+  useEffect(() => {
+    return () => {
+      // Clear all notification timeouts
+      Object.values(notificationTimeoutsRef.current).forEach(timeout => {
+        clearTimeout(timeout);
+      });
+    };
+  }, []);
+  
   // Add new task
   // Add these state variables at the top with your other state declarations
   const [errors, setErrors] = useState({
@@ -549,7 +654,24 @@ const Tasks = () => {
   }, [archivedTasks]);
 
   const toggleArchive = () => {
-    setIsArchiveOpen(!isArchiveOpen);
+    if (isArchiveOpen) {
+      // If we're closing the archive, animate it out
+      const archiveSection = document.querySelector(".archive-section");
+      if (archiveSection) {
+        archiveSection.classList.remove("visible");
+        archiveSection.classList.add("hidden");
+
+        // Wait for animation to complete before updating state
+        setTimeout(() => {
+          setIsArchiveOpen(false);
+        }, 400); // Match with animation duration
+      } else {
+        setIsArchiveOpen(false);
+      }
+    } else {
+      // If we're opening the archive, update state immediately
+      setIsArchiveOpen(true);
+    }
   };
 
   // Add ArchivedTaskItem component for archived tasks
@@ -610,46 +732,74 @@ const Tasks = () => {
           prevTasks.filter((task) => task.id !== taskId)
         );
 
+        // Show notification
+        showNotification("Task restored to Later");
+
         // Close the menu
         setIsMenuOpen(false);
       }
     };
 
     // Handle moving a task from Archive to Now
-    const handleMoveToNowFromArchive = (taskId) => {
-      // Find the task to move
-      const taskToMove = archivedTasks.find((task) => task.id === taskId);
+  const handleMoveToNowFromArchive = (taskId) => {
+    // Find the task to move
+    const taskToMove = archivedTasks.find((task) => task.id === taskId);
 
-      if (taskToMove) {
-        // Check if there is an existing task in "Now"
-        if (nowTask) {
-          // If yes, move the current "Now" task back to "Later" tasks
-          setLaterTasks((prevTasks) => [nowTask, ...prevTasks]); // Add it to the beginning of the later tasks list
-        }
-
-        // Set the selected task as the new "Now" task
-        setNowTask(taskToMove);
-
-        // Remove the selected task from archived tasks
-        setArchivedTasks((prevTasks) =>
-          prevTasks.filter((task) => task.id !== taskId)
-        );
-
-        // Close the menu
-        setIsMenuOpen(false);
+    if (taskToMove) {
+      // Check if there is an existing task in "Now"
+      if (nowTask) {
+        // If yes, move the current "Now" task back to "Later" tasks
+        setLaterTasks((prevTasks) => [nowTask, ...prevTasks]); // Add it to the beginning of the later tasks list
       }
-    };
 
-    // Handle deleting a task from Archive
-    const handleDeleteFromArchive = (taskId) => {
-      // Remove the task from archivedTasks
+      // Set the selected task as the new "Now" task
+      setNowTask(taskToMove);
+
+      // Remove the selected task from archived tasks
       setArchivedTasks((prevTasks) =>
         prevTasks.filter((task) => task.id !== taskId)
       );
 
+      // Show notification
+      showNotification("Task moved to Now");
+
       // Close the menu
       setIsMenuOpen(false);
+    }
+  };
+
+    // Add state for delete confirmation popup
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [isConfirmationClosing, setIsConfirmationClosing] = useState(false);
+
+    // Function to show delete confirmation
+    const showDeleteConfirm = (e) => {
+      e.stopPropagation(); // Prevent event bubbling
+      setShowDeleteConfirmation(true);
     };
+
+    // Function to hide delete confirmation
+    const hideDeleteConfirm = () => {
+      setIsConfirmationClosing(true);
+      setTimeout(() => {
+        setShowDeleteConfirmation(false);
+        setIsConfirmationClosing(false);
+      }, 300); // Match with animation duration
+    };
+
+    // Function to confirm deletion
+  const confirmDelete = (taskId) => {
+    // Remove the task from archivedTasks
+    setArchivedTasks((prevTasks) =>
+      prevTasks.filter((task) => task.id !== taskId)
+    );
+
+    // Show notification
+    showNotification("Task deleted");
+
+    // Close the menu
+    setIsMenuOpen(false);
+  };
 
     // Define the maximum length for the truncated description
     const maxDescriptionLength = " task's description is long, so long..."
@@ -724,12 +874,39 @@ const Tasks = () => {
               >
                 <LaterIcon className="menu-icon" /> Restore to Later
               </button>
-              <button
-                className="menu-item delete"
-                onClick={() => handleDeleteFromArchive(task.id)}
-              >
-                <BinIcon className="menu-icon" /> Delete
-              </button>
+              <div style={{ position: "relative" }}>
+                <button
+                  className="menu-item delete"
+                  onClick={showDeleteConfirm}
+                >
+                  <BinIcon className="menu-icon" /> Delete
+                </button>
+
+                {/* Delete confirmation popup */}
+                {showDeleteConfirmation && (
+                  <div
+                    className={`delete-confirmation-popup ${
+                      isConfirmationClosing ? "fading-out" : ""
+                    }`}
+                  >
+                    <p className="delete-confirmation-text">Are you sure?</p>
+                    <div className="delete-confirmation-buttons">
+                      <button
+                        className="cancel-delete-button"
+                        onClick={hideDeleteConfirm}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="confirm-delete-button"
+                        onClick={() => confirmDelete(task.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -739,6 +916,17 @@ const Tasks = () => {
 
   return (
     <div className="tasks-page-container">
+      {/* Render stacked notifications */}
+      <div className="notifications-container">
+        {notifications.map((notification) => (
+          <div
+            key={notification.id}
+            className="task-notification"
+          >
+            {notification.message}
+          </div>
+        ))}
+      </div>
       {/* Pass the nowTask to the TimerWhiteNoises component */}
       <div className="left-section">
         <TimerWhiteNoises nowTask={nowTask} />
@@ -855,37 +1043,40 @@ const Tasks = () => {
           )}
         </div>
         {/* Archive section */}
-        <div className="archive-section" style={{ marginTop: "24px" }}>
-          <div
-            className="archive-header"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "20px",
-            }}
-          >
-            <p className="archive-header-text" onClick={toggleArchive}>
-              Archive ({archivedTasks.length})
-            </p>
-          </div>
+        <div
+          className="archive-header"
+          style={{
+            marginTop: "24px",
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "20px",
+          }}
+        >
+          <p className="archive-header-text" onClick={toggleArchive}>
+            Archive ({archivedTasks.length})
+          </p>
+        </div>
 
-          {archivedTasks.length > 0 && isArchiveOpen ? (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext
-                items={archivedTasks.map((task) => task.id)}
-                strategy={verticalListSortingStrategy}
+        <div
+          className={`archive-section ${isArchiveOpen ? "visible" : "hidden"}`}
+        >
+          {isArchiveOpen && (
+            <>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
               >
-                {archivedTasks.map((task) => (
-                  <SortableArchiveItem key={task.id} task={task} />
-                ))}
-              </SortableContext>
-            </DndContext>
-          ) : (
-            <p></p>
+                <SortableContext
+                  items={archivedTasks.map((task) => task.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {archivedTasks.map((task) => (
+                    <SortableArchiveItem key={task.id} task={task} />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            </>
           )}
         </div>
       </div>

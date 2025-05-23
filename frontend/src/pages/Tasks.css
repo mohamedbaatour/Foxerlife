@@ -756,16 +756,47 @@ textarea.modal-input {
   align-items: center;
   justify-content: center;
 }
-/* Archive */
-
-.archive-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
+/* Archive animations */
+@keyframes archiveCardFadeIn {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
 }
 
+@keyframes archiveCardFadeOut {
+  from {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(10px);
+  }
+}
+
+.archive-section {
+  overflow: hidden;
+}
+
+.archive-section.visible {
+  animation: archiveCardFadeIn 0.4s ease-out forwards;
+}
+
+.archive-section.hidden {
+  animation: archiveCardFadeOut 0.4s ease-out forwards;
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
 
 .archive-header-text {
   font-size: 16px;
@@ -773,4 +804,124 @@ textarea.modal-input {
   color: #999;
   margin-bottom: 16px;
   cursor: pointer;
+}
+/* Delete confirmation popup styles */
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes popupFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(4px);
+  }
+}
+
+.delete-confirmation-popup {
+  position: absolute;
+  bottom: 100%;
+  left: -80%;
+  transform: translateX(-50%);
+  margin-bottom: 6px;
+  background-color: #181A1C;
+  border: 1px solid #232526;
+  width: 200px;
+  border-radius: 8px;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: popupFadeIn 0.3s ease-out forwards;
+}
+
+.delete-confirmation-popup.fading-out {
+  animation: popupFadeOut 0.3s ease-out forwards;
+}
+
+.delete-confirmation-text {
+  color: #f1f1f1;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.delete-confirmation-buttons {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.confirm-delete-button {
+  background-color: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Manrope", sans-serif;
+}
+
+.cancel-delete-button {
+  background-color: transparent;
+  color: #999;
+  border: 1px solid #232526;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Manrope", sans-serif;
+}
+
+/* Task notification styles */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(1.25rem); }
+  15% { opacity: 1; transform: translateY(0); }
+  85% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-0.625rem); }
+}
+
+.notifications-container {
+  position: fixed;
+  bottom: 1.875rem;
+  left: 1.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  z-index: 2000;
+  pointer-events: none;
+}
+
+.task-notification {
+  background-color: #131517;
+  color: #f1f1f1;
+  padding: 0.75rem 1.25rem;
+  border-radius: 99px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid #232526;
+  animation: fadeInOut 2s ease-in-out;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
