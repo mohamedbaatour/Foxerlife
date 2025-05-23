@@ -421,6 +421,18 @@ const Tasks = () => {
     localStorage.setItem("nowTask", JSON.stringify(nowTask));
   }, [nowTask]); // Save whenever nowTask changes
 
+  // Add cross-tab synchronization
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === "nowTask") {
+        setNowTask(e.newValue ? JSON.parse(e.newValue) : null);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   const [showModal, setShowModal] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const modalContentRef = useRef(null);

@@ -4,7 +4,7 @@ import './App.css';
 import Navbar from './components/Navbar';
 import { BrowserRouter as Router, Switch, Route, Routes } from 'react-router-dom';
 import Tasks from './pages/Tasks';
-import TimerWhiteNoises from './components/Timer-WhiteNoise';
+import Stats from './pages/Stats';
 
 function App() {
   return (
@@ -13,6 +13,7 @@ function App() {
        
           <Routes>
         <Route path="/" element={<Tasks />} />
+        <Route path="/stats" element={<Stats />} />
         </Routes>
     </div>
   );
