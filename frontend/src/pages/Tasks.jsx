@@ -931,10 +931,7 @@ const Tasks = () => {
       {/* Render stacked notifications */}
       <div className="notifications-container">
         {notifications.map((notification) => (
-          <div
-            key={notification.id}
-            className="task-notification"
-          >
+          <div key={notification.id} className="task-notification">
             {notification.message}
           </div>
         ))}
@@ -1208,7 +1205,6 @@ const Tasks = () => {
                       >
                         <EmojiPicker
                           onEmojiClick={onEmojiClick}
-                          emojiStyle={EmojiStyle.APPLE} // Ensure iOS/Apple emoji style
                           width={300}
                           height={400}
                           searchPlaceholder="Search emoji..."

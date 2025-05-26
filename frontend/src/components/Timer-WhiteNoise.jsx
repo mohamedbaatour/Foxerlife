@@ -63,8 +63,12 @@ const parseDurationToSeconds = (timeString) => {
 
 // Update the component to accept nowTask prop
 const TimerWhiteNoises = ({ nowTask }) => {
-  // Initialize timer based on nowTask duration if available, otherwise use a default
+  // Initialize timer based on nowTask duration and saved state if available
   const getInitialTime = () => {
+    const savedTime = localStorage.getItem("timerState");
+    if (savedTime) {
+      return parseInt(savedTime);
+    }
     if (nowTask && nowTask.time) {
       return parseDurationToSeconds(nowTask.time);
     }
@@ -72,7 +76,7 @@ const TimerWhiteNoises = ({ nowTask }) => {
   };
 
   const [initialTime, setInitialTime] = useState(getInitialTime());
-  const [timeRemaining, setTimeRemaining] = useState(initialTime);
+  const [timeRemaining, setTimeRemaining] = useState(getInitialTime());
   const [isActive, setIsActive] = useState(false);
   // Add new state for overtime tracking
   const [isOvertime, setIsOvertime] = useState(false);
@@ -172,10 +176,17 @@ const TimerWhiteNoises = ({ nowTask }) => {
     setIsActive(!isActive);
   };
 
+  // Save timer state when it changes
+  useEffect(() => {
+    localStorage.setItem("timerState", timeRemaining.toString());
+  }, [timeRemaining]);
+
+  // Clear saved timer state when timer ends or is reset
   const resetTimer = () => {
     clearInterval(timerIntervalRef.current);
     setIsActive(false);
-    setTimeRemaining(initialTime); // Reset to the current initialTime
+    setTimeRemaining(initialTime);
+    localStorage.removeItem("timerState");
   };
 
   const endTimer = () => {
@@ -184,6 +195,7 @@ const TimerWhiteNoises = ({ nowTask }) => {
     setTimeRemaining(0);
     setIsOvertime(false);
     setOvertimeSeconds(0);
+    localStorage.removeItem("timerState");
   };
 
   const formatTime = (seconds) => {
@@ -552,6 +564,19 @@ const TimerWhiteNoises = ({ nowTask }) => {
       setTimeRemaining(newInitialTime);
     }
   }, [nowTask]); // This effect runs whenever nowTask changes
+
+  useEffect(() => {
+    if (isActive && !isOvertime) {
+      const interval = setInterval(() => {
+        const currentTimeSpent = parseInt(
+          localStorage.getItem("timeSpent") || "0"
+        );
+        localStorage.setItem("timeSpent", JSON.stringify(currentTimeSpent + 1));
+      }, 60000); // Changed from 10000 to 60000 to update every minute instead of every 10 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [isActive, isOvertime]);
 
   return (
     <div className="tasks-main-content-left-column">

@@ -756,7 +756,6 @@ textarea.modal-input {
   align-items: center;
   justify-content: center;
 }
-/* Archive animations */
 @keyframes archiveCardFadeIn {
   from {
     opacity: 0;
@@ -805,6 +804,12 @@ textarea.modal-input {
   margin-bottom: 16px;
   cursor: pointer;
 }
+
+/* Add this new class for the task card fade out */
+.later-tasks-card.fading-out-task {
+  animation: fadeOut 0.3s ease-out forwards; /* Use the existing fadeOut keyframes */
+}
+
 /* Delete confirmation popup styles */
 @keyframes popupFadeIn {
   from {
@@ -924,4 +929,23 @@ textarea.modal-input {
   animation: fadeInOut 2s ease-in-out;
   pointer-events: none;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Add this media query at the end of the file */
+@media screen and (max-width: 1100px) {
+  .tasks-page-container {
+    flex-direction: column;
+    gap: 40px;
+    margin-top: 16px;
+  }
+
+  .left-section {
+    padding-top: 2rem;
+    height: auto;
+  }
+
+  .right-section {
+    padding-top: 2rem;
+    height: auto;
+  }
 }
