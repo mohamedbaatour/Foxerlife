@@ -72,7 +72,7 @@ const TimerWhiteNoises = ({ nowTask }) => {
     if (nowTask && nowTask.time) {
       return parseDurationToSeconds(nowTask.time);
     }
-    return 10; // Default 10 seconds if no task is set
+    return 1500; // Default 10 seconds if no task is set
   };
 
   const [initialTime, setInitialTime] = useState(getInitialTime());
@@ -181,6 +181,15 @@ const TimerWhiteNoises = ({ nowTask }) => {
     localStorage.setItem("timerState", timeRemaining.toString());
   }, [timeRemaining]);
 
+  useEffect(() => {
+    if (nowTask && nowTask.time) {
+      const newTime = parseDurationToSeconds(nowTask.time);
+      setInitialTime(newTime);
+      setTimeRemaining(newTime);
+      localStorage.removeItem("timerState"); // Clear saved state when new task is added
+    }
+  }, [nowTask]);
+
   // Clear saved timer state when timer ends or is reset
   const resetTimer = () => {
     clearInterval(timerIntervalRef.current);
@@ -196,6 +205,82 @@ const TimerWhiteNoises = ({ nowTask }) => {
     setIsOvertime(false);
     setOvertimeSeconds(0);
     localStorage.removeItem("timerState");
+
+    if (nowTask) {
+      // Calculate time spent on the task
+      const timeSpentSeconds = initialTime - timeRemaining + overtimeSeconds;
+      const hours = Math.floor(timeSpentSeconds / 3600);
+      const minutes = Math.floor((timeSpentSeconds % 3600) / 60);
+      const timeSpentFormatted = `${hours}h ${minutes}m`;
+
+      // Get current date and time
+      const now = new Date();
+      const timeString = now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      // Create completed task object
+      const completedTask = {
+        ...nowTask,
+        completedAt: timeString,
+        timeSpent: timeSpentFormatted,
+        completedDate: now.toISOString(),
+        id: nowTask.id + "-" + Date.now(), // Ensure unique ID
+      };
+
+      // Save to completedTasks
+      const existingCompletedTasks = JSON.parse(
+        localStorage.getItem("completedTasks") || "[]"
+      );
+      const updatedCompletedTasks = [completedTask, ...existingCompletedTasks];
+      localStorage.setItem(
+        "completedTasks",
+        JSON.stringify(updatedCompletedTasks)
+      );
+
+      // Save to archivedTasks (using the same completedTask object)
+      const existingArchivedTasks = JSON.parse(
+        localStorage.getItem("archivedTasks") || "[]"
+      );
+      const updatedArchivedTasks = [completedTask, ...existingArchivedTasks];
+      localStorage.setItem(
+        "archivedTasks",
+        JSON.stringify(updatedArchivedTasks)
+      );
+
+      // Clear nowTask from localStorage
+      localStorage.removeItem("nowTask");
+
+      // Show notification
+      const notificationId = Date.now();
+      const newNotification = {
+        id: notificationId,
+        message: "Task completed and archived!", // Updated message
+      };
+
+      setNotifications((prevNotifications) => {
+        const updatedNotifications = [...prevNotifications];
+        if (updatedNotifications.length >= 3) {
+          const oldestId = updatedNotifications[0].id;
+          if (notificationTimeoutsRef.current[oldestId]) {
+            clearTimeout(notificationTimeoutsRef.current[oldestId]);
+            delete notificationTimeoutsRef.current[oldestId];
+          }
+          updatedNotifications.shift();
+        }
+        return [...updatedNotifications, newNotification];
+      });
+
+      notificationTimeoutsRef.current[notificationId] = setTimeout(() => {
+        setNotifications((prevNotifications) =>
+          prevNotifications.filter(
+            (notification) => notification.id !== notificationId
+          )
+        );
+        delete notificationTimeoutsRef.current[notificationId];
+      }, 2000);
+    }
   };
 
   const formatTime = (seconds) => {

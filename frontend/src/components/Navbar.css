@@ -18,6 +18,14 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
+  p.navbar-brand-description {
+    font-size: 0.76rem;
+    color: #C4C4C4;
+    font-weight: 700;
+    margin-top: -1rem;
+    margin-left: -1.5rem;
+  }
+
 .navbar-left-section {
     display: flex;
     flex-direction: row;
@@ -178,6 +186,7 @@ li {
   .navbar-brand-name {
     font-size: 1rem;
   }
+
   .navbar-menu-link {
     font-size: 0.75rem;
   }

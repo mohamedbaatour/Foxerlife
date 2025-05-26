@@ -29,9 +29,17 @@ const Stats = () => {
     return saved ? JSON.parse(saved) : 0; // Time in minutes
   });
 
+  // Add state for completed tasks
+  const [completedTasks, setCompletedTasks] = useState(() => {
+    const saved = localStorage.getItem("completedTasks");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   // Calculate total tasks
   const totalTasks =
-    laterTasks.length + archivedTasks.length + (nowTask ? 1 : 0);
+    laterTasks.length +
+    archivedTasks.length +
+    (nowTask ? 1 : 0);
 
   // Calculate total planned time
   const calculatePlannedTime = (tasks) => {
@@ -47,7 +55,7 @@ const Stats = () => {
   };
 
   const totalPlannedMinutes =
-    calculatePlannedTime([...laterTasks, ...archivedTasks]) +
+    calculatePlannedTime([...laterTasks, ...archivedTasks, ...completedTasks]) +
     (nowTask ? calculatePlannedTime([nowTask]) : 0);
 
   // Format time for display
@@ -68,12 +76,40 @@ const Stats = () => {
         setNowTask(e.newValue ? JSON.parse(e.newValue) : null);
       } else if (e.key === "timeSpent") {
         setTimeSpent(JSON.parse(e.newValue || "0"));
+      } else if (e.key === "completedTasks") {
+        setCompletedTasks(JSON.parse(e.newValue || "[]"));
       }
     };
 
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
+
+  // Helper to parse duration string to seconds
+  const parseDurationToSeconds = (duration) => {
+    if (!duration) return 0;
+    const parts = duration.match(/(\d+)h\s*(\d+)m/);
+    if (parts) {
+      const hours = parseInt(parts[1]) || 0;
+      const minutes = parseInt(parts[2]) || 0;
+      return hours * 3600 + minutes * 60;
+    }
+    return 0;
+  };
+
+  // Helper to get time spent for a task
+  const getTaskTimeSpent = (task) => {
+    if (!task) return 0;
+    const savedTimeRemaining = localStorage.getItem(`timerState-${task.id}`);
+    const initialSeconds = parseDurationToSeconds(task.time);
+
+    if (savedTimeRemaining !== null) {
+      const remainingSeconds = parseInt(savedTimeRemaining);
+      const spentSeconds = initialSeconds - remainingSeconds;
+      return Math.max(0, spentSeconds);
+    }
+    return 0; // If no saved state, assume 0 spent time for tasks not currently running
+  };
 
   return (
     <div className="stats-page-container">
@@ -113,18 +149,24 @@ const Stats = () => {
             </div>
           </div>
           <div className="tasks-completed-container">
-            <div className="task-completed-card">
-              <div className="task-completed-info">
-                <span className="task-completed-card-emoji">😃</span>
-                <p className="task-completed-card-title">
-                  My first completed task
-                </p>
-              </div>
-              <div className="task-completed-times">
-                <p className="task-completed-time">9:24AM</p>
-                <p className="task-completed-duration">1h 30m</p>
-              </div>
-            </div>
+            {completedTasks.length > 0 ? (
+              completedTasks.map((task) => (
+                <div key={task.id} className="task-completed-card">
+                  <div className="task-completed-info">
+                    <span className="task-completed-card-emoji">
+                      {task.emoji}
+                    </span>
+                    <p className="task-completed-card-title">{task.title}</p>
+                  </div>
+                  <div className="task-completed-times">
+                    <p className="task-completed-time">{task.completedAt}</p>
+                    <p className="task-completed-duration">{task.timeSpent}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="no-completed-tasks">No completed tasks yet</div>
+            )}
           </div>
         </div>
         <div className="remaining-tasks-section">
@@ -141,19 +183,53 @@ const Stats = () => {
             </div>
           </div>
           <div className="tasks-remaining-container">
-            <div className="task-remaining-card">
-              <div className="task-remaining-info">
-                <span className="task-remaining-card-emoji">😃</span>
-                <p className="task-remaining-card-title">
-                  My first completed task
-                </p>
-              </div>
-              <div className="task-remaining-times">
-                <p className="task-remaining-time">2h 30m</p>
-                <p className="task-remaining-duration">0h 20m</p>
-                <p className="task-remaining-duration">2h 10m</p>
-              </div>
-            </div>
+            {nowTask &&
+              !completedTasks.some((task) => task.id === nowTask.id) && (
+                <div
+                  key={nowTask.id}
+                  className="task-remaining-card now-task-card"
+                >
+                  <div className="task-remaining-info">
+                    <span className="task-remaining-card-emoji">
+                      {nowTask.emoji}
+                    </span>
+                    <p className="task-remaining-card-title">
+                      {nowTask.title} (Now)
+                    </p>
+                  </div>
+                  <div className="task-remaining-times">
+                    <p className="task-remaining-time">{nowTask.time}</p>
+                    <p className="task-remaining-duration">
+                      {formatTime(Math.floor(getTaskTimeSpent(nowTask) / 60))}
+                    </p>
+                    <p className="task-remaining-duration">
+                      {formatTime(
+                        Math.floor(parseDurationToSeconds(nowTask.time) / 60) -
+                          Math.floor(getTaskTimeSpent(nowTask) / 60)
+                      )}
+                    </p>
+                  </div>
+                </div>
+              )}
+            {laterTasks.length > 0 ? (
+              laterTasks.map((task) => (
+                <div key={task.id} className="task-remaining-card">
+                  <div className="task-remaining-info">
+                    <span className="task-remaining-card-emoji">
+                      {task.emoji}
+                    </span>
+                    <p className="task-remaining-card-title">{task.title}</p>
+                  </div>
+                  <div className="task-remaining-times">
+                    <p className="task-remaining-time">{task.time}</p>
+                    <p className="task-remaining-duration">0h 0m</p>
+                    <p className="task-remaining-duration">{task.time}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="no-remaining-tasks">No remaining tasks</div>
+            )}
           </div>
         </div>
       </div>

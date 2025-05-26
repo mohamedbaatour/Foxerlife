@@ -71,9 +71,9 @@ color: white;
   justify-content: space-between;
   align-items: center;
   padding: 14px 24px 14px 32px;
-  background-color: #181A1C;
+  background-color: transparent;
   border-radius: 12px;
-  margin-bottom: 12px;
+    border: 1px solid #232526;
 }
 
 .task-remaining-card {
@@ -90,6 +90,7 @@ background-color: transparent;
 .task-completed-times, .task-remaining-times {
   display: flex;
   gap: 48px;
+  justify-content: center; /* Added to center horizontally */
 }
 
 .task-completed-time,
@@ -153,12 +154,9 @@ background-color: transparent;
 .tasks-completed-container, .tasks-remaining-container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
-.task-completed-card, .task-remaining-card {
-  border: 1px solid #232526;
-}
 
 .task-completed-card-emoji, .task-remaining-card-emoji {
   font-size: 20px;
@@ -185,7 +183,15 @@ background-color: transparent;
   color: #999;
   font-size: 14px;
   margin-bottom: 8px;
+  justify-content: center; /* Added to center horizontally */
 }
+
+  .no-completed-tasks, .no-remaining-tasks {
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px 0;
+  }
 
 .left-column {
   width: 200px;

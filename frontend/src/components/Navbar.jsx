@@ -173,13 +173,22 @@ const Navbar = () => {
 
   return (
     <nav className="navbar-main">
-      <div 
+      <div
         className="navbar-left-section"
         onMouseEnter={() => setIsLogoHovered(true)}
         onMouseLeave={() => setIsLogoHovered(false)}
       >
-        {isLogoHovered ? <img src={LogoGIF} alt="Foxerlife Animated Logo" className="animated-logo" /> : <LogoIcon className="logo" />}
-        <div className="navbar-brand-name">Foxerlife</div>
+        {isLogoHovered ? (
+          <img
+            src={LogoGIF}
+            alt="Foxerlife Animated Logo"
+            className="animated-logo"
+          />
+        ) : (
+          <LogoIcon className="logo" />
+        )}
+        <p className="navbar-brand-name">Foxerlife</p>
+        <p className="navbar-brand-description">Pre-Alpha</p>
       </div>
 
       <ul className="navbar-center-section">
