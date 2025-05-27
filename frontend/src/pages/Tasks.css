@@ -321,6 +321,7 @@ backdrop-filter: blur(8px);
   border: 1px solid #232526;
   border-radius: 10px;
   transition: all 0.3s ease;
+  cursor: pointer;
   overflow: hidden;
 }
 .search-icon, .filter-icon {
@@ -363,6 +364,10 @@ backdrop-filter: blur(8px);
   transition: opacity 0.3s ease, transform 0.3s ease;
   pointer-events: none;
   box-sizing: border-box;
+}
+
+.search-input:focus {
+  outline: none;
 }
 
 .later-tasks-card.expanded .task-card-menu {

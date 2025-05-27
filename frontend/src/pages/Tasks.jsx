@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './Tasks.css';
-import TimerWhiteNoises from '../components/Timer-WhiteNoise.jsx';
+import { motion, AnimatePresence } from "framer-motion";
+import "./Tasks.css";
+import TimerWhiteNoises from "../components/Timer-WhiteNoise.jsx";
 import { ReactComponent as NowIcon } from "../icones/now.svg";
 import { ReactComponent as ArrowDownIcon } from "../icones/arrow-down.svg";
 import { ReactComponent as LaterIcon } from "../icones/later.svg";
@@ -43,7 +44,7 @@ const Tasks = () => {
     name: "Personal life",
     color: "#6366F1",
   });
-  
+
   // Add these new states and refs for notifications
   const [notifications, setNotifications] = useState([]);
   const notificationTimeoutsRef = useRef({});
@@ -201,16 +202,26 @@ const Tasks = () => {
     };
 
     // Function to confirm deletion
-  const confirmDelete = (taskId) => {
-    // Get the menu element
-    const menuElement = document.querySelector(
-      `#task-${taskId} .task-card-menu`
-    );
-    if (menuElement) {
-      // Add the fading-out class
-      menuElement.classList.add("fading-out");
-      // Wait for the animation to complete before removing the task
-      setTimeout(() => {
+    const confirmDelete = (taskId) => {
+      // Get the menu element
+      const menuElement = document.querySelector(
+        `#task-${taskId} .task-card-menu`
+      );
+      if (menuElement) {
+        // Add the fading-out class
+        menuElement.classList.add("fading-out");
+        // Wait for the animation to complete before removing the task
+        setTimeout(() => {
+          // Remove the task from laterTasks
+          setLaterTasks((prevTasks) =>
+            prevTasks.filter((task) => task.id !== taskId)
+          );
+          // Show notification
+          showNotification("Task deleted");
+          // Close the menu
+          setIsMenuOpen(false);
+        }, 300); // Match this with the animation duration
+      } else {
         // Remove the task from laterTasks
         setLaterTasks((prevTasks) =>
           prevTasks.filter((task) => task.id !== taskId)
@@ -219,40 +230,30 @@ const Tasks = () => {
         showNotification("Task deleted");
         // Close the menu
         setIsMenuOpen(false);
-      }, 300); // Match this with the animation duration
-    } else {
-      // Remove the task from laterTasks
-      setLaterTasks((prevTasks) =>
-        prevTasks.filter((task) => task.id !== taskId)
-      );
-      // Show notification
-      showNotification("Task deleted");
-      // Close the menu
-      setIsMenuOpen(false);
-    }
+      }
     };
 
     // Add the handleArchiveTask function
-  const handleArchiveTask = (taskId) => {
-    // Find the task to archive
-    const taskToArchive = laterTasks.find((task) => task.id === taskId);
+    const handleArchiveTask = (taskId) => {
+      // Find the task to archive
+      const taskToArchive = laterTasks.find((task) => task.id === taskId);
 
-    if (taskToArchive) { 
-      // Add to archived tasks
-      setArchivedTasks((prevTasks) => [taskToArchive, ...prevTasks]);
+      if (taskToArchive) {
+        // Add to archived tasks
+        setArchivedTasks((prevTasks) => [taskToArchive, ...prevTasks]);
 
-      // Remove from later tasks
-      setLaterTasks((prevTasks) =>
-        prevTasks.filter((task) => task.id !== taskId)
-      );
+        // Remove from later tasks
+        setLaterTasks((prevTasks) =>
+          prevTasks.filter((task) => task.id !== taskId)
+        );
 
-      // Show notification
-      showNotification("Task archived");
+        // Show notification
+        showNotification("Task archived");
 
-      // Close the menu
-      setIsMenuOpen(false);
-    }
-  };
+        // Close the menu
+        setIsMenuOpen(false);
+      }
+    };
 
     // Define the maximum length for the truncated description
     const maxDescriptionLength =
@@ -429,8 +430,8 @@ const Tasks = () => {
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const [showModal, setShowModal] = useState(false);
@@ -506,12 +507,12 @@ const Tasks = () => {
   useEffect(() => {
     return () => {
       // Clear all notification timeouts
-      Object.values(notificationTimeoutsRef.current).forEach(timeout => {
+      Object.values(notificationTimeoutsRef.current).forEach((timeout) => {
         clearTimeout(timeout);
       });
     };
   }, []);
-  
+
   // Add new task
   // Add these state variables at the top with your other state declarations
   const [errors, setErrors] = useState({
@@ -753,32 +754,32 @@ const Tasks = () => {
     };
 
     // Handle moving a task from Archive to Now
-  const handleMoveToNowFromArchive = (taskId) => {
-    // Find the task to move
-    const taskToMove = archivedTasks.find((task) => task.id === taskId);
+    const handleMoveToNowFromArchive = (taskId) => {
+      // Find the task to move
+      const taskToMove = archivedTasks.find((task) => task.id === taskId);
 
-    if (taskToMove) {
-      // Check if there is an existing task in "Now"
-      if (nowTask) {
-        // If yes, move the current "Now" task back to "Later" tasks
-        setLaterTasks((prevTasks) => [nowTask, ...prevTasks]); // Add it to the beginning of the later tasks list
+      if (taskToMove) {
+        // Check if there is an existing task in "Now"
+        if (nowTask) {
+          // If yes, move the current "Now" task back to "Later" tasks
+          setLaterTasks((prevTasks) => [nowTask, ...prevTasks]); // Add it to the beginning of the later tasks list
+        }
+
+        // Set the selected task as the new "Now" task
+        setNowTask(taskToMove);
+
+        // Remove the selected task from archived tasks
+        setArchivedTasks((prevTasks) =>
+          prevTasks.filter((task) => task.id !== taskId)
+        );
+
+        // Show notification
+        showNotification("Task moved to Now");
+
+        // Close the menu
+        setIsMenuOpen(false);
       }
-
-      // Set the selected task as the new "Now" task
-      setNowTask(taskToMove);
-
-      // Remove the selected task from archived tasks
-      setArchivedTasks((prevTasks) =>
-        prevTasks.filter((task) => task.id !== taskId)
-      );
-
-      // Show notification
-      showNotification("Task moved to Now");
-
-      // Close the menu
-      setIsMenuOpen(false);
-    }
-  };
+    };
 
     // Add state for delete confirmation popup
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -800,18 +801,18 @@ const Tasks = () => {
     };
 
     // Function to confirm deletion
-  const confirmDelete = (taskId) => {
-    // Remove the task from archivedTasks
-    setArchivedTasks((prevTasks) =>
-      prevTasks.filter((task) => task.id !== taskId)
-    );
+    const confirmDelete = (taskId) => {
+      // Remove the task from archivedTasks
+      setArchivedTasks((prevTasks) =>
+        prevTasks.filter((task) => task.id !== taskId)
+      );
 
-    // Show notification
-    showNotification("Task deleted");
+      // Show notification
+      showNotification("Task deleted");
 
-    // Close the menu
-    setIsMenuOpen(false);
-  };
+      // Close the menu
+      setIsMenuOpen(false);
+    };
 
     // Define the maximum length for the truncated description
     const maxDescriptionLength = " task's description is long, so long..."
@@ -930,11 +931,20 @@ const Tasks = () => {
     <div className="tasks-page-container">
       {/* Render stacked notifications */}
       <div className="notifications-container">
-        {notifications.map((notification) => (
-          <div key={notification.id} className="task-notification">
-            {notification.message}
-          </div>
-        ))}
+        <AnimatePresence>
+          {notifications.map((notification) => (
+            <motion.div
+              key={notification.id}
+              className="task-notification"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              {notification.message}
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
       {/* Pass the nowTask to the TimerWhiteNoises component */}
       <div className="left-section">
@@ -1044,9 +1054,11 @@ const Tasks = () => {
                 items={laterTasks.map((task) => task.id)}
                 strategy={verticalListSortingStrategy}
               >
-                {laterTasks.map((task) => (
-                  <SortableItem key={task.id} task={task} />
-                ))}
+                
+                  {laterTasks.map((task) => (
+
+                      <SortableItem task={task} />
+                  ))}
               </SortableContext>
             </DndContext>
           )}
@@ -1066,8 +1078,14 @@ const Tasks = () => {
           </p>
         </div>
 
-        <div
-          className={`archive-section ${isArchiveOpen ? "visible" : "hidden"}`}
+        <motion.div
+          className={`archive-section${isArchiveOpen ? " visible" : " hidden"}`}
+          initial={{ height: 0, opacity: 0 }}
+          animate={{
+            height: isArchiveOpen ? "auto" : 0,
+            opacity: isArchiveOpen ? 1 : 0,
+          }}
+          transition={{ duration: 0.4 }}
         >
           {isArchiveOpen && (
             <>
@@ -1087,146 +1105,156 @@ const Tasks = () => {
               </DndContext>
             </>
           )}
-        </div>
+        </motion.div>
       </div>
 
       {/* Task Modal */}
-      {showModal && (
-        <div
-          className={`modal-overlay ${isClosing ? "closing" : ""}`}
-          onClick={handleOverlayClick}
-        >
-          <div
-            className={`modal-content ${isClosing ? "closing" : ""}`}
-            ref={modalContentRef}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            className={`modal-overlay${isClosing ? " closing" : ""}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={handleOverlayClick}
           >
-            <div className="modal-header">
-              <h2>Add task</h2>
-              <button className="close-button" onClick={closeModal}>
-                ×
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="form-group">
-                <label>Title</label>
-                <input
-                  type="text"
-                  placeholder="My first task..."
-                  className={`modal-input ${
-                    formSubmitted && errors.title ? "input-error" : ""
-                  }`}
-                  value={taskTitle}
-                  onChange={(e) => setTaskTitle(e.target.value)}
-                />
-                {formSubmitted && errors.title && (
-                  <p className="error-message">{errors.title}</p>
-                )}
+            <motion.div
+              className={`modal-content${isClosing ? " closing" : ""}`}
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 40, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              ref={modalContentRef}
+            >
+              <div className="modal-header">
+                <h2>Add task</h2>
+                <button className="close-button" onClick={closeModal}>
+                  ×
+                </button>
               </div>
-
-              <div className="form-group">
-                <label>Description</label>
-                <textarea
-                  placeholder="My first task's description..."
-                  className={`modal-input ${
-                    formSubmitted && errors.description ? "input-error" : ""
-                  }`}
-                  rows="2"
-                  maxLength={60} // Limit description length to 150 characters
-                  value={taskDescription}
-                  onChange={(e) => setTaskDescription(e.target.value)}
-                ></textarea>
-                {formSubmitted && errors.description && (
-                  <p className="error-message">{errors.description}</p>
-                )}
-              </div>
-
-              <div className="form-row">
-                {/* <div className="form-group half">
-                  <label>Tag</label>
-                  <div className="tag-selector">
-                    <div className="selected-tag">
-                      <span
-                        className="tag-dot"
-                        style={{ backgroundColor: taskTag.color }}
-                      ></span>
-                      <span>{taskTag.name}</span>
-                    </div>
-                    <PlusIcon className="add-tag-button" />
-                  </div>
-                </div> */}
-
-                <div className="form-group half">
-                  <label>Duration</label>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>Title</label>
                   <input
                     type="text"
-                    className="modal-input"
-                    value={taskDuration}
-                    onChange={(e) => setTaskDuration(e.target.value)}
+                    placeholder="My first task..."
+                    className={`modal-input ${
+                      formSubmitted && errors.title ? "input-error" : ""
+                    }`}
+                    value={taskTitle}
+                    onChange={(e) => setTaskTitle(e.target.value)}
                   />
+                  {formSubmitted && errors.title && (
+                    <p className="error-message">{errors.title}</p>
+                  )}
                 </div>
-              </div>
 
-              <div className="form-row">
-                {/* <div className="form-group half">
-                  <label>Priority</label>
-                  <select
-                    className="modal-input"
-                    value={taskPriority}
-                    onChange={(e) => setTaskPriority(e.target.value)}
-                  >
-                    <option>Low</option>
-                    <option>Medium</option>
-                    <option>High</option>
-                  </select>
-                </div> */}
+                <div className="form-group">
+                  <label>Description</label>
+                  <textarea
+                    placeholder="My first task's description..."
+                    className={`modal-input ${
+                      formSubmitted && errors.description ? "input-error" : ""
+                    }`}
+                    rows="2"
+                    maxLength={60} // Limit description length to 150 characters
+                    value={taskDescription}
+                    onChange={(e) => setTaskDescription(e.target.value)}
+                  ></textarea>
+                  {formSubmitted && errors.description && (
+                    <p className="error-message">{errors.description}</p>
+                  )}
+                </div>
 
-                <div className="form-group half">
-                  <label>Emoji</label>
-                  <div style={{ position: "relative" }}>
-                    <button
-                      className="emoji-selector"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setShowEmojiPicker(!showEmojiPicker);
-                      }}
+                <div className="form-row">
+                  {/* <div className="form-group half">
+                    <label>Tag</label>
+                    <div className="tag-selector">
+                      <div className="selected-tag">
+                        <span
+                          className="tag-dot"
+                          style={{ backgroundColor: taskTag.color }}
+                        ></span>
+                        <span>{taskTag.name}</span>
+                      </div>
+                      <PlusIcon className="add-tag-button" />
+                    </div>
+                  </div> */}
+
+                  <div className="form-group half">
+                    <label>Duration</label>
+                    <input
+                      type="text"
+                      className="modal-input"
+                      value={taskDuration}
+                      onChange={(e) => setTaskDuration(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  {/* <div className="form-group half">
+                    <label>Priority</label>
+                    <select
+                      className="modal-input"
+                      value={taskPriority}
+                      onChange={(e) => setTaskPriority(e.target.value)}
                     >
-                      {taskEmoji}
-                    </button>
+                      <option>Low</option>
+                      <option>Medium</option>
+                      <option>High</option>
+                    </select>
+                  </div> */}
 
-                    {showEmojiPicker && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          zIndex: 1000,
-                          // Change 'top' to 'bottom' and adjust the value
-                          bottom: "45px", // Adjust this value as needed for spacing
-                          right: "0px",
+                  <div className="form-group half">
+                    <label>Emoji</label>
+                    <div style={{ position: "relative" }}>
+                      <button
+                        className="emoji-selector"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowEmojiPicker(!showEmojiPicker);
                         }}
                       >
-                        <EmojiPicker
-                          onEmojiClick={onEmojiClick}
-                          width={300}
-                          height={400}
-                          searchPlaceholder="Search emoji..."
-                        />
-                      </div>
-                    )}
+                        {taskEmoji}
+                      </button>
+
+                      {showEmojiPicker && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            zIndex: 1000,
+                            // Change 'top' to 'bottom' and adjust the value
+                            bottom: "45px", // Adjust this value as needed for spacing
+                            right: "0px",
+                          }}
+                        >
+                          <EmojiPicker
+                            onEmojiClick={onEmojiClick}
+                            width={300}
+                            height={400}
+                            searchPlaceholder="Search emoji..."
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="modal-footer">
-              <button className="cancel-button" onClick={closeModal}>
-                Cancel
-              </button>
-              <button className="add-task-button" onClick={addTask}>
-                <PlusIcon className="add-task-popup-icon" />
-                Add Task
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              <div className="modal-footer">
+                <button className="cancel-button" onClick={closeModal}>
+                  Cancel
+                </button>
+                <button className="add-task-button" onClick={addTask}>
+                  <PlusIcon className="add-task-popup-icon" />
+                  Add Task
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
