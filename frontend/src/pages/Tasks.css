@@ -402,6 +402,28 @@ backdrop-filter: blur(8px);
 
 
 
+
+/* Style for the suggested description placeholder */
+.modal-input::placeholder {
+  color: #999; /* Gray color */
+  /* font-style: italic; */
+  opacity: 1; /* Ensure placeholder is visible */
+}
+
+/* For Firefox */
+.modal-input:-moz-placeholder {
+  color: #999;
+  /* font-style: italic; */
+  opacity: 1;
+}
+
+/* For Internet Explorer */
+.modal-input:-ms-input-placeholder {
+  color: #999;
+  /* font-style: italic; */
+}
+
+
 /* Modal Styles */
 .modal-overlay {
   position: fixed;
@@ -954,3 +976,5 @@ textarea.modal-input {
     height: auto;
   }
 }
+
+

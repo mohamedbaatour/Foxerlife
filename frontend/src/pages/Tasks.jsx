@@ -37,6 +37,12 @@ const Tasks = () => {
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
+  const [isDescriptionSuggested, setIsDescriptionSuggested] = useState(false);
+  const [suggestionText, setSuggestionText] = useState(''); // New state for suggestion text
+
+  const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
+  const debounceTimeout = useRef(null);
+
   const [taskDuration, setTaskDuration] = useState("3h 45m");
   const [taskPriority, setTaskPriority] = useState("Low");
   const [taskEmoji, setTaskEmoji] = useState("😃");
@@ -45,11 +51,139 @@ const Tasks = () => {
     color: "#6366F1",
   });
 
+
   // Add these new states and refs for notifications
   const [notifications, setNotifications] = useState([]);
   const notificationTimeoutsRef = useRef({});
 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const titleInputRef = useRef(null);
+  const descriptionInputRef = useRef(null);
+  const durationInputRef = useRef(null);
+  const emojiButtonRef = useRef(null);
+
+  const generateDescription = async (title) => {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.REACT_APP_GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "llama3-70b-8192", // or "llama3-70b-8192"
+        messages: [
+          {
+            role: "user",
+            content: `Suggest a short description (max 50 characters), Do not say anything other than the description. for a task titled: "${title}"`,
+          },
+        ],
+        max_tokens: 50,
+      }),
+    });
+
+    const data = await res.json();
+    console.log("GPT API response:", data);
+
+let content = data.choices?.[0]?.message?.content?.trim() || "";
+
+// Remove leading and trailing double quotes if they exist
+if (content.startsWith('"') && content.endsWith('"')) {
+  content = content.slice(1, -1); // Remove the first and last character
+}
+
+return content;
+  };
+
+  const handleTitleChange = (e) => {
+    const value = e.target.value;
+    setTaskTitle(value);
+
+    // Debounce GPT call
+    clearTimeout(debounceTimeout.current);
+    debounceTimeout.current = setTimeout(async () => {
+      if (value.length > 3 && taskDescription.trim() === "") {
+        setIsGeneratingDesc(true);
+        const suggestion = await generateDescription(value);
+        // Set the suggestion text and clear the actual input value
+        setSuggestionText(suggestion);
+        setTaskDescription(''); // Keep the actual input empty initially
+        setIsDescriptionSuggested(true); // Indicate that a suggestion is active
+        setIsGeneratingDesc(false);
+      }
+    }, 1000);
+  };
+
+  const handleDescriptionChange = (e) => {
+    // When the user types, the suggestion is no longer active
+    if (isDescriptionSuggested) {
+      setIsDescriptionSuggested(false);
+      setSuggestionText(''); // Clear the suggestion text
+    }
+    setTaskDescription(e.target.value); // Update the actual input value
+  };
+
+  const handleDescriptionKeyDown = (e) => {
+    // Handle Tab key press to accept the suggestion
+    if (e.key === 'Tab' && isDescriptionSuggested) {
+      e.preventDefault(); // Prevent default tab behavior
+      setTaskDescription(suggestionText); // Set the suggestion as the actual value
+      setIsDescriptionSuggested(false); // Suggestion is accepted
+      setSuggestionText(''); // Clear the suggestion text
+      // Optionally, move focus to the next input field (Duration)
+    }
+    // else if (isDescriptionSuggested && e.key !== 'Tab') {
+    //   // If any other key is pressed while suggestion is active, turn off suggestion
+    //   setIsDescriptionSuggested(false);
+    //   setSuggestionText(''); // Clear the suggestion text
+    //   // The character typed will be handled by the onChange event
+    // }
+
+    // Existing logic for arrow key navigation
+    const inputs = [
+      titleInputRef.current,
+      descriptionInputRef.current,
+      durationInputRef.current,
+      emojiButtonRef.current,
+    ].filter(Boolean);
+
+    const currentIndex = inputs.findIndex(
+      (input) => input === document.activeElement
+    );
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const nextIndex = (currentIndex + 1) % inputs.length;
+      inputs[nextIndex].focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const prevIndex = (currentIndex - 1 + inputs.length) % inputs.length;
+      inputs[prevIndex].focus();
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    const inputs = [
+      titleInputRef.current,
+      descriptionInputRef.current,
+      durationInputRef.current,
+      emojiButtonRef.current,
+    ].filter(Boolean); // Filter out any null refs
+
+    const currentIndex = inputs.findIndex(
+      (input) => input === document.activeElement
+    );
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const nextIndex = (currentIndex + 1) % inputs.length;
+      inputs[nextIndex].focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const prevIndex = (currentIndex - 1 + inputs.length) % inputs.length;
+      inputs[prevIndex].focus();
+    }
+  };
 
   // Handle emoji selection
   const onEmojiClick = (emojiObject) => {
@@ -585,7 +719,10 @@ const Tasks = () => {
   useEffect(() => {
     const handleEscKey = (event) => {
       if (event.key === "Escape") {
-        if (showModal) {
+        // Close the emoji picker if it's open
+        if (showEmojiPicker) {
+          setShowEmojiPicker(false);
+        } else if (showModal) {
           closeModal();
         } else if (isSearchExpanded) {
           closeSearch();
@@ -597,10 +734,16 @@ const Tasks = () => {
     return () => {
       window.removeEventListener("keydown", handleEscKey);
     };
-  }, [showModal, isSearchExpanded]);
+  }, [showModal, isSearchExpanded, showEmojiPicker]); // Add showEmojiPicker to dependencies
 
   // Handle click outside modal
   const handleOverlayClick = (event) => {
+    // Close the emoji picker if it's open
+    if (showEmojiPicker) {
+      setShowEmojiPicker(false);
+      return; // Prevent closing the modal if only the emoji picker was clicked
+    }
+
     if (
       modalContentRef.current &&
       !modalContentRef.current.contains(event.target)
@@ -759,7 +902,6 @@ const Tasks = () => {
         setIsMenuOpen(false);
       }
     };
-    
 
     // Handle moving a task from Archive to Now
     const handleMoveToNowFromArchive = (taskId) => {
@@ -1136,6 +1278,7 @@ const Tasks = () => {
               exit={{ y: 40, opacity: 0 }}
               transition={{ duration: 0.3 }}
               ref={modalContentRef}
+              onKeyDown={handleKeyDown}
             >
               <div className="modal-header">
                 <h2>Add task</h2>
@@ -1153,7 +1296,8 @@ const Tasks = () => {
                       formSubmitted && errors.title ? "input-error" : ""
                     }`}
                     value={taskTitle}
-                    onChange={(e) => setTaskTitle(e.target.value)}
+                    onChange={handleTitleChange}
+                    ref={titleInputRef}
                   />
                   {formSubmitted && errors.title && (
                     <p className="error-message">{errors.title}</p>
@@ -1163,14 +1307,16 @@ const Tasks = () => {
                 <div className="form-group">
                   <label>Description</label>
                   <textarea
-                    placeholder="My first task's description..."
+                    placeholder={isDescriptionSuggested ? suggestionText : "My first task's description..."} // Use suggestionText as placeholder
                     className={`modal-input ${
                       formSubmitted && errors.description ? "input-error" : ""
                     }`}
                     rows="2"
                     maxLength={60} // Limit description length to 150 characters
-                    value={taskDescription}
-                    onChange={(e) => setTaskDescription(e.target.value)}
+                    value={taskDescription} // Value is the actual input
+                    onChange={handleDescriptionChange}
+                    onKeyDown={handleDescriptionKeyDown}
+                    ref={descriptionInputRef}
                   ></textarea>
                   {formSubmitted && errors.description && (
                     <p className="error-message">{errors.description}</p>
@@ -1199,6 +1345,7 @@ const Tasks = () => {
                       className="modal-input"
                       value={taskDuration}
                       onChange={(e) => setTaskDuration(e.target.value)}
+                      ref={durationInputRef}
                     />
                   </div>
                 </div>
@@ -1226,6 +1373,7 @@ const Tasks = () => {
                           e.preventDefault();
                           setShowEmojiPicker(!showEmojiPicker);
                         }}
+                        ref={emojiButtonRef}
                       >
                         {taskEmoji}
                       </button>
