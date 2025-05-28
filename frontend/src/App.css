@@ -26,11 +26,12 @@ p {
 
 /* Add padding to the main content container to make space for the fixed timer */
 .main-content-container {
-  padding-bottom: 100px; /* Adjust this value based on the timer's height */
   width: 100vw;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: start;
   gap: 80px;
   margin-top: 22rem;
+  height: 100vh;
 }

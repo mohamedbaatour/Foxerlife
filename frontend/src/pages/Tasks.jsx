@@ -35,20 +35,33 @@ import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 const Tasks = () => {
   // State for form inputs
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
-  const [taskTitle, setTaskTitle] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
+  const [taskTitle, setTaskTitle] = useState(
+    localStorage.getItem('taskTitle') || ""
+  );
+  const [taskDescription, setTaskDescription] = useState(
+    localStorage.getItem('taskDescription') || ""
+  );
   const [isDescriptionSuggested, setIsDescriptionSuggested] = useState(false);
   const [suggestionText, setSuggestionText] = useState(''); // New state for suggestion text
 
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const debounceTimeout = useRef(null);
 
-  const [taskDuration, setTaskDuration] = useState("3h 45m");
-  const [taskPriority, setTaskPriority] = useState("Low");
-  const [taskEmoji, setTaskEmoji] = useState("😃");
-  const [taskTag, setTaskTag] = useState({
-    name: "Personal life",
-    color: "#6366F1",
+  const [taskDuration, setTaskDuration] = useState(
+    localStorage.getItem('taskDuration') || "3h 45m"
+  );
+  const [taskPriority, setTaskPriority] = useState(
+    localStorage.getItem('taskPriority') || "Low"
+  );
+  const [taskEmoji, setTaskEmoji] = useState(
+    localStorage.getItem('taskEmoji') || "😃"
+  );
+  const [taskTag, setTaskTag] = useState(() => {
+    const storedTag = localStorage.getItem('taskTag');
+    return storedTag ? JSON.parse(storedTag) : {
+      name: "Personal life",
+      color: "#6366F1",
+    };
   });
 
 
@@ -71,7 +84,7 @@ const Tasks = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "llama3-70b-8192", // or "llama3-70b-8192"
+        model: "llama3-70b-8192",
         messages: [
           {
             role: "user",
@@ -85,15 +98,75 @@ const Tasks = () => {
     const data = await res.json();
     console.log("GPT API response:", data);
 
-let content = data.choices?.[0]?.message?.content?.trim() || "";
+    let content = data.choices?.[0]?.message?.content?.trim() || "";
 
-// Remove leading and trailing double quotes if they exist
-if (content.startsWith('"') && content.endsWith('"')) {
-  content = content.slice(1, -1); // Remove the first and last character
-}
+    // Remove leading and trailing double quotes if they exist
+    if (content.startsWith('"') && content.endsWith('"')) {
+      content = content.slice(1, -1); // Remove the first and last character
+    }
 
-return content;
+    return content;
   };
+
+  const generateEmoji = async (title) => {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.REACT_APP_GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "llama3-70b-8192",
+        messages: [
+          {
+            role: "user",
+            content: `Suggest the most relevant single emoji (only 1 emoji, nothing else) for this task title: "${title}".`,
+          },
+        ],
+        max_tokens: 10,
+      }),
+    });
+
+    const data = await res.json();
+    console.log("Emoji response:", data);
+
+    let content = data.choices?.[0]?.message?.content?.trim() || "";
+
+    // Ensure only one emoji is returned
+    const emojiMatch = content.match(/[\p{Emoji}]/u);
+    return emojiMatch ? emojiMatch[0] : "😃"; // default emoji fallback
+  };
+
+  const estimateDuration = async (title) => {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.REACT_APP_GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "llama3-70b-8192",
+        messages: [
+          {
+            role: "user",
+            content: `Estimate a realistic time duration for a task titled: "${title}". Respond with just a short duration string like "0h 45m", "2h 00m", or "3h 30m" — do not include any explanation. always with hours and minutes like in the example.`,
+          },
+        ],
+        max_tokens: 20,
+      }),
+    });
+
+    const data = await res.json();
+    console.log("Duration response:", data);
+
+    let content = data.choices?.[0]?.message?.content?.trim() || "";
+
+    // Cleanup any quotes or extras
+    content = content.replace(/^"|"$/g, "");
+    return content.match(/^(\d+h\s*)?(\d+m)?$/) ? content : "1h";
+  };
+
+
 
   const handleTitleChange = (e) => {
     const value = e.target.value;
@@ -105,14 +178,20 @@ return content;
       if (value.length > 3 && taskDescription.trim() === "") {
         setIsGeneratingDesc(true);
         const suggestion = await generateDescription(value);
-        // Set the suggestion text and clear the actual input value
         setSuggestionText(suggestion);
-        setTaskDescription(''); // Keep the actual input empty initially
-        setIsDescriptionSuggested(true); // Indicate that a suggestion is active
+        setTaskDescription('');
+        setIsDescriptionSuggested(true);
         setIsGeneratingDesc(false);
       }
+
+      const suggestedEmoji = await generateEmoji(value);
+      setTaskEmoji(suggestedEmoji);
+
+      const suggestedDuration = await estimateDuration(value);
+      setTaskDuration(suggestedDuration);
     }, 1000);
-  };
+  }
+
 
   const handleDescriptionChange = (e) => {
     // When the user types, the suggestion is no longer active
@@ -563,6 +642,30 @@ return content;
     localStorage.setItem("nowTask", JSON.stringify(nowTask));
   }, [nowTask]); // Save whenever nowTask changes
 
+  useEffect(() => {
+    localStorage.setItem('taskTitle', taskTitle);
+  }, [taskTitle]);
+
+  useEffect(() => {
+    localStorage.setItem('taskDescription', taskDescription);
+  }, [taskDescription]);
+
+  useEffect(() => {
+    localStorage.setItem('taskDuration', taskDuration);
+  }, [taskDuration]);
+
+  useEffect(() => {
+    localStorage.setItem('taskPriority', taskPriority);
+  }, [taskPriority]);
+
+  useEffect(() => {
+    localStorage.setItem('taskEmoji', taskEmoji);
+  }, [taskEmoji]);
+
+  useEffect(() => {
+    localStorage.setItem('taskTag', JSON.stringify(taskTag));
+  }, [taskTag]);
+
   // Add cross-tab synchronization
   useEffect(() => {
     const handleStorageChange = (e) => {
@@ -588,23 +691,44 @@ return content;
   const searchContainerRef = useRef(null);
 
   const openModal = () => {
-    // Reset form fields when opening modal
-    setTaskTitle("");
-    setTaskDescription("");
-    setTaskDuration("3h 45m");
-    setTaskPriority("Low");
-    setTaskEmoji("😃");
-    setTaskTag({ name: "Personal life", color: "#6366F1" });
+    // Use values from localStorage if they exist, otherwise use defaults
+    setTaskTitle(localStorage.getItem('taskTitle') || "");
+    setTaskDescription(localStorage.getItem('taskDescription') || "");
+    setTaskDuration(localStorage.getItem('taskDuration') || "3h 45m");
+    setTaskPriority(localStorage.getItem('taskPriority') || "Low");
+    setTaskEmoji(localStorage.getItem('taskEmoji') || "😃");
+    
+    // For taskTag, we need to parse the JSON string
+    const storedTag = localStorage.getItem('taskTag');
+    setTaskTag(storedTag ? JSON.parse(storedTag) : {
+      name: "Personal life",
+      color: "#6366F1",
+    });
+    setIsDescriptionSuggested(false);
+    setSuggestionText("");
 
     setShowModal(true);
     setIsClosing(false);
   };
 
-  const closeModal = () => {
+  const closeModal = (shouldReset = false) => {
     setIsClosing(true);
     setTimeout(() => {
       setShowModal(false);
       setIsClosing(false);
+      if (shouldReset) {
+        setTaskTitle("");
+        setTaskDescription("");
+        setTaskDuration("3h 45m");
+        setTaskPriority("Low");
+        setTaskEmoji("😃");
+        setTaskTag({
+          name: "Personal life",
+          color: "#6366F1",
+        });
+        setIsDescriptionSuggested(false);
+        setSuggestionText("");
+      }
     }, 300); // Match this with the animation duration (0.3s)
   };
 
@@ -712,7 +836,7 @@ return content;
     setFormSubmitted(false);
 
     // Close modal
-    closeModal();
+    closeModal(true);
   };
 
   // Handle ESC key press
@@ -723,7 +847,7 @@ return content;
         if (showEmojiPicker) {
           setShowEmojiPicker(false);
         } else if (showModal) {
-          closeModal();
+          closeModal(); // Close without resetting
         } else if (isSearchExpanded) {
           closeSearch();
         }
@@ -745,11 +869,11 @@ return content;
     }
 
     if (
-      modalContentRef.current &&
-      !modalContentRef.current.contains(event.target)
-    ) {
-      closeModal();
-    }
+        modalContentRef.current &&
+        !modalContentRef.current.contains(event.target)
+      ) {
+        closeModal(); // Close without resetting
+      }
   };
 
   // Handle search expansion
@@ -1379,13 +1503,14 @@ return content;
                       </button>
 
                       {showEmojiPicker && (
-                        <div
+                        <motion.div
                           style={{
                             position: "absolute",
                             zIndex: 1000,
                             // Change 'top' to 'bottom' and adjust the value
                             bottom: "45px", // Adjust this value as needed for spacing
                             right: "0px",
+
                           }}
                         >
                           <EmojiPicker
@@ -1393,15 +1518,16 @@ return content;
                             width={300}
                             height={400}
                             searchPlaceholder="Search emoji..."
+                            
                           />
-                        </div>
+                        </motion.div>
                       )}
                     </div>
                   </div>
                 </div>
               </div>
               <div className="modal-footer">
-                <button className="cancel-button" onClick={closeModal}>
+                <button className="cancel-button" onClick={() => closeModal(true)}>
                   Cancel
                 </button>
                 <button className="add-task-button" onClick={addTask}>
