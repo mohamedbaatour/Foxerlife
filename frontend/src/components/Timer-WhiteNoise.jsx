@@ -72,15 +72,25 @@ const TimerWhiteNoises = ({ nowTask }) => {
     if (nowTask && nowTask.time) {
       return parseDurationToSeconds(nowTask.time);
     }
-    return 1500; // Default 10 seconds if no task is set
+    return 1500; // Default 25 minutes if no task is set
   };
 
   const [initialTime, setInitialTime] = useState(getInitialTime());
   const [timeRemaining, setTimeRemaining] = useState(getInitialTime());
-  const [isActive, setIsActive] = useState(false);
-  // Add new state for overtime tracking
-  const [isOvertime, setIsOvertime] = useState(false);
-  const [overtimeSeconds, setOvertimeSeconds] = useState(0);
+  // Load isActive state from localStorage or default to false
+  const [isActive, setIsActive] = useState(() => {
+    const savedIsActive = localStorage.getItem("timerIsActive");
+    return savedIsActive === "true";
+  });
+  // Add new state for overtime tracking with localStorage persistence
+  const [isOvertime, setIsOvertime] = useState(() => {
+    const savedIsOvertime = localStorage.getItem("timerIsOvertime");
+    return savedIsOvertime === "true";
+  });
+  const [overtimeSeconds, setOvertimeSeconds] = useState(() => {
+    const savedOvertimeSeconds = localStorage.getItem("timerOvertimeSeconds");
+    return savedOvertimeSeconds ? parseInt(savedOvertimeSeconds) : 0;
+  });
 
   const [notifications, setNotifications] = useState([]);
   const notificationTimeoutsRef = useRef({});
@@ -181,12 +191,30 @@ const TimerWhiteNoises = ({ nowTask }) => {
     localStorage.setItem("timerState", timeRemaining.toString());
   }, [timeRemaining]);
 
+  // Save isActive state when it changes
+  useEffect(() => {
+    localStorage.setItem("timerIsActive", isActive.toString());
+  }, [isActive]);
+
+  // Save overtime states when they change
+  useEffect(() => {
+    localStorage.setItem("timerIsOvertime", isOvertime.toString());
+  }, [isOvertime]);
+
+  useEffect(() => {
+    localStorage.setItem("timerOvertimeSeconds", overtimeSeconds.toString());
+  }, [overtimeSeconds]);
+
   useEffect(() => {
     if (nowTask && nowTask.time) {
       const newTime = parseDurationToSeconds(nowTask.time);
       setInitialTime(newTime);
       setTimeRemaining(newTime);
-      localStorage.removeItem("timerState"); // Clear saved state when new task is added
+      // Clear all saved timer states when new task is added
+      localStorage.removeItem("timerState");
+      localStorage.removeItem("timerIsActive");
+      localStorage.removeItem("timerIsOvertime");
+      localStorage.removeItem("timerOvertimeSeconds");
     }
   }, [nowTask]);
 
@@ -195,7 +223,13 @@ const TimerWhiteNoises = ({ nowTask }) => {
     clearInterval(timerIntervalRef.current);
     setIsActive(false);
     setTimeRemaining(initialTime);
+    setIsOvertime(false);
+    setOvertimeSeconds(0);
+    // Clear all saved timer states
     localStorage.removeItem("timerState");
+    localStorage.removeItem("timerIsActive");
+    localStorage.removeItem("timerIsOvertime");
+    localStorage.removeItem("timerOvertimeSeconds");
   };
 
   const endTimer = () => {
@@ -204,7 +238,11 @@ const TimerWhiteNoises = ({ nowTask }) => {
     setTimeRemaining(0);
     setIsOvertime(false);
     setOvertimeSeconds(0);
+    // Clear all saved timer states
     localStorage.removeItem("timerState");
+    localStorage.removeItem("timerIsActive");
+    localStorage.removeItem("timerIsOvertime");
+    localStorage.removeItem("timerOvertimeSeconds");
 
     if (nowTask) {
       // Calculate time spent on the task

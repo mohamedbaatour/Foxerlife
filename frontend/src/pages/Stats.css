@@ -1,18 +1,17 @@
 .stats-page-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100vw;
-  margin-top: 200px;
-color: white;
+  align-items: start;
+  justify-content: start;
+  color: #f1f1f1;
+  min-width: 580px;
 }
 
 
 .stats-text {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
   gap: 8px;
   margin-left: 8px;
@@ -30,13 +29,12 @@ color: white;
     color: #f1f1f1;
 }
 
+
 .stats-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  min-width: 580px;
   margin-top: 32px;
-  width: 100%;
 }
 
 /* .general-stats {
@@ -47,15 +45,39 @@ color: white;
   gap: 24px;
 } */
 
+
+
+.general-stats {
+  display: flex;
+
+  gap: 24px;
+  width: 100%;
+  max-width: 1014px;
+}
+
+.general-stats-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex: 1;
+  min-height: 128px;
+  min-width: 185px;
+  border-radius: 12px;
+  background-color: #131517;
+  border: 1px solid #232526;
+}
+
 .general-stats-card-text {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
   color: #f1f1f1;
 }
 
 .general-stats-card-number {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 600;
   color: #f1f1f1; 
   margin-bottom: 8px;
 }
@@ -70,21 +92,23 @@ color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 24px 14px 32px;
+  padding: 12px 24px 12px 32px;
   background-color: transparent;
   border-radius: 12px;
     border: 1px solid #232526;
+    background-color: #181A1C;
 }
 
 .task-remaining-card {
-background-color: transparent;
+background-color: #131517;
 }
   
 
 .task-completed-info, .task-remaining-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 16px;
 }
 
 .task-completed-times, .task-remaining-times {
@@ -106,34 +130,9 @@ background-color: transparent;
 .completed-tasks-section, .remaining-tasks-section {
   display: flex;
   flex-direction: column;
-  width: 70%;
+  width: 100%;
   max-width: 1014px;
   margin-top: 64px;
-}
-
-.general-stats {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  width: 70%;
-  max-width: 1014px;
-  padding: 0 24px;
-}
-
-.general-stats-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  flex: 1;
-  min-height: 120px;
-  border-radius: 12px;
-  background-color: #181A1C;
-  padding: 24px;
-  border: 1px solid #232526;
 }
 
 .completed-tasks-header, .remaining-tasks-header {
@@ -160,7 +159,6 @@ background-color: transparent;
 
 .task-completed-card-emoji, .task-remaining-card-emoji {
   font-size: 20px;
-  margin-right: 12px;
 }
 
 .task-completed-card-title, .task-remaining-card-title {

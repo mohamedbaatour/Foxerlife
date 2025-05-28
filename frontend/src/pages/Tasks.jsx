@@ -179,6 +179,13 @@ const Tasks = () => {
 
         // Close the menu
         setIsMenuOpen(false);
+
+        // Dispatch custom event to notify App.js about nowTask change
+        window.dispatchEvent(
+          new CustomEvent("nowTaskUpdated", {
+            detail: taskToMove,
+          })
+        );
       }
     };
 
@@ -752,11 +759,12 @@ const Tasks = () => {
         setIsMenuOpen(false);
       }
     };
+    
 
     // Handle moving a task from Archive to Now
     const handleMoveToNowFromArchive = (taskId) => {
       // Find the task to move
-      const taskToMove = archivedTasks.find((task) => task.id === taskId);
+      let taskToMove = archivedTasks.find((task) => task.id === taskId);
 
       if (taskToMove) {
         // Check if there is an existing task in "Now"
@@ -778,6 +786,13 @@ const Tasks = () => {
 
         // Close the menu
         setIsMenuOpen(false);
+
+        // Dispatch custom event to notify App.js about nowTask change
+        window.dispatchEvent(
+          new CustomEvent("nowTaskUpdated", {
+            detail: taskToMove,
+          })
+        );
       }
     };
 
@@ -947,9 +962,6 @@ const Tasks = () => {
         </AnimatePresence>
       </div>
       {/* Pass the nowTask to the TimerWhiteNoises component */}
-      <div className="left-section">
-        <TimerWhiteNoises nowTask={nowTask} />
-      </div>
       <div className="right-section">
         <div className="now-tasks-container">
           <div className="now-tasks-text">
@@ -1054,11 +1066,9 @@ const Tasks = () => {
                 items={laterTasks.map((task) => task.id)}
                 strategy={verticalListSortingStrategy}
               >
-                
-                  {laterTasks.map((task) => (
-
-                      <SortableItem task={task} />
-                  ))}
+                {laterTasks.map((task) => (
+                  <SortableItem task={task} />
+                ))}
               </SortableContext>
             </DndContext>
           )}

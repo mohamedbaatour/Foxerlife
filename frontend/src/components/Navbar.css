@@ -18,10 +18,10 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-  p.navbar-brand-description {
-    font-size: 0.76rem;
+  p.navbar-brand-version {
+    font-size: 0.75rem;
     color: #C4C4C4;
-    font-weight: 700;
+    font-weight: 800;
     margin-top: -1rem;
     margin-left: -1.5rem;
   }
@@ -57,6 +57,7 @@
     gap: 4rem;
     text-decoration: none; 
     color: #f1f1f1;
+    margin-left: -2.5rem;
 }
 
 .navbar-menu-icon {

@@ -1,4 +1,4 @@
-.tasks-page-container {
+/* .tasks-page-container {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -8,15 +8,14 @@
   margin-top: 32px;
 color: white;
 background-color: transparent;
-}
+} */
 
 .right-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: start;
-  height: 100vh;
-    padding-top: 5rem;
+
 }
 
 .left-section {
@@ -24,7 +23,6 @@ background-color: transparent;
   flex-direction: column;
   align-items: center;
   justify-content: start;
-  height: 100vh;
     padding-top: 5rem;
 }
 
@@ -103,6 +101,7 @@ background-color: transparent;
 
 .tasks-arrow-down-icon {
   cursor: pointer;
+  color: white;
 }
 
 .later-tasks-container {
@@ -416,9 +415,9 @@ backdrop-filter: blur(8px);
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.3s ease-out forwards;
+  /* animation: fadeIn 0.3s ease-out forwards; */
 }
-
+/* 
 .modal-overlay.closing {
   animation: fadeOut 0.3s ease-out forwards;
 }
@@ -443,7 +442,7 @@ backdrop-filter: blur(8px);
     opacity: 0;
     backdrop-filter: blur(0);
   }
-}
+} */
 
 .modal-content {
   background-color: #131517;
@@ -451,14 +450,14 @@ backdrop-filter: blur(8px);
   width: 550px;
   max-width: 90%;
   border: 1px solid #232526;
-  animation: slideIn 0.3s ease-out forwards;
+  /* animation: slideIn 0.3s ease-out forwards; */
   overflow: hidden;
 }
 
-.modal-content.closing {
+/* .modal-content.closing {
   animation: slideOut 0.3s ease-out forwards;
-}
-
+} */
+/* 
 @keyframes slideIn {
   from {
     transform: translateY(20px);
@@ -479,7 +478,7 @@ backdrop-filter: blur(8px);
     transform: translateY(20px);
     opacity: 0;
   }
-}
+} */
 
 .modal-header {
   display: flex;

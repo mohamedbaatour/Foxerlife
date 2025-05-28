@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import './Stats.css';
+import React, { useState, useEffect, useRef } from "react";
+import "./Stats.css";
 
 import TimerWhiteNoises from "../components/Timer-WhiteNoise.jsx";
 import { ReactComponent as StatsIcon } from "../icones/stats.svg";
@@ -37,9 +37,7 @@ const Stats = () => {
 
   // Calculate total tasks
   const totalTasks =
-    laterTasks.length +
-    archivedTasks.length +
-    (nowTask ? 1 : 0);
+    laterTasks.length + archivedTasks.length + (nowTask ? 1 : 0);
 
   // Calculate total planned time
   const calculatePlannedTime = (tasks) => {
