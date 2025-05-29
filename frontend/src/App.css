@@ -34,4 +34,85 @@ p {
   gap: 80px;
   margin-top: 12rem;
   height: 100vh;
+  transition: 0.3s all ease-in-out;
 }
+
+@media screen and (max-width: 625px) {
+
+  .main-content-container {
+  transform: scale(0.9);
+  transition: 0.3s all ease-in-out;
+}
+
+}
+
+@media screen and (max-width: 580px) {
+
+  .main-content-container {
+  transform: scale(0.85);
+  transition: 0.3s all ease-in-out;
+}
+
+}
+
+@media screen and (max-width: 535px) {
+
+  .main-content-container {
+  transform: scale(0.7);
+  transition: 0.3s all ease-in-out;
+    margin-top: -2rem;
+}
+
+}
+
+@media screen and (max-width: 440px) {
+
+  .main-content-container {
+  transform: scale(0.65);
+  transition: 0.3s all ease-in-out;
+  margin-top: -3rem;
+}
+
+}
+
+@media screen and (max-width: 410px) {
+
+  .main-content-container {
+  transform: scale(0.6);
+  transition: 0.3s all ease-in-out;
+}
+
+}
+
+
+@media screen and (max-width: 380px) {
+
+  .main-content-container {
+  transform: scale(0.5);
+  transition: 0.3s all ease-in-out;
+  margin-top: -3rem;
+}
+
+}
+
+
+@media screen and (max-width: 315px) {
+
+  .main-content-container {
+  transform: scale(0.45);
+  transition: 0.3s all ease-in-out;
+  margin-top: -5rem;
+}
+
+}
+
+@media screen and (max-width: 280px) {
+
+  .main-content-container {
+  transform: scale(0.4);
+  transition: 0.3s all ease-in-out;
+  margin-top: -7rem;
+}
+
+}
+

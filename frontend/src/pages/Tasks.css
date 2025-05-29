@@ -959,22 +959,18 @@ textarea.modal-input {
 }
 
 /* Add this media query at the end of the file */
-@media screen and (max-width: 1100px) {
-  .tasks-page-container {
-    flex-direction: column;
-    gap: 40px;
-    margin-top: 16px;
-  }
+/* @media screen and (max-width: 625px) {
 
-  .left-section {
-    padding-top: 2rem;
-    height: auto;
-  }
-
-  .right-section {
-    padding-top: 2rem;
-    height: auto;
-  }
+.tasks-main-content-left-column {
+    transition: 0.3s ease-in-out;
+  transform: scale(0.9);
 }
+
+.right-section {
+  transition: 0.3s ease-in-out;
+  transform: scale(0.9);
+}
+
+} */
 
 

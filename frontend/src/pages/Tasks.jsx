@@ -1225,7 +1225,13 @@ const Tasks = () => {
   };
 
   return (
-    <div className="tasks-page-container">
+    <motion.div
+      className="tasks-page-container"
+      initial={{ y: -50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 50, opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       {/* Render stacked notifications */}
       <div className="notifications-container">
         <AnimatePresence>
@@ -1405,8 +1411,8 @@ const Tasks = () => {
         {showModal && (
           <motion.div
             className={`modal-overlay${isClosing ? " closing" : ""}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             onClick={handleOverlayClick}
@@ -1419,13 +1425,19 @@ const Tasks = () => {
               transition={{ duration: 0.3 }}
               ref={modalContentRef}
             >
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                addTask();
-              }}>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  addTask();
+                }}
+              >
                 <div className="modal-header">
                   <h2>Add task</h2>
-                  <button type="button" className="close-button" onClick={closeModal}>
+                  <button
+                    type="button"
+                    className="close-button"
+                    onClick={closeModal}
+                  >
                     ×
                   </button>
                 </div>
@@ -1451,7 +1463,11 @@ const Tasks = () => {
                   <div className="form-group">
                     <label>Description</label>
                     <textarea
-                      placeholder={isDescriptionSuggested ? suggestionText : "My first task's description..."} // Use suggestionText as placeholder
+                      placeholder={
+                        isDescriptionSuggested
+                          ? suggestionText
+                          : "My first task's description..."
+                      } // Use suggestionText as placeholder
                       className={`modal-input ${
                         formSubmitted && errors.description ? "input-error" : ""
                       }`}
@@ -1532,7 +1548,6 @@ const Tasks = () => {
                               // Change 'top' to 'bottom' and adjust the value
                               bottom: "45px", // Adjust this value as needed for spacing
                               right: "0px",
-
                             }}
                           >
                             <EmojiPicker
@@ -1540,7 +1555,6 @@ const Tasks = () => {
                               width={300}
                               height={400}
                               searchPlaceholder="Search emoji..."
-                              
                             />
                           </motion.div>
                         )}
@@ -1549,7 +1563,11 @@ const Tasks = () => {
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="cancel-button" onClick={() => closeModal(true)}>
+                  <button
+                    type="button"
+                    className="cancel-button"
+                    onClick={() => closeModal(true)}
+                  >
                     Cancel
                   </button>
                   <button type="submit" className="add-task-button">
@@ -1562,7 +1580,7 @@ const Tasks = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 };
 

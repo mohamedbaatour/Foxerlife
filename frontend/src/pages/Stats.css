@@ -194,3 +194,16 @@ background-color: #131517;
 .left-column {
   width: 200px;
 }
+
+
+@media screen and (max-width: 625px) {
+
+  .stats-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  transform: scale(0.9);
+  transition: 0.3s all ease-in-out;
+}
+
+}

@@ -678,15 +678,28 @@ const TimerWhiteNoises = ({ nowTask }) => {
 
   // Add a new useEffect to update the timer when nowTask changes
   useEffect(() => {
-    const newInitialTime = getInitialTime();
-    setInitialTime(newInitialTime);
+    // Check if there's a saved timer state in localStorage
+    const savedTime = localStorage.getItem("timerState");
+    const savedIsActive = localStorage.getItem("timerIsActive");
 
-    // Only update timeRemaining if the timer is not active
-    // This prevents resetting an ongoing timer
-    if (!isActive && !isOvertime) {
+    // Only update if there's no saved state OR if a new task is explicitly set
+    // and the timer is not currently active or in overtime (to avoid interrupting an ongoing session)
+    if (!savedTime || (nowTask && !isActive && !isOvertime)) {
+      const newInitialTime = getInitialTime();
+      setInitialTime(newInitialTime);
       setTimeRemaining(newInitialTime);
     }
-  }, [nowTask]); // This effect runs whenever nowTask changes
+
+    // Clear all saved timer states when a new task is added or timer is explicitly reset
+    // This part should ideally be handled by the resetTimer or endTimer functions
+    // and not automatically on every nowTask change unless it's a fresh start.
+    // For now, let's remove the automatic clearing here to prevent unintended resets.
+    // localStorage.removeItem("timerState");
+    // localStorage.removeItem("timerIsActive");
+    // localStorage.removeItem("timerIsOvertime");
+    // localStorage.removeItem("timerOvertimeSeconds");
+
+  }, [nowTask, isActive, isOvertime]);
 
   useEffect(() => {
     if (isActive && !isOvertime) {

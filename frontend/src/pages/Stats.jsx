@@ -7,6 +7,8 @@ import { ReactComponent as StatsIcon } from "../icones/stats.svg";
 import { ReactComponent as CheckMarkIcon } from "../icones/checkmark.svg";
 import { ReactComponent as LaterIcon } from "../icones/later.svg";
 
+import { motion } from "framer-motion";
+
 const Stats = () => {
   // Initialize states from localStorage
   const [laterTasks, setLaterTasks] = useState(() => {
@@ -110,7 +112,13 @@ const Stats = () => {
   };
 
   return (
-    <div className="stats-page-container">
+    <motion.div
+      className="stats-page-container"
+      initial={{ y: 50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 50, opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <div className="stats-text">
         <StatsIcon className="stats-icon" />
         <p className="stats-title">Statistics</p>
@@ -231,7 +239,7 @@ const Stats = () => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
