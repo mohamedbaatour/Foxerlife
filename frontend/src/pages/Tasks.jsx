@@ -238,6 +238,9 @@ const Tasks = () => {
       e.preventDefault();
       const prevIndex = (currentIndex - 1 + inputs.length) % inputs.length;
       inputs[prevIndex].focus();
+    } else if (e.key === "Enter") {
+      e.preventDefault(); // Prevent default behavior to avoid double submission
+      addTask();
     }
   };
 
@@ -261,6 +264,13 @@ const Tasks = () => {
       e.preventDefault();
       const prevIndex = (currentIndex - 1 + inputs.length) % inputs.length;
       inputs[prevIndex].focus();
+    } else if (e.key === "Enter") {
+      // Stop propagation to prevent the event from bubbling up
+      e.stopPropagation();
+      // Prevent default to avoid form submission
+      e.preventDefault();
+      // Call addTask only once
+      addTask();
     }
   };
 
@@ -706,6 +716,12 @@ const Tasks = () => {
     });
     setIsDescriptionSuggested(false);
     setSuggestionText("");
+
+        setTimeout(() => {
+      if (titleInputRef.current) {
+        titleInputRef.current.focus();
+      }
+    }, 0);
 
     setShowModal(true);
     setIsClosing(false);
@@ -1402,139 +1418,146 @@ const Tasks = () => {
               exit={{ y: 40, opacity: 0 }}
               transition={{ duration: 0.3 }}
               ref={modalContentRef}
-              onKeyDown={handleKeyDown}
             >
-              <div className="modal-header">
-                <h2>Add task</h2>
-                <button className="close-button" onClick={closeModal}>
-                  ×
-                </button>
-              </div>
-              <div className="modal-body">
-                <div className="form-group">
-                  <label>Title</label>
-                  <input
-                    type="text"
-                    placeholder="My first task..."
-                    className={`modal-input ${
-                      formSubmitted && errors.title ? "input-error" : ""
-                    }`}
-                    value={taskTitle}
-                    onChange={handleTitleChange}
-                    ref={titleInputRef}
-                  />
-                  {formSubmitted && errors.title && (
-                    <p className="error-message">{errors.title}</p>
-                  )}
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                addTask();
+              }}>
+                <div className="modal-header">
+                  <h2>Add task</h2>
+                  <button type="button" className="close-button" onClick={closeModal}>
+                    ×
+                  </button>
                 </div>
-
-                <div className="form-group">
-                  <label>Description</label>
-                  <textarea
-                    placeholder={isDescriptionSuggested ? suggestionText : "My first task's description..."} // Use suggestionText as placeholder
-                    className={`modal-input ${
-                      formSubmitted && errors.description ? "input-error" : ""
-                    }`}
-                    rows="2"
-                    maxLength={60} // Limit description length to 150 characters
-                    value={taskDescription} // Value is the actual input
-                    onChange={handleDescriptionChange}
-                    onKeyDown={handleDescriptionKeyDown}
-                    ref={descriptionInputRef}
-                  ></textarea>
-                  {formSubmitted && errors.description && (
-                    <p className="error-message">{errors.description}</p>
-                  )}
-                </div>
-
-                <div className="form-row">
-                  {/* <div className="form-group half">
-                    <label>Tag</label>
-                    <div className="tag-selector">
-                      <div className="selected-tag">
-                        <span
-                          className="tag-dot"
-                          style={{ backgroundColor: taskTag.color }}
-                        ></span>
-                        <span>{taskTag.name}</span>
-                      </div>
-                      <PlusIcon className="add-tag-button" />
-                    </div>
-                  </div> */}
-
-                  <div className="form-group half">
-                    <label>Duration</label>
+                <div className="modal-body">
+                  <div className="form-group">
+                    <label>Title</label>
                     <input
                       type="text"
-                      className="modal-input"
-                      value={taskDuration}
-                      onChange={(e) => setTaskDuration(e.target.value)}
-                      ref={durationInputRef}
+                      placeholder="My first task..."
+                      className={`modal-input ${
+                        formSubmitted && errors.title ? "input-error" : ""
+                      }`}
+                      value={taskTitle}
+                      onChange={handleTitleChange}
+                      ref={titleInputRef}
+                      onKeyDown={handleKeyDown}
                     />
+                    {formSubmitted && errors.title && (
+                      <p className="error-message">{errors.title}</p>
+                    )}
                   </div>
-                </div>
 
-                <div className="form-row">
-                  {/* <div className="form-group half">
-                    <label>Priority</label>
-                    <select
-                      className="modal-input"
-                      value={taskPriority}
-                      onChange={(e) => setTaskPriority(e.target.value)}
-                    >
-                      <option>Low</option>
-                      <option>Medium</option>
-                      <option>High</option>
-                    </select>
-                  </div> */}
+                  <div className="form-group">
+                    <label>Description</label>
+                    <textarea
+                      placeholder={isDescriptionSuggested ? suggestionText : "My first task's description..."} // Use suggestionText as placeholder
+                      className={`modal-input ${
+                        formSubmitted && errors.description ? "input-error" : ""
+                      }`}
+                      rows="2"
+                      maxLength={60} // Limit description length to 150 characters
+                      value={taskDescription} // Value is the actual input
+                      onChange={handleDescriptionChange}
+                      onKeyDown={handleDescriptionKeyDown}
+                      ref={descriptionInputRef}
+                    ></textarea>
+                    {formSubmitted && errors.description && (
+                      <p className="error-message">{errors.description}</p>
+                    )}
+                  </div>
 
-                  <div className="form-group half">
-                    <label>Emoji</label>
-                    <div style={{ position: "relative" }}>
-                      <button
-                        className="emoji-selector"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setShowEmojiPicker(!showEmojiPicker);
-                        }}
-                        ref={emojiButtonRef}
+                  <div className="form-row">
+                    {/* <div className="form-group half">
+                      <label>Tag</label>
+                      <div className="tag-selector">
+                        <div className="selected-tag">
+                          <span
+                            className="tag-dot"
+                            style={{ backgroundColor: taskTag.color }}
+                          ></span>
+                          <span>{taskTag.name}</span>
+                        </div>
+                        <PlusIcon className="add-tag-button" />
+                      </div>
+                    </div> */}
+
+                    <div className="form-group half">
+                      <label>Duration</label>
+                      <input
+                        type="text"
+                        className="modal-input"
+                        value={taskDuration}
+                        onChange={(e) => setTaskDuration(e.target.value)}
+                        ref={durationInputRef}
+                        onKeyDown={handleKeyDown}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    {/* <div className="form-group half">
+                      <label>Priority</label>
+                      <select
+                        className="modal-input"
+                        value={taskPriority}
+                        onChange={(e) => setTaskPriority(e.target.value)}
                       >
-                        {taskEmoji}
-                      </button>
+                        <option>Low</option>
+                        <option>Medium</option>
+                        <option>High</option>
+                      </select>
+                    </div> */}
 
-                      {showEmojiPicker && (
-                        <motion.div
-                          style={{
-                            position: "absolute",
-                            zIndex: 1000,
-                            // Change 'top' to 'bottom' and adjust the value
-                            bottom: "45px", // Adjust this value as needed for spacing
-                            right: "0px",
-
+                    <div className="form-group half">
+                      <label>Emoji</label>
+                      <div style={{ position: "relative" }}>
+                        <button
+                          type="button"
+                          className="emoji-selector"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setShowEmojiPicker(!showEmojiPicker);
                           }}
+                          ref={emojiButtonRef}
                         >
-                          <EmojiPicker
-                            onEmojiClick={onEmojiClick}
-                            width={300}
-                            height={400}
-                            searchPlaceholder="Search emoji..."
-                            
-                          />
-                        </motion.div>
-                      )}
+                          {taskEmoji}
+                        </button>
+
+                        {showEmojiPicker && (
+                          <motion.div
+                            style={{
+                              position: "absolute",
+                              zIndex: 1000,
+                              // Change 'top' to 'bottom' and adjust the value
+                              bottom: "45px", // Adjust this value as needed for spacing
+                              right: "0px",
+
+                            }}
+                          >
+                            <EmojiPicker
+                              onEmojiClick={onEmojiClick}
+                              width={300}
+                              height={400}
+                              searchPlaceholder="Search emoji..."
+                              
+                            />
+                          </motion.div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="modal-footer">
-                <button className="cancel-button" onClick={() => closeModal(true)}>
-                  Cancel
-                </button>
-                <button className="add-task-button" onClick={addTask}>
-                  <PlusIcon className="add-task-popup-icon" />
-                  Add Task
-                </button>
-              </div>
+                <div className="modal-footer">
+                  <button type="button" className="cancel-button" onClick={() => closeModal(true)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="add-task-button">
+                    <PlusIcon className="add-task-popup-icon" />
+                    Add Task
+                  </button>
+                </div>
+              </form>
             </motion.div>
           </motion.div>
         )}
