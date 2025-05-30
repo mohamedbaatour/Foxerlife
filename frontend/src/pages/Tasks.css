@@ -18,13 +18,13 @@ background-color: transparent;
 
 }
 
-.left-section {
+/* .left-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: start;
     padding-top: 5rem;
-}
+} */
 
 .now-tasks-text {
   display: flex;
@@ -50,7 +50,7 @@ background-color: transparent;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: left;
   border: 1px solid #232526;
   background-color: #181A1C;
   padding: 38px 40px 38px 24px;
@@ -393,8 +393,6 @@ backdrop-filter: blur(8px);
   color: #999;
   text-align: center;
   padding: 16px;
-  background-color: #181A1C;
-  border: 1px solid #232526;
   border-radius: 10px;
   margin-top: 16px;
 }

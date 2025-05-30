@@ -278,6 +278,7 @@ const TimerWhiteNoises = ({ nowTask }) => {
       );
 
       // Save to archivedTasks (using the same completedTask object)
+      // Save to archivedTasks (using the same completedTask object)
       const existingArchivedTasks = JSON.parse(
         localStorage.getItem("archivedTasks") || "[]"
       );
@@ -286,6 +287,7 @@ const TimerWhiteNoises = ({ nowTask }) => {
         "archivedTasks",
         JSON.stringify(updatedArchivedTasks)
       );
+      // Updated message
 
       // Clear nowTask from localStorage
       localStorage.removeItem("nowTask");
@@ -297,18 +299,9 @@ const TimerWhiteNoises = ({ nowTask }) => {
         message: "Task completed and archived!", // Updated message
       };
 
-      setNotifications((prevNotifications) => {
-        const updatedNotifications = [...prevNotifications];
-        if (updatedNotifications.length >= 3) {
-          const oldestId = updatedNotifications[0].id;
-          if (notificationTimeoutsRef.current[oldestId]) {
-            clearTimeout(notificationTimeoutsRef.current[oldestId]);
-            delete notificationTimeoutsRef.current[oldestId];
-          }
-          updatedNotifications.shift();
-        }
-        return [...updatedNotifications, newNotification];
-      });
+      window.location.reload();
+
+
 
       notificationTimeoutsRef.current[notificationId] = setTimeout(() => {
         setNotifications((prevNotifications) =>

@@ -149,7 +149,7 @@ const Tasks = () => {
         messages: [
           {
             role: "user",
-            content: `Estimate a realistic time duration for a task titled: "${title}". Respond with just a short duration string like "0h 45m", "2h 00m", or "3h 30m" — do not include any explanation. always with hours and minutes like in the example.`,
+            content: `Estimate a realistic time duration for a task titled: "${title}". Respond with just a short duration string like "0h 45m", "2h 00m", or "3h 30m" — do not include any explanation. always include hours and minutes like in the examples.`,
           },
         ],
         max_tokens: 20,
@@ -166,8 +166,6 @@ const Tasks = () => {
     return content.match(/^(\d+h\s*)?(\d+m)?$/) ? content : "1h";
   };
 
-
-
   const handleTitleChange = (e) => {
     const value = e.target.value;
     setTaskTitle(value);
@@ -179,7 +177,7 @@ const Tasks = () => {
         setIsGeneratingDesc(true);
         const suggestion = await generateDescription(value);
         setSuggestionText(suggestion);
-        setTaskDescription('');
+        setTaskDescription("");
         setIsDescriptionSuggested(true);
         setIsGeneratingDesc(false);
       }
@@ -190,25 +188,24 @@ const Tasks = () => {
       const suggestedDuration = await estimateDuration(value);
       setTaskDuration(suggestedDuration);
     }, 1000);
-  }
-
+  };
 
   const handleDescriptionChange = (e) => {
     // When the user types, the suggestion is no longer active
     if (isDescriptionSuggested) {
       setIsDescriptionSuggested(false);
-      setSuggestionText(''); // Clear the suggestion text
+      setSuggestionText(""); // Clear the suggestion text
     }
     setTaskDescription(e.target.value); // Update the actual input value
   };
 
   const handleDescriptionKeyDown = (e) => {
     // Handle Tab key press to accept the suggestion
-    if (e.key === 'Tab' && isDescriptionSuggested) {
+    if (e.key === "Tab" && isDescriptionSuggested) {
       e.preventDefault(); // Prevent default tab behavior
       setTaskDescription(suggestionText); // Set the suggestion as the actual value
       setIsDescriptionSuggested(false); // Suggestion is accepted
-      setSuggestionText(''); // Clear the suggestion text
+      setSuggestionText(""); // Clear the suggestion text
       // Optionally, move focus to the next input field (Duration)
     }
     // else if (isDescriptionSuggested && e.key !== 'Tab') {
@@ -653,27 +650,27 @@ const Tasks = () => {
   }, [nowTask]); // Save whenever nowTask changes
 
   useEffect(() => {
-    localStorage.setItem('taskTitle', taskTitle);
+    localStorage.setItem("taskTitle", taskTitle);
   }, [taskTitle]);
 
   useEffect(() => {
-    localStorage.setItem('taskDescription', taskDescription);
+    localStorage.setItem("taskDescription", taskDescription);
   }, [taskDescription]);
 
   useEffect(() => {
-    localStorage.setItem('taskDuration', taskDuration);
+    localStorage.setItem("taskDuration", taskDuration);
   }, [taskDuration]);
 
   useEffect(() => {
-    localStorage.setItem('taskPriority', taskPriority);
+    localStorage.setItem("taskPriority", taskPriority);
   }, [taskPriority]);
 
   useEffect(() => {
-    localStorage.setItem('taskEmoji', taskEmoji);
+    localStorage.setItem("taskEmoji", taskEmoji);
   }, [taskEmoji]);
 
   useEffect(() => {
-    localStorage.setItem('taskTag', JSON.stringify(taskTag));
+    localStorage.setItem("taskTag", JSON.stringify(taskTag));
   }, [taskTag]);
 
   // Add cross-tab synchronization
@@ -702,22 +699,26 @@ const Tasks = () => {
 
   const openModal = () => {
     // Use values from localStorage if they exist, otherwise use defaults
-    setTaskTitle(localStorage.getItem('taskTitle') || "");
-    setTaskDescription(localStorage.getItem('taskDescription') || "");
-    setTaskDuration(localStorage.getItem('taskDuration') || "3h 45m");
-    setTaskPriority(localStorage.getItem('taskPriority') || "Low");
-    setTaskEmoji(localStorage.getItem('taskEmoji') || "😃");
-    
+    setTaskTitle(localStorage.getItem("taskTitle") || "");
+    setTaskDescription(localStorage.getItem("taskDescription") || "");
+    setTaskDuration(localStorage.getItem("taskDuration") || "3h 45m");
+    setTaskPriority(localStorage.getItem("taskPriority") || "Low");
+    setTaskEmoji(localStorage.getItem("taskEmoji") || "😃");
+
     // For taskTag, we need to parse the JSON string
-    const storedTag = localStorage.getItem('taskTag');
-    setTaskTag(storedTag ? JSON.parse(storedTag) : {
-      name: "Personal life",
-      color: "#6366F1",
-    });
+    const storedTag = localStorage.getItem("taskTag");
+    setTaskTag(
+      storedTag
+        ? JSON.parse(storedTag)
+        : {
+            name: "Personal life",
+            color: "#6366F1",
+          }
+    );
     setIsDescriptionSuggested(false);
     setSuggestionText("");
 
-        setTimeout(() => {
+    setTimeout(() => {
       if (titleInputRef.current) {
         titleInputRef.current.focus();
       }
@@ -885,11 +886,11 @@ const Tasks = () => {
     }
 
     if (
-        modalContentRef.current &&
-        !modalContentRef.current.contains(event.target)
-      ) {
-        closeModal(); // Close without resetting
-      }
+      modalContentRef.current &&
+      !modalContentRef.current.contains(event.target)
+    ) {
+      closeModal(); // Close without resetting
+    }
   };
 
   // Handle search expansion
@@ -1284,7 +1285,6 @@ const Tasks = () => {
               </div>
               {/* Add a button or icon to clear the Now task if needed */}
               {/* <button onClick={() => setNowTask(null)}>Clear</button> */}
-              <ArrowDownIcon className="tasks-arrow-down-icon" />{" "}
               {/* Keep the arrow if needed */}
             </div>
           ) : (

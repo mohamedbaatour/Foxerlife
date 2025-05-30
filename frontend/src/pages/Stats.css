@@ -4,7 +4,7 @@
   align-items: start;
   justify-content: start;
   color: #f1f1f1;
-  min-width: 580px;
+  width: 580px;
 }
 
 
@@ -23,7 +23,7 @@
     color: #f1f1f1;
 }
 
-.stats-text {
+.stats-title {
     font-size: 24px;
     font-weight: 700;
     color: #f1f1f1;

@@ -12,6 +12,7 @@ import {
 } from "react-router-dom";
 import Tasks from "./pages/Tasks";
 import Stats from "./pages/Stats";
+import Settings from "./pages/Settings";
 import { AnimatePresence } from "framer-motion";
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<Tasks setNowTask={setNowTask} />} />
             <Route path="/stats" element={<Stats />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </AnimatePresence>
       </div>

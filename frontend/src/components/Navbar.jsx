@@ -152,10 +152,13 @@ const Navbar = () => {
     };
 
     const updateLocalTime = () => {
+      const storedTimeFormat = localStorage.getItem('timeFormat');
+      const hour12 = storedTimeFormat === '12';
+
       const localTime = new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
-        hour12: true,
+        hour12: hour12,
       });
       setCurrentTime(localTime);
     };
@@ -167,8 +170,20 @@ const Navbar = () => {
     updateLocalTime(); // Set initially
     const intervalId = setInterval(updateLocalTime, 60 * 1000);
 
-    // Cleanup interval on unmount
-    return () => clearInterval(intervalId);
+    // Listen for changes in localStorage from other tabs/windows
+    const handleStorageChange = (event) => {
+      if (event.key === 'timeFormat') {
+        updateLocalTime();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Cleanup interval and event listener on unmount
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   return (
