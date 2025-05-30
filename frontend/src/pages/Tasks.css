@@ -46,6 +46,7 @@ background-color: transparent;
   margin-bottom: 1.5rem;
 }
 
+
 .now-tasks-card {
   display: flex;
   flex-direction: row;
@@ -242,6 +243,7 @@ backdrop-filter: blur(8px);
   align-items: center;
   justify-content: space-between;
   margin-bottom: 24px;
+  width: 564px;
 }
 
 .search-filter-container {
@@ -295,10 +297,88 @@ backdrop-filter: blur(8px);
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  width: 48px;
-  height: 48px;
+  transition: all 0.2s ease;
 }
 
+
+.filter-button.active {
+  border-color: #119DFF;
+}
+
+.filter-menu {
+  position: absolute;
+  top: 55px;
+  right: 0;
+  width: 150px;
+  background-color: #181A1C;
+  border: 1px solid #232526;
+  border-radius: 12px;
+  padding: 8px;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+    filter: blur(8px);
+  }
+}
+
+.filter-menu.fading-out {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+.filter-menu-header {
+  color: #999;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  margin-bottom: 4px;
+}
+
+.filter-option {
+  width: 100%;
+  text-align: left;
+  padding: 8px;
+  background: none;
+  border: none;
+  color: #f1f1f1;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.filter-option:hover {
+  background-color: #232526;
+}
+
+.filter-option.active {
+  background-color: rgba(17, 157, 255, 0.1);
+  color: #119DFF;
+}
+
+.filter-option.clear {
+  margin-top: 4px;
+  border-top: 1px solid #232526;
+  color: #999;
+}
+
+.filtered-results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
 
 
 /* Expandable Search Styles */

@@ -13,14 +13,27 @@ const Settings = () => {
         return savedTimeFormat ? savedTimeFormat : '12'; // Default to 12h if not found
     });
 
+    const [defaultTaskLength, setDefaultTaskLength] = useState(() => {
+        const savedDefaultTaskLength = localStorage.getItem('defaultTaskLength');
+        return savedDefaultTaskLength ? savedDefaultTaskLength : '25'; // Default to 25m if not found
+    });
+
     useEffect(() => {
         localStorage.setItem('timeFormat', timeFormat);
         
     }, [timeFormat]);
 
+    useEffect(() => {
+        localStorage.setItem('defaultTaskLength', defaultTaskLength);
+    }, [defaultTaskLength]);
+
     const handleTimeFormatChange = (event) => {
         setTimeFormat(event.target.value);
         window.location.reload(); // Recharge la page pour appliquer les changements
+    };
+
+    const handleDefaultTaskLengthChange = (event) => {
+        setDefaultTaskLength(event.target.value);
     };
 
     return (
@@ -49,7 +62,11 @@ const Settings = () => {
           </div>
           <div className="settings-option">
             <p className="settings-option-text">Default task length</p>
-            <select className="settings-dropdown">
+            <select 
+                className="settings-dropdown"
+                value={defaultTaskLength}
+                onChange={handleDefaultTaskLengthChange}
+            >
               <option value="25">25m</option>
               <option value="50">50m</option>
             </select>

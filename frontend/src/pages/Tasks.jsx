@@ -696,6 +696,11 @@ const Tasks = () => {
   const searchInputRef = useRef(null);
   const searchButtonRef = useRef(null);
   const searchContainerRef = useRef(null);
+  
+  // Filter functionality
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState(null); // null means no filter
+  const [filteredResults, setFilteredResults] = useState([]);
 
   const openModal = () => {
     // Use values from localStorage if they exist, otherwise use defaults
@@ -912,6 +917,77 @@ const Tasks = () => {
     setIsSearchExpanded(false);
     setSearchQuery("");
     setSearchResults([]);
+  };
+
+  // Helper function to parse duration strings to minutes
+  const parseDurationToMinutes = (timeString) => {
+    if (!timeString) return 0;
+    
+    let totalMinutes = 0;
+    const hourMatch = timeString.match(/(\d+)h/);
+    const minuteMatch = timeString.match(/(\d+)m/);
+    
+    if (hourMatch && hourMatch[1]) {
+      totalMinutes += parseInt(hourMatch[1]) * 60;
+    }
+    
+    if (minuteMatch && minuteMatch[1]) {
+      totalMinutes += parseInt(minuteMatch[1]);
+    }
+    
+    return totalMinutes;
+  };
+
+  // Handle filter click
+  const handleFilterClick = () => {
+    setIsFilterMenuOpen(!isFilterMenuOpen);
+  };
+
+  // Apply a filter
+  const applyFilter = (filterRange) => {
+    setActiveFilter(filterRange);
+    
+    if (!filterRange) {
+      // Clear filter
+      setFilteredResults([]);
+      setIsFilterMenuOpen(false);
+      return;
+    }
+    
+    let filteredTasks = [];
+    
+    switch(filterRange) {
+      case '1m-10m':
+        filteredTasks = laterTasks.filter(task => {
+          const minutes = parseDurationToMinutes(task.time);
+          return minutes >= 1 && minutes <= 10;
+        });
+        break;
+      case '10m-20m':
+        filteredTasks = laterTasks.filter(task => {
+          const minutes = parseDurationToMinutes(task.time);
+          return minutes > 10 && minutes <= 20;
+        });
+        break;
+      case '20m-30m':
+        filteredTasks = laterTasks.filter(task => {
+          const minutes = parseDurationToMinutes(task.time);
+          return minutes > 20 && minutes <= 30;
+        });
+        break;
+      case '30m+':
+        filteredTasks = laterTasks.filter(task => {
+          const minutes = parseDurationToMinutes(task.time);
+          return minutes > 30;
+        });
+        break;
+      default:
+        filteredTasks = [];
+    }
+    
+    setFilteredResults(filteredTasks);
+    setIsFilterMenuOpen(false);
+    showNotification(`Filtered by duration: ${filterRange}`);
   };
 
   // Handle search input
@@ -1322,9 +1398,71 @@ const Tasks = () => {
                     />
                   </button>
                 </div>
-                <button className="filter-button">
-                  <FilterIcon className="filter-icon" />
-                </button>
+                <div
+                  className="filter-container"
+                  style={{ position: "relative" }}
+                >
+                  <button
+                    className={`filter-button ${activeFilter ? "active" : ""}`}
+                    onClick={handleFilterClick}
+                  >
+                    <FilterIcon className="filter-icon" />
+                  </button>
+
+                  {isFilterMenuOpen && (
+                    <motion.div
+                      initial={{ y: -20, opacity: 0, filter: "blur(8px)" }}
+                      animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                      exit={{ y: -20, opacity: 0, filter: "blur(8px)" }} // Fade-out animation
+                      transition={{ duration: 0.3 }}
+                      className="filter-menu"
+                    >
+                      <div className="filter-menu-header">
+                        Filter by duration
+                      </div>
+                      <button
+                        className={`filter-option ${
+                          activeFilter === "1m-10m" ? "active" : ""
+                        }`}
+                        onClick={() => applyFilter("1m-10m")}
+                      >
+                        1m - 10m
+                      </button>
+                      <button
+                        className={`filter-option ${
+                          activeFilter === "10m-20m" ? "active" : ""
+                        }`}
+                        onClick={() => applyFilter("10m-20m")}
+                      >
+                        10m - 20m
+                      </button>
+                      <button
+                        className={`filter-option ${
+                          activeFilter === "20m-30m" ? "active" : ""
+                        }`}
+                        onClick={() => applyFilter("20m-30m")}
+                      >
+                        20m - 30m
+                      </button>
+                      <button
+                        className={`filter-option ${
+                          activeFilter === "30m+" ? "active" : ""
+                        }`}
+                        onClick={() => applyFilter("30m+")}
+                      >
+                        30m+
+                      </button>
+                      {activeFilter && (
+                        <button
+                          className="filter-option clear"
+                          onClick={() => applyFilter(null)}
+                        >
+                          Clear filter
+                        </button>
+                      )}
+                    </motion.div>
+                  )}
+                </div>
               </div>
               <button className="add-task-CTA" onClick={openModal}>
                 <PlusIcon className="add-task-icon" />
@@ -1333,7 +1471,7 @@ const Tasks = () => {
             </div>
           </div>
 
-          {/* Display search results or regular tasks */}
+          {/* Display search results, filtered results, or regular tasks */}
           {searchQuery.trim() !== "" && searchResults.length > 0 ? (
             <div className="search-results-container">
               {/* Use SortableItem for search results as well for consistency */}
@@ -1343,8 +1481,17 @@ const Tasks = () => {
             </div>
           ) : searchQuery.trim() !== "" && searchResults.length === 0 ? (
             <div className="no-results">No tasks found</div>
+          ) : activeFilter && filteredResults.length > 0 ? (
+            <div className="filtered-results-container">
+              {/* Display filtered tasks */}
+              {filteredResults.map((task) => (
+                <SortableItem key={task.id} task={task} />
+              ))}
+            </div>
+          ) : activeFilter && filteredResults.length === 0 ? (
+            <div className="no-results">No tasks match the selected filter</div>
           ) : (
-            // Regular tasks (only shown when not searching)
+            // Regular tasks (only shown when not searching or filtering)
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -1355,7 +1502,7 @@ const Tasks = () => {
                 strategy={verticalListSortingStrategy}
               >
                 {laterTasks.map((task) => (
-                  <SortableItem task={task} />
+                  <SortableItem key={task.id} task={task} />
                 ))}
               </SortableContext>
             </DndContext>

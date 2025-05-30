@@ -72,7 +72,8 @@ const TimerWhiteNoises = ({ nowTask }) => {
     if (nowTask && nowTask.time) {
       return parseDurationToSeconds(nowTask.time);
     }
-    return 1500; // Default 25 minutes if no task is set
+    const defaultLength = localStorage.getItem('defaultTaskLength');
+    return defaultLength ? parseInt(defaultLength) * 60 : 1500; // Default 25 minutes (1500 seconds) if not found
   };
 
   const [initialTime, setInitialTime] = useState(getInitialTime());
@@ -233,85 +234,89 @@ const TimerWhiteNoises = ({ nowTask }) => {
   };
 
   const endTimer = () => {
-    clearInterval(timerIntervalRef.current);
-    setIsActive(false);
-    setTimeRemaining(0);
-    setIsOvertime(false);
-    setOvertimeSeconds(0);
-    // Clear all saved timer states
-    localStorage.removeItem("timerState");
-    localStorage.removeItem("timerIsActive");
-    localStorage.removeItem("timerIsOvertime");
-    localStorage.removeItem("timerOvertimeSeconds");
-
-    if (nowTask) {
-      // Calculate time spent on the task
-      const timeSpentSeconds = initialTime - timeRemaining + overtimeSeconds;
-      const hours = Math.floor(timeSpentSeconds / 3600);
-      const minutes = Math.floor((timeSpentSeconds % 3600) / 60);
-      const timeSpentFormatted = `${hours}h ${minutes}m`;
-
-      // Get current date and time
-      const now = new Date();
-      const timeString = now.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-
-      // Create completed task object
-      const completedTask = {
-        ...nowTask,
-        completedAt: timeString,
-        timeSpent: timeSpentFormatted,
-        completedDate: now.toISOString(),
-        id: nowTask.id + "-" + Date.now(), // Ensure unique ID
-      };
-
-      // Save to completedTasks
-      const existingCompletedTasks = JSON.parse(
-        localStorage.getItem("completedTasks") || "[]"
-      );
-      const updatedCompletedTasks = [completedTask, ...existingCompletedTasks];
-      localStorage.setItem(
-        "completedTasks",
-        JSON.stringify(updatedCompletedTasks)
-      );
-
-      // Save to archivedTasks (using the same completedTask object)
-      // Save to archivedTasks (using the same completedTask object)
-      const existingArchivedTasks = JSON.parse(
-        localStorage.getItem("archivedTasks") || "[]"
-      );
-      const updatedArchivedTasks = [completedTask, ...existingArchivedTasks];
-      localStorage.setItem(
-        "archivedTasks",
-        JSON.stringify(updatedArchivedTasks)
-      );
-      // Updated message
-
-      // Clear nowTask from localStorage
-      localStorage.removeItem("nowTask");
-
-      // Show notification
-      const notificationId = Date.now();
-      const newNotification = {
-        id: notificationId,
-        message: "Task completed and archived!", // Updated message
-      };
-
-      window.location.reload();
-
-
-
-      notificationTimeoutsRef.current[notificationId] = setTimeout(() => {
-        setNotifications((prevNotifications) =>
-          prevNotifications.filter(
-            (notification) => notification.id !== notificationId
-          )
-        );
-        delete notificationTimeoutsRef.current[notificationId];
-      }, 2000);
-    }
+      clearInterval(timerIntervalRef.current);
+      setIsActive(false);
+      setIsOvertime(false);
+      setOvertimeSeconds(0);
+      
+      // Set timer to default task length
+      const defaultLength = localStorage.getItem('defaultTaskLength');
+      const newInitialTime = defaultLength ? parseInt(defaultLength) * 60 : 1500; // Default to 25 minutes if not found
+      setInitialTime(newInitialTime);
+      setTimeRemaining(newInitialTime);
+  
+      // Clear all saved timer states
+      localStorage.removeItem("timerState");
+      localStorage.removeItem("timerIsActive");
+      localStorage.removeItem("timerIsOvertime");
+      localStorage.removeItem("timerOvertimeSeconds");
+  
+      if (nowTask) {
+          // Calculate time spent on the task
+          const timeSpentSeconds = initialTime - timeRemaining + overtimeSeconds;
+          const hours = Math.floor(timeSpentSeconds / 3600);
+          const minutes = Math.floor((timeSpentSeconds % 3600) / 60);
+          const timeSpentFormatted = `${hours}h ${minutes}m`;
+  
+          // Get current date and time
+          const now = new Date();
+          const timeString = now.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+          });
+  
+          // Create completed task object
+          const completedTask = {
+              ...nowTask,
+              completedAt: timeString,
+              timeSpent: timeSpentFormatted,
+              completedDate: now.toISOString(),
+              id: nowTask.id + "-" + Date.now(), // Ensure unique ID
+          };
+  
+          // Save to completedTasks
+          const existingCompletedTasks = JSON.parse(
+              localStorage.getItem("completedTasks") || "[]"
+          );
+          const updatedCompletedTasks = [completedTask, ...existingCompletedTasks];
+          localStorage.setItem(
+              "completedTasks",
+              JSON.stringify(updatedCompletedTasks)
+          );
+  
+          // Save to archivedTasks (using the same completedTask object)
+          const existingArchivedTasks = JSON.parse(
+              localStorage.getItem("archivedTasks") || "[]"
+          );
+          const updatedArchivedTasks = [completedTask, ...existingArchivedTasks];
+          localStorage.setItem(
+              "archivedTasks",
+              JSON.stringify(updatedArchivedTasks)
+          );
+  
+          // Clear nowTask from localStorage
+          localStorage.removeItem("nowTask");
+  
+          // Show notification
+          const notificationId = Date.now();
+          const newNotification = {
+              id: notificationId,
+              message: "Task completed and archived!", // Updated message
+          };
+  
+          window.location.reload();
+  
+  
+  
+          notificationTimeoutsRef.current[notificationId] = setTimeout(() => {
+              setNotifications((prevNotifications) =>
+                  prevNotifications.filter(
+                      (notification) => notification.id !== notificationId
+                  )
+              );
+              delete notificationTimeoutsRef.current[notificationId];
+          }, 2000);
+      }
   };
 
   const formatTime = (seconds) => {
@@ -706,6 +711,50 @@ const TimerWhiteNoises = ({ nowTask }) => {
       return () => clearInterval(interval);
     }
   }, [isActive, isOvertime]);
+
+  useEffect(() => {
+    // Only update if timer is not active and there's no current task
+    const handleStorageChange = (e) => {
+      if (e.key === 'defaultTaskLength' && !isActive && !nowTask) {
+        const newDefaultLength = e.newValue;
+        const newTime = newDefaultLength ? parseInt(newDefaultLength) * 60 : 1500;
+        setInitialTime(newTime);
+        setTimeRemaining(newTime);
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also add a direct event listener for changes made in the same window
+    const originalSetItem = localStorage.setItem;
+    localStorage.setItem = function(key, value) {
+      const event = new Event('localStorageChange');
+      event.key = key;
+      event.newValue = value;
+      window.dispatchEvent(event);
+      originalSetItem.apply(this, arguments);
+    };
+    
+    const handleLocalChange = (e) => {
+      if (e.key === 'defaultTaskLength' && !isActive && !nowTask) {
+        const newDefaultLength = e.newValue;
+        const newTime = newDefaultLength ? parseInt(newDefaultLength) * 60 : 1500;
+        setInitialTime(newTime);
+        setTimeRemaining(newTime);
+      }
+    };
+    
+    window.addEventListener('localStorageChange', handleLocalChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('localStorageChange', handleLocalChange);
+      localStorage.setItem = originalSetItem;
+    };
+  }, [isActive, nowTask]);
+  
+  // ... existing code ...
+
 
   return (
     <div className="tasks-main-content-left-column">
