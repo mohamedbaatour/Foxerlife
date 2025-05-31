@@ -316,7 +316,7 @@ backdrop-filter: blur(8px);
   padding: 8px;
   z-index: 1000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-
+  gap: 4px;
 }
 
 @keyframes fadeOut {
@@ -355,7 +355,8 @@ backdrop-filter: blur(8px);
   font-weight: 500;
   cursor: pointer;
   border-radius: 8px;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  margin-bottom: 2px;
 }
 
 .filter-option:hover {
@@ -621,6 +622,18 @@ backdrop-filter: blur(8px);
 
 .form-group.half {
   flex: 1;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 12px;
+    background-color: #181A1C;
+    border: 1px solid #232526;
+    border-radius: 12px;
+    color: #f1f1f1;
+    font-size: 14px;
+    font-family: "Manrope", sans-serif;
+    box-sizing: border-box;
 }
 
 .form-group label {

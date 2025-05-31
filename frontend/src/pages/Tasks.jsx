@@ -47,9 +47,15 @@ const Tasks = () => {
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const debounceTimeout = useRef(null);
 
-  const [taskDuration, setTaskDuration] = useState(
-    localStorage.getItem('taskDuration') || "3h 45m"
-  );
+const [taskDuration, setTaskDuration] = useState(() => {
+  const defaultTaskLength = localStorage.getItem("defaultTaskLength");
+  if (defaultTaskLength === "25") {
+    return "0h 25m";
+  } else if (defaultTaskLength === "50") {
+    return "0h 50m";
+  }
+  return "3h 45m"; // Fallback value
+});
   const [taskPriority, setTaskPriority] = useState(
     localStorage.getItem('taskPriority') || "Low"
   );
@@ -108,6 +114,37 @@ const Tasks = () => {
     return content;
   };
 
+  const generatePriority = async (title) => {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.REACT_APP_GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "llama3-70b-8192",
+        messages: [
+          {
+            role: "user",
+            content: `Estimate the priority (Low, Medium, or High only) for a task titled: "${title}". Reply with only one of these three words.`,
+          },
+        ],
+        max_tokens: 5,
+      }),
+    });
+
+    const data = await res.json();
+    let content = data.choices?.[0]?.message?.content?.trim();
+
+    // Normalize and validate response
+    const validPriorities = ["Low", "Medium", "High"];
+    if (validPriorities.includes(content)) {
+      return content;
+    }
+
+    return "Low"; // Default fallback
+  };
+
   const generateEmoji = async (title) => {
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -149,7 +186,7 @@ const Tasks = () => {
         messages: [
           {
             role: "user",
-            content: `Estimate a realistic time duration for a task titled: "${title}". Respond with just a short duration string like "0h 45m", "2h 00m", or "3h 30m" — do not include any explanation. always include hours and minutes like in the examples.`,
+            content: `Estimate a realistic time duration for a task titled: "${title}". Respond with just a short duration string like "0h 45m", "1h 00m", or "3h 30m" — do not include any explanation. always include hours and minutes like in the examples.`,
           },
         ],
         max_tokens: 20,
@@ -187,6 +224,10 @@ const Tasks = () => {
 
       const suggestedDuration = await estimateDuration(value);
       setTaskDuration(suggestedDuration);
+      
+              const aiPriority = await generatePriority(value);
+    setTaskPriority(aiPriority);
+    localStorage.setItem("taskPriority", aiPriority);
     }, 1000);
   };
 
@@ -197,6 +238,8 @@ const Tasks = () => {
       setSuggestionText(""); // Clear the suggestion text
     }
     setTaskDescription(e.target.value); // Update the actual input value
+
+
   };
 
   const handleDescriptionKeyDown = (e) => {
@@ -1655,6 +1698,20 @@ const Tasks = () => {
                         ref={durationInputRef}
                         onKeyDown={handleKeyDown}
                       />
+                    </div>
+
+                    <div className="form-group half">
+                      <label htmlFor="priority">Priority</label>
+                      <select
+                        id="priority"
+                        className="modal-input"
+                        value={taskPriority}
+                        onChange={(e) => setTaskPriority(e.target.value)}
+                      >
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                      </select>
                     </div>
                   </div>
 
