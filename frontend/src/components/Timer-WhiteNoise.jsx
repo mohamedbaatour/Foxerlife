@@ -489,7 +489,6 @@ const TimerWhiteNoises = ({ nowTask }) => {
     const notificationId = Date.now();
     const newNotification = {
       id: notificationId,
-      message: newRepeatState ? "Repeat Activated" : "Repeat Deactivated",
     };
 
     // Add the new notification to the array (limit to 3)

@@ -9,31 +9,30 @@ import { ReactComponent as ArrowDownIcon } from '../icones/arrow-down.svg';
 
 const Settings = () => {
     const [timeFormat, setTimeFormat] = useState(() => {
-        const savedTimeFormat = localStorage.getItem('timeFormat');
-        return savedTimeFormat ? savedTimeFormat : '12'; // Default to 12h if not found
+      const savedTimeFormat = localStorage.getItem("timeFormat");
+      return savedTimeFormat ? savedTimeFormat : "24"; // Default to 12h if not found
     });
 
     const [defaultTaskLength, setDefaultTaskLength] = useState(() => {
-        const savedDefaultTaskLength = localStorage.getItem('defaultTaskLength');
-        return savedDefaultTaskLength ? savedDefaultTaskLength : '25'; // Default to 25m if not found
+      const savedDefaultTaskLength = localStorage.getItem("defaultTaskLength");
+      return savedDefaultTaskLength ? savedDefaultTaskLength : "25"; // Default to 25m if not found
     });
 
     useEffect(() => {
-        localStorage.setItem('timeFormat', timeFormat);
-        
+      localStorage.setItem("timeFormat", timeFormat);
     }, [timeFormat]);
 
     useEffect(() => {
-        localStorage.setItem('defaultTaskLength', defaultTaskLength);
+      localStorage.setItem("defaultTaskLength", defaultTaskLength);
     }, [defaultTaskLength]);
 
     const handleTimeFormatChange = (event) => {
-        setTimeFormat(event.target.value);
-        window.location.reload(); // Recharge la page pour appliquer les changements
+      setTimeFormat(event.target.value);
+      window.location.reload(); // Recharge la page pour appliquer les changements
     };
 
     const handleDefaultTaskLengthChange = (event) => {
-        setDefaultTaskLength(event.target.value);
+      setDefaultTaskLength(event.target.value);
     };
 
     return (
@@ -56,16 +55,16 @@ const Settings = () => {
               value={timeFormat}
               onChange={handleTimeFormatChange}
             >
-              <option value="12">12h</option>
               <option value="24">24h</option>
+              <option value="12">12h</option>
             </select>
           </div>
           <div className="settings-option">
             <p className="settings-option-text">Default task length</p>
-            <select 
-                className="settings-dropdown"
-                value={defaultTaskLength}
-                onChange={handleDefaultTaskLengthChange}
+            <select
+              className="settings-dropdown"
+              value={defaultTaskLength}
+              onChange={handleDefaultTaskLengthChange}
             >
               <option value="25">25m</option>
               <option value="50">50m</option>

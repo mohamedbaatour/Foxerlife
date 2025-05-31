@@ -7,6 +7,8 @@ import { ReactComponent as StatsIcon } from "../icones/stats.svg";
 import { ReactComponent as CheckMarkIcon } from "../icones/checkmark.svg";
 import { ReactComponent as LaterIcon } from "../icones/later.svg";
 
+import {ReactComponent as LogoIcon } from "../icones/icon.svg";
+
 import { motion } from "framer-motion";
 
 const Stats = () => {
@@ -171,7 +173,10 @@ const Stats = () => {
                 </div>
               ))
             ) : (
-              <div className="no-completed-tasks">No completed tasks yet</div>
+              <div className="no-completed-tasks">
+                <LogoIcon className="logo-icon" />
+                No victories yet — time to chase some!
+              </div>
             )}
           </div>
         </div>
@@ -234,7 +239,10 @@ const Stats = () => {
                 </div>
               ))
             ) : (
-              <div className="no-remaining-tasks">No remaining tasks</div>
+                <div className="no-remaining-tasks">
+                  <LogoIcon className="logo-icon" />
+                Nothing left to do — go enjoy a snack!
+              </div>
             )}
           </div>
         </div>

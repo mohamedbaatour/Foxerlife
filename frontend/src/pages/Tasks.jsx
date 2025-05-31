@@ -384,9 +384,8 @@ const [taskDuration, setTaskDuration] = useState(() => {
 
     const style = {
       transform: CSS.Transform.toString(transform),
-      transition,
-      zIndex: isDragging ? 3000 : 0, // Set a high z-index when dragging
-      // Remove cursor: "grab" from here, it will be applied to the handle
+      transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)', // Apply transition here
+
     };
 
     // Add state for menu visibility
@@ -438,7 +437,7 @@ const [taskDuration, setTaskDuration] = useState(() => {
         );
 
         // Show notification
-        showNotification("Task moved to Now");
+        showNotification("Nice pick buddy!");
 
         // Close the menu
         setIsMenuOpen(false);
@@ -739,7 +738,7 @@ const [taskDuration, setTaskDuration] = useState(() => {
   const searchInputRef = useRef(null);
   const searchButtonRef = useRef(null);
   const searchContainerRef = useRef(null);
-  
+
   // Filter functionality
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState(null); // null means no filter
@@ -830,7 +829,7 @@ const [taskDuration, setTaskDuration] = useState(() => {
         )
       );
       delete notificationTimeoutsRef.current[notificationId];
-    }, 2000);
+    }, 2300);
   };
 
   // Clean up timeouts when component unmounts
@@ -965,19 +964,19 @@ const [taskDuration, setTaskDuration] = useState(() => {
   // Helper function to parse duration strings to minutes
   const parseDurationToMinutes = (timeString) => {
     if (!timeString) return 0;
-    
+
     let totalMinutes = 0;
     const hourMatch = timeString.match(/(\d+)h/);
     const minuteMatch = timeString.match(/(\d+)m/);
-    
+
     if (hourMatch && hourMatch[1]) {
       totalMinutes += parseInt(hourMatch[1]) * 60;
     }
-    
+
     if (minuteMatch && minuteMatch[1]) {
       totalMinutes += parseInt(minuteMatch[1]);
     }
-    
+
     return totalMinutes;
   };
 
@@ -989,37 +988,37 @@ const [taskDuration, setTaskDuration] = useState(() => {
   // Apply a filter
   const applyFilter = (filterRange) => {
     setActiveFilter(filterRange);
-    
+
     if (!filterRange) {
       // Clear filter
       setFilteredResults([]);
       setIsFilterMenuOpen(false);
       return;
     }
-    
+
     let filteredTasks = [];
-    
-    switch(filterRange) {
-      case '1m-10m':
-        filteredTasks = laterTasks.filter(task => {
+
+    switch (filterRange) {
+      case "1m-10m":
+        filteredTasks = laterTasks.filter((task) => {
           const minutes = parseDurationToMinutes(task.time);
           return minutes >= 1 && minutes <= 10;
         });
         break;
-      case '10m-20m':
-        filteredTasks = laterTasks.filter(task => {
+      case "10m-20m":
+        filteredTasks = laterTasks.filter((task) => {
           const minutes = parseDurationToMinutes(task.time);
           return minutes > 10 && minutes <= 20;
         });
         break;
-      case '20m-30m':
-        filteredTasks = laterTasks.filter(task => {
+      case "20m-30m":
+        filteredTasks = laterTasks.filter((task) => {
           const minutes = parseDurationToMinutes(task.time);
           return minutes > 20 && minutes <= 30;
         });
         break;
-      case '30m+':
-        filteredTasks = laterTasks.filter(task => {
+      case "30m+":
+        filteredTasks = laterTasks.filter((task) => {
           const minutes = parseDurationToMinutes(task.time);
           return minutes > 30;
         });
@@ -1027,10 +1026,10 @@ const [taskDuration, setTaskDuration] = useState(() => {
       default:
         filteredTasks = [];
     }
-    
+
     setFilteredResults(filteredTasks);
     setIsFilterMenuOpen(false);
-    showNotification(`Filtered by duration: ${filterRange}`);
+    showNotification(`Fox filtered your focus: ${filterRange}`);
   };
 
   // Handle search input
@@ -1184,7 +1183,7 @@ const [taskDuration, setTaskDuration] = useState(() => {
         );
 
         // Show notification
-        showNotification("Task moved to Now");
+        showNotification("Task revived!");
 
         // Close the menu
         setIsMenuOpen(false);
@@ -1359,11 +1358,12 @@ const [taskDuration, setTaskDuration] = useState(() => {
             <motion.div
               key={notification.id}
               className="task-notification"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
+              <LogoIcon className="notification-logo" />
               {notification.message}
             </motion.div>
           ))}
@@ -1407,8 +1407,11 @@ const [taskDuration, setTaskDuration] = useState(() => {
               {/* Keep the arrow if needed */}
             </div>
           ) : (
-            <div className="now-tasks-card">
-              <p className="now-tasks-card-title">No task set for Now</p>
+            <div className="now-tasks-no-task">
+              <LogoIcon className="now-tasks-no-task-logo" />
+              <p className="now-tasks-no-task-title">
+                I’m bored! Pick something for us to do!
+              </p>
             </div>
           )}
         </div>
@@ -1544,9 +1547,19 @@ const [taskDuration, setTaskDuration] = useState(() => {
                 items={laterTasks.map((task) => task.id)}
                 strategy={verticalListSortingStrategy}
               >
-                {laterTasks.map((task) => (
+                {laterTasks.length > 0 ? (laterTasks.map((task) => (
                   <SortableItem key={task.id} task={task} />
-                ))}
+                  )
+                        ))
+                          : (
+                            <div className='now-tasks-no-task'>
+                              <LogoIcon
+                                className="now-tasks-no-task-logo"
+                              />
+                              <p className="now-tasks-no-task-title">Nothing left to do — go enjoy a snack!</p>
+                            </div>
+              )
+                      }
               </SortableContext>
             </DndContext>
           )}
@@ -1586,9 +1599,16 @@ const [taskDuration, setTaskDuration] = useState(() => {
                   items={archivedTasks.map((task) => task.id)}
                   strategy={verticalListSortingStrategy}
                 >
-                  {archivedTasks.map((task) => (
-                    <SortableArchiveItem key={task.id} task={task} />
-                  ))}
+                  {archivedTasks.length > 0 ? (
+                    archivedTasks.map((task) => (
+                      <SortableArchiveItem key={task.id} task={task} />
+                    ))
+                  ) : (
+                    <div className="now-tasks-no-task">
+                      <LogoIcon className="now-tasks-no-task-logo" />
+                      <p className="now-tasks-no-task-title">No retired tasks — keep on moving!</p>
+                    </div>
+                  )}
                 </SortableContext>
               </DndContext>
             </>
