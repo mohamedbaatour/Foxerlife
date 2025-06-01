@@ -48,6 +48,7 @@ color: #f1f1f1 ;
     padding: 16px 48px 16px 32px;
     background-color: #131517;
     border-radius: 10px;
+    box-sizing: border-box;
     border: 1px solid #232526;
 }
 
@@ -92,3 +93,4 @@ color: #f1f1f1 ;
     padding-left: 14px;
     font-family: 'Manrope', sans-serif;
 }
+

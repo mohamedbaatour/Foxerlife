@@ -536,106 +536,111 @@ const [taskDuration, setTaskDuration] = useState(() => {
         {...attributes}
         className={isDragging ? "is-dragging" : ""} // Add class when dragging
       >
-        <div
-          className={`later-tasks-card ${isMenuOpen ? "expanded" : ""}`}
-          key={task.id}
-          id={`task-${task.id}`}
-        >
-          <div className="later-tasks-card-top-row">
-            <div className="later-tasks-card-emoji-text-container">
-              <div className="later-tasks-card-emoji-container">
-                {/* Apply listeners and cursor style to the SixDotsIcon */}
-                <SixDotsIcon
-                  className="later-tasks-card-emoji-dots"
-                  {...listeners}
-                  style={{ cursor: "grab" }}
-                />
-                {typeof task.emoji === "string" &&
-                task.emoji.startsWith("http") ? (
-                  <img
-                    className="later-tasks-card-emoji"
-                    src={task.emoji}
-                    alt="emoji"
+
+          <div
+
+            className={`later-tasks-card ${isMenuOpen ? "expanded" : ""}`}
+            key={task.id}
+            id={`task-${task.id}`}
+          >
+            <div className="later-tasks-card-top-row">
+              <div className="later-tasks-card-emoji-text-container">
+                <div className="later-tasks-card-emoji-container">
+                  {/* Apply listeners and cursor style to the SixDotsIcon */}
+                  <SixDotsIcon
+                    className="later-tasks-card-emoji-dots"
+                    {...listeners}
+                    style={{ cursor: "grab" }}
                   />
-                ) : (
-                  <span className="later-tasks-card-emoji-text">
-                    {task.emoji}
-                  </span>
-                )}
-              </div>
-              <div className="later-tasks-card-text">
-                <div className="later-tasks-card-title-div">
-                  <p className="later-tasks-card-title">{task.title}</p>
-                  <p className="later-tasks-card-time">{task.time}</p>
+                  {typeof task.emoji === "string" &&
+                  task.emoji.startsWith("http") ? (
+                    <img
+                      className="later-tasks-card-emoji"
+                      src={task.emoji}
+                      alt="emoji"
+                    />
+                  ) : (
+                    <span className="later-tasks-card-emoji-text">
+                      {task.emoji}
+                    </span>
+                  )}
                 </div>
-                <p className="later-tasks-card-description">
-                  {isMenuOpen || task.description.length <= maxDescriptionLength
-                    ? task.description
-                    : `${task.description.substring(
-                        0,
-                        maxDescriptionLength
-                      )}...`}
-                </p>
-              </div>
-            </div>
-            <ArrowDownIcon
-              className={`tasks-arrow-down-icon ${isMenuOpen ? "rotated" : ""}`}
-              onClick={toggleMenu}
-            />
-          </div>
-
-          {/* Conditionally render the menu */}
-          {isMenuOpen && (
-            <div className="task-card-menu">
-              {/* Add onClick handler to the "move to Now" button */}
-              <button
-                className="menu-item"
-                onClick={() => handleMoveToNow(task.id)}
-              >
-                <NowIcon className="menu-icon" /> move to Now
-              </button>
-              <button
-                className="menu-item"
-                onClick={() => handleArchiveTask(task.id)}
-              >
-                <ArchiveIcon className="menu-icon" /> archive
-              </button>
-              <div style={{ position: "relative" }}>
-                <button
-                  className="menu-item delete"
-                  onClick={showDeleteConfirm}
-                >
-                  <BinIcon className="menu-icon" /> Delete
-                </button>
-
-                {/* Delete confirmation popup */}
-                {showDeleteConfirmation && (
-                  <div
-                    className={`delete-confirmation-popup ${
-                      isConfirmationClosing ? "fading-out" : ""
-                    }`}
-                  >
-                    <p className="delete-confirmation-text">Are you sure?</p>
-                    <div className="delete-confirmation-buttons">
-                      <button
-                        className="cancel-delete-button"
-                        onClick={hideDeleteConfirm}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        className="confirm-delete-button"
-                        onClick={() => confirmDelete(task.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
+                <div className="later-tasks-card-text">
+                  <div className="later-tasks-card-title-div">
+                    <p className="later-tasks-card-title">{task.title}</p>
+                    <p className="later-tasks-card-time">{task.time}</p>
                   </div>
-                )}
+                  <p className="later-tasks-card-description">
+                    {isMenuOpen ||
+                    task.description.length <= maxDescriptionLength
+                      ? task.description
+                      : `${task.description.substring(
+                          0,
+                          maxDescriptionLength
+                        )}...`}
+                  </p>
+                </div>
               </div>
+              <ArrowDownIcon
+                className={`tasks-arrow-down-icon ${
+                  isMenuOpen ? "rotated" : ""
+                }`}
+                onClick={toggleMenu}
+              />
             </div>
-          )}
-        </div>
+
+            {/* Conditionally render the menu */}
+            {isMenuOpen && (
+              <div className="task-card-menu">
+                {/* Add onClick handler to the "move to Now" button */}
+                <button
+                  className="menu-item"
+                  onClick={() => handleMoveToNow(task.id)}
+                >
+                  <NowIcon className="menu-icon" /> move to Now
+                </button>
+                <button
+                  className="menu-item"
+                  onClick={() => handleArchiveTask(task.id)}
+                >
+                  <ArchiveIcon className="menu-icon" /> archive
+                </button>
+                <div style={{ position: "relative" }}>
+                  <button
+                    className="menu-item delete"
+                    onClick={showDeleteConfirm}
+                  >
+                    <BinIcon className="menu-icon" /> Delete
+                  </button>
+
+                  {/* Delete confirmation popup */}
+                  {showDeleteConfirmation && (
+                    <div
+                      className={`delete-confirmation-popup ${
+                        isConfirmationClosing ? "fading-out" : ""
+                      }`}
+                    >
+                      <p className="delete-confirmation-text">Are you sure?</p>
+                      <div className="delete-confirmation-buttons">
+                        <button
+                          className="cancel-delete-button"
+                          onClick={hideDeleteConfirm}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className="confirm-delete-button"
+                          onClick={() => confirmDelete(task.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
       </div>
     );
   };

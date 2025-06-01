@@ -121,18 +121,18 @@
 
 .start-pause-button {
   padding: 0.625rem 1.5rem 0.625rem 1.25rem;
-  box-shadow: inset 0px 0px 1.5rem -0.4375rem white;
+  box-shadow: inset 0px 0px 1.5rem -0.3rem white;
   font-weight: 500;
   color: #f1f1f1;
   font-size: 1.125rem;
   border-radius: 0.625rem;
-  border: 1px solid #232526;
+  border: none;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   font-family: "Manrope", "Roboto", sans-serif;
 }
 
@@ -159,8 +159,8 @@ stroke-width: 1px;
 }
 
 .start-pause-button.start:hover {
-  background-color: #0056b3;
-  transform: scale(1.02);
+  box-shadow: inset 0px 0px 1.5rem 0rem white;
+  transform: scale(1.01);
 }
 
 .start-pause-button.pause {
@@ -321,7 +321,9 @@ stroke-width: 1px;
   position: relative;
   z-index: 1;
 
+
 }
+
 
 .white-noise-controls .control-button svg {
   background: none;
@@ -335,6 +337,12 @@ stroke-width: 1px;
   justify-content: center;
   position: relative;
   z-index: 1;
+  transition: all 0.2s ease;
+}
+
+.white-noise-controls .control-button svg:hover {
+
+  transform: scale(1.02);
 }
 
 .volume-control-container {
@@ -428,6 +436,8 @@ stroke-width: 1px;
   padding: 0;
 }
 
+
+
 .white-noise-controls .play-pause-main-button svg {
   background-color: #FFF;
   border-radius: 50%;
@@ -444,7 +454,6 @@ stroke-width: 1px;
   background-color: #f0f0f0;
   color: #131517;
 }
-
 
 
 

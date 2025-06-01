@@ -241,6 +241,7 @@ const getInitialTime = () => {
       const newTime = parseDurationToSeconds(nowTask.time);
       setInitialTime(newTime);
       setTimeRemaining(newTime);
+          saveTaskInitialTime(nowTask.id, newTime);
       // Clear all saved timer states when new task is added
       localStorage.removeItem("timerState");
       localStorage.removeItem("timerIsActive");
@@ -249,20 +250,32 @@ const getInitialTime = () => {
     }
   }, [nowTask]);
 
+  const saveTaskInitialTime = (taskId, time) => {
+    if (taskId) {
+      localStorage.setItem(`taskInitialTime_${taskId}`, time.toString());
+    }
+  };
+
   // Clear saved timer state when timer ends or is reset
   const resetTimer = () => {
     clearInterval(timerIntervalRef.current);
     setIsActive(false);
-    setTimeRemaining(initialTime);
-    setIsOvertime(false);
-    setOvertimeSeconds(0);
-    setTimeSpent(0)
-    // Clear all saved timer states
+    
+    // Clear timer state but NOT the task-specific initial time
     localStorage.removeItem("timerState");
     localStorage.removeItem("timerIsActive");
     localStorage.removeItem("timerIsOvertime");
     localStorage.removeItem("timerOvertimeSeconds");
-        localStorage.removeItem("taskTimeSpent");
+    localStorage.removeItem(`taskTimeSpent_${nowTask.id}`);
+    
+    // Get the initial time for this specific task
+    const recalculatedInitialTime = getInitialTime();
+    setInitialTime(recalculatedInitialTime);
+    setTimeRemaining(recalculatedInitialTime);
+    
+    setIsOvertime(false);
+    setOvertimeSeconds(0);
+    setTimeSpent(0); // Reset time spent for the current task
   };
 
   const endTimer = () => {

@@ -52,7 +52,7 @@
 
   gap: 24px;
   width: 100%;
-  max-width: 1014px;
+  justify-content: space-evenly;
 }
 
 .general-stats-card {
@@ -63,7 +63,7 @@
   gap: 16px;
   flex: 1;
   min-height: 128px;
-  min-width: 185px;
+  /* min-width: 185px; */
   border-radius: 12px;
   background-color: #131517;
   border: 1px solid #232526;
