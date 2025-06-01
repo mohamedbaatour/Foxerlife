@@ -29,6 +29,8 @@ import cricket from "../../src/white-noises/cricket.mp3";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
+
+
 // Define sounds array with their properties
 const sounds = [
   { name: "Light rain", src: lightRainSound, Icon: RainIcon },
@@ -37,6 +39,7 @@ const sounds = [
   { name: "Fireplace", src: fireplace, Icon: FireIcon },
   { name: "Airport buzz", src: airportSound, Icon: PlaneIcon },
 ];
+
 
 
 
@@ -63,26 +66,53 @@ const parseDurationToSeconds = (timeString) => {
 
 // Update the component to accept nowTask prop
 const TimerWhiteNoises = ({ nowTask }) => {
-  // Initialize timer based on nowTask duration and saved state if available
-  const getInitialTime = () => {
-    const savedTime = localStorage.getItem("timerState");
-    if (savedTime) {
-      return parseInt(savedTime);
-    }
-    if (nowTask && nowTask.time) {
-      return parseDurationToSeconds(nowTask.time);
-    }
-    const defaultLength = localStorage.getItem('defaultTaskLength');
-    return defaultLength ? parseInt(defaultLength) * 60 : 1500; // Default 25 minutes (1500 seconds) if not found
-  };
 
+  const [timeSpent, setTimeSpent] = useState(() => {
+    if (!nowTask) return 0;
+    const taskTimeKey = `taskTimeSpent_${nowTask.id}`;
+    const savedTimeSpent = localStorage.getItem(taskTimeKey);
+    return savedTimeSpent ? parseInt(savedTimeSpent) : 0;
+  });
+
+    
+
+  // Initialize timer based on nowTask duration and saved state if available
+const getInitialTime = () => {
+  const savedTime = localStorage.getItem("timerState");
+  if (savedTime) {
+    return parseInt(savedTime);
+  }
+  if (nowTask && nowTask.time) {
+    const totalTime = parseDurationToSeconds(nowTask.time);
+          const taskTimeKey = `taskTimeSpent_${nowTask.id}`;
+          const savedTimeSpent = localStorage.getItem(taskTimeKey);
+          return totalTime - (savedTimeSpent? parseInt(savedTimeSpent) : 0);
+  }
+  const defaultLength = localStorage.getItem("defaultTaskLength");
+  return defaultLength ? parseInt(defaultLength) * 60 : 1500;
+  };
+  
   const [initialTime, setInitialTime] = useState(getInitialTime());
   const [timeRemaining, setTimeRemaining] = useState(getInitialTime());
+
+    const [isActive, setIsActive] = useState(() => {
+      const savedIsActive = localStorage.getItem("timerIsActive");
+      return savedIsActive === "true";
+    });
+
+  useEffect(() => {
+    if (isActive && nowTask) {
+      const savedInitialTime =
+        parseDurationToSeconds(nowTask.time) || initialTime;
+      const currentTimeSpent = savedInitialTime - timeRemaining;
+      const taskTimeKey = `taskTimeSpent_${nowTask.id}`;
+      localStorage.setItem(taskTimeKey, currentTimeSpent.toString());
+      setTimeSpent(currentTimeSpent);
+    }
+  }, [timeRemaining, isActive, nowTask]);
+
   // Load isActive state from localStorage or default to false
-  const [isActive, setIsActive] = useState(() => {
-    const savedIsActive = localStorage.getItem("timerIsActive");
-    return savedIsActive === "true";
-  });
+
   // Add new state for overtime tracking with localStorage persistence
   const [isOvertime, setIsOvertime] = useState(() => {
     const savedIsOvertime = localStorage.getItem("timerIsOvertime");
@@ -226,11 +256,13 @@ const TimerWhiteNoises = ({ nowTask }) => {
     setTimeRemaining(initialTime);
     setIsOvertime(false);
     setOvertimeSeconds(0);
+    setTimeSpent(0)
     // Clear all saved timer states
     localStorage.removeItem("timerState");
     localStorage.removeItem("timerIsActive");
     localStorage.removeItem("timerIsOvertime");
     localStorage.removeItem("timerOvertimeSeconds");
+        localStorage.removeItem("taskTimeSpent");
   };
 
   const endTimer = () => {
@@ -250,13 +282,18 @@ const TimerWhiteNoises = ({ nowTask }) => {
       localStorage.removeItem("timerIsActive");
       localStorage.removeItem("timerIsOvertime");
       localStorage.removeItem("timerOvertimeSeconds");
+
   
       if (nowTask) {
           // Calculate time spent on the task
+          const taskTimeKey = `taskTimeSpent_${nowTask.id}`;
+          
           const timeSpentSeconds = initialTime - timeRemaining + overtimeSeconds;
           const hours = Math.floor(timeSpentSeconds / 3600);
           const minutes = Math.floor((timeSpentSeconds % 3600) / 60);
           const timeSpentFormatted = `${hours}h ${minutes}m`;
+           localStorage.setItem(taskTimeKey, timeSpentSeconds.toString());
+           setTimeSpent(0); 
   
           // Get current date and time
           const now = new Date();
@@ -751,9 +788,6 @@ const TimerWhiteNoises = ({ nowTask }) => {
       localStorage.setItem = originalSetItem;
     };
   }, [isActive, nowTask]);
-  
-  // ... existing code ...
-
 
   return (
     <div className="tasks-main-content-left-column">

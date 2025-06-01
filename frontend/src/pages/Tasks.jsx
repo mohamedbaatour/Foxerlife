@@ -186,7 +186,7 @@ const [taskDuration, setTaskDuration] = useState(() => {
         messages: [
           {
             role: "user",
-            content: `Estimate a realistic time duration for a task titled: "${title}". Respond with just a short duration string like "0h 45m", "1h 00m", or "3h 30m" — do not include any explanation. always include hours and minutes like in the examples.`,
+            content: `Estimate a realistic time duration for a task titled: "${title}". Respond with just a short duration string like "0h 45m", "1h 00m", or "3h 30m" — do not include any explanation. always include hours and minutes like in the examples. if there is time in that task, include it with the format of the example.`,
           },
         ],
         max_tokens: 20,
@@ -224,10 +224,10 @@ const [taskDuration, setTaskDuration] = useState(() => {
 
       const suggestedDuration = await estimateDuration(value);
       setTaskDuration(suggestedDuration);
-      
-              const aiPriority = await generatePriority(value);
-    setTaskPriority(aiPriority);
-    localStorage.setItem("taskPriority", aiPriority);
+
+      const aiPriority = await generatePriority(value);
+      setTaskPriority(aiPriority);
+      localStorage.setItem("taskPriority", aiPriority);
     }, 1000);
   };
 
@@ -238,8 +238,6 @@ const [taskDuration, setTaskDuration] = useState(() => {
       setSuggestionText(""); // Clear the suggestion text
     }
     setTaskDescription(e.target.value); // Update the actual input value
-
-
   };
 
   const handleDescriptionKeyDown = (e) => {
@@ -384,8 +382,9 @@ const [taskDuration, setTaskDuration] = useState(() => {
 
     const style = {
       transform: CSS.Transform.toString(transform),
-      transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)', // Apply transition here
-
+      transition: isDragging
+        ? "none"
+        : "transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)", // Apply transition here
     };
 
     // Add state for menu visibility
@@ -1346,7 +1345,7 @@ const [taskDuration, setTaskDuration] = useState(() => {
   return (
     <motion.div
       className="tasks-page-container"
-      initial={{ y: -50, opacity: 0 }}
+      initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 50, opacity: 0 }}
       transition={{ duration: 0.3 }}
@@ -1454,60 +1453,61 @@ const [taskDuration, setTaskDuration] = useState(() => {
                   >
                     <FilterIcon className="filter-icon" />
                   </button>
-
-                  {isFilterMenuOpen && (
-                    <motion.div
-                      initial={{ y: -20, opacity: 0, filter: "blur(8px)" }}
-                      animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                      exit={{ y: -20, opacity: 0, filter: "blur(8px)" }} // Fade-out animation
-                      transition={{ duration: 0.3 }}
-                      className="filter-menu"
-                    >
-                      <div className="filter-menu-header">
-                        Filter by duration
-                      </div>
-                      <button
-                        className={`filter-option ${
-                          activeFilter === "1m-10m" ? "active" : ""
-                        }`}
-                        onClick={() => applyFilter("1m-10m")}
+                  <AnimatePresence>
+                    {isFilterMenuOpen && (
+                      <motion.div
+                        initial={{ y: -20, opacity: 0, filter: "blur(8px)" }}
+                        animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                        exit={{ y: -20, opacity: 0, filter: "blur(8px)" }} // Fade-out animation
+                        transition={{ duration: 0.3 }}
+                        className="filter-menu"
                       >
-                        1m - 10m
-                      </button>
-                      <button
-                        className={`filter-option ${
-                          activeFilter === "10m-20m" ? "active" : ""
-                        }`}
-                        onClick={() => applyFilter("10m-20m")}
-                      >
-                        10m - 20m
-                      </button>
-                      <button
-                        className={`filter-option ${
-                          activeFilter === "20m-30m" ? "active" : ""
-                        }`}
-                        onClick={() => applyFilter("20m-30m")}
-                      >
-                        20m - 30m
-                      </button>
-                      <button
-                        className={`filter-option ${
-                          activeFilter === "30m+" ? "active" : ""
-                        }`}
-                        onClick={() => applyFilter("30m+")}
-                      >
-                        30m+
-                      </button>
-                      {activeFilter && (
+                        <div className="filter-menu-header">
+                          Filter by duration
+                        </div>
                         <button
-                          className="filter-option clear"
-                          onClick={() => applyFilter(null)}
+                          className={`filter-option ${
+                            activeFilter === "1m-10m" ? "active" : ""
+                          }`}
+                          onClick={() => applyFilter("1m-10m")}
                         >
-                          Clear filter
+                          1m - 10m
                         </button>
-                      )}
-                    </motion.div>
-                  )}
+                        <button
+                          className={`filter-option ${
+                            activeFilter === "10m-20m" ? "active" : ""
+                          }`}
+                          onClick={() => applyFilter("10m-20m")}
+                        >
+                          10m - 20m
+                        </button>
+                        <button
+                          className={`filter-option ${
+                            activeFilter === "20m-30m" ? "active" : ""
+                          }`}
+                          onClick={() => applyFilter("20m-30m")}
+                        >
+                          20m - 30m
+                        </button>
+                        <button
+                          className={`filter-option ${
+                            activeFilter === "30m+" ? "active" : ""
+                          }`}
+                          onClick={() => applyFilter("30m+")}
+                        >
+                          30m+
+                        </button>
+                        {activeFilter && (
+                          <button
+                            className="filter-option clear"
+                            onClick={() => applyFilter(null)}
+                          >
+                            Clear filter
+                          </button>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
               <button className="add-task-CTA" onClick={openModal}>
@@ -1547,19 +1547,18 @@ const [taskDuration, setTaskDuration] = useState(() => {
                 items={laterTasks.map((task) => task.id)}
                 strategy={verticalListSortingStrategy}
               >
-                {laterTasks.length > 0 ? (laterTasks.map((task) => (
-                  <SortableItem key={task.id} task={task} />
-                  )
-                        ))
-                          : (
-                            <div className='now-tasks-no-task'>
-                              <LogoIcon
-                                className="now-tasks-no-task-logo"
-                              />
-                              <p className="now-tasks-no-task-title">Nothing left to do — go enjoy a snack!</p>
-                            </div>
-              )
-                      }
+                {laterTasks.length > 0 ? (
+                  laterTasks.map((task) => (
+                    <SortableItem key={task.id} task={task} />
+                  ))
+                ) : (
+                  <div className="now-tasks-no-task">
+                    <LogoIcon className="now-tasks-no-task-logo" />
+                    <p className="now-tasks-no-task-title">
+                      Nothing left to do — go enjoy a snack!
+                    </p>
+                  </div>
+                )}
               </SortableContext>
             </DndContext>
           )}
@@ -1606,7 +1605,9 @@ const [taskDuration, setTaskDuration] = useState(() => {
                   ) : (
                     <div className="now-tasks-no-task">
                       <LogoIcon className="now-tasks-no-task-logo" />
-                      <p className="now-tasks-no-task-title">No retired tasks — keep on moving!</p>
+                      <p className="now-tasks-no-task-title">
+                        No retired tasks — keep on moving!
+                      </p>
                     </div>
                   )}
                 </SortableContext>
