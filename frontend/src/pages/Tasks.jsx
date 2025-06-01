@@ -536,111 +536,125 @@ const [taskDuration, setTaskDuration] = useState(() => {
         {...attributes}
         className={isDragging ? "is-dragging" : ""} // Add class when dragging
       >
-
-          <div
-
-            className={`later-tasks-card ${isMenuOpen ? "expanded" : ""}`}
-            key={task.id}
-            id={`task-${task.id}`}
-          >
-            <div className="later-tasks-card-top-row">
-              <div className="later-tasks-card-emoji-text-container">
-                <div className="later-tasks-card-emoji-container">
-                  {/* Apply listeners and cursor style to the SixDotsIcon */}
-                  <SixDotsIcon
-                    className="later-tasks-card-emoji-dots"
-                    {...listeners}
-                    style={{ cursor: "grab" }}
+        <div
+          className={`later-tasks-card ${isMenuOpen ? "expanded" : ""}`}
+          key={task.id}
+          id={`task-${task.id}`}
+        >
+          <div className="later-tasks-card-top-row">
+            <div className="later-tasks-card-emoji-text-container">
+              <div className="later-tasks-card-emoji-container">
+                {/* Apply listeners and cursor style to the SixDotsIcon */}
+                <SixDotsIcon
+                  className="later-tasks-card-emoji-dots"
+                  {...listeners}
+                  style={{ cursor: "grab" }}
+                />
+                {typeof task.emoji === "string" &&
+                task.emoji.startsWith("http") ? (
+                  <img
+                    className="later-tasks-card-emoji"
+                    src={task.emoji}
+                    alt="emoji"
                   />
-                  {typeof task.emoji === "string" &&
-                  task.emoji.startsWith("http") ? (
-                    <img
-                      className="later-tasks-card-emoji"
-                      src={task.emoji}
-                      alt="emoji"
-                    />
-                  ) : (
-                    <span className="later-tasks-card-emoji-text">
-                      {task.emoji}
-                    </span>
-                  )}
-                </div>
-                <div className="later-tasks-card-text">
-                  <div className="later-tasks-card-title-div">
-                    <p className="later-tasks-card-title">{task.title}</p>
-                    <p className="later-tasks-card-time">{task.time}</p>
-                  </div>
-                  <p className="later-tasks-card-description">
-                    {isMenuOpen ||
-                    task.description.length <= maxDescriptionLength
-                      ? task.description
-                      : `${task.description.substring(
-                          0,
-                          maxDescriptionLength
-                        )}...`}
-                  </p>
-                </div>
+                ) : (
+                  <span className="later-tasks-card-emoji-text">
+                    {task.emoji}
+                  </span>
+                )}
               </div>
-              <ArrowDownIcon
-                className={`tasks-arrow-down-icon ${
-                  isMenuOpen ? "rotated" : ""
-                }`}
-                onClick={toggleMenu}
-              />
-            </div>
-
-            {/* Conditionally render the menu */}
-            {isMenuOpen && (
-              <div className="task-card-menu">
-                {/* Add onClick handler to the "move to Now" button */}
-                <button
-                  className="menu-item"
-                  onClick={() => handleMoveToNow(task.id)}
-                >
-                  <NowIcon className="menu-icon" /> move to Now
-                </button>
-                <button
-                  className="menu-item"
-                  onClick={() => handleArchiveTask(task.id)}
-                >
-                  <ArchiveIcon className="menu-icon" /> archive
-                </button>
-                <div style={{ position: "relative" }}>
-                  <button
-                    className="menu-item delete"
-                    onClick={showDeleteConfirm}
+              <div className="later-tasks-card-text">
+                <div className="later-tasks-card-title-div">
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                    }}
                   >
-                    <BinIcon className="menu-icon" /> Delete
-                  </button>
-
-                  {/* Delete confirmation popup */}
-                  {showDeleteConfirmation && (
                     <div
-                      className={`delete-confirmation-popup ${
-                        isConfirmationClosing ? "fading-out" : ""
-                      }`}
-                    >
-                      <p className="delete-confirmation-text">Are you sure?</p>
-                      <div className="delete-confirmation-buttons">
-                        <button
-                          className="cancel-delete-button"
-                          onClick={hideDeleteConfirm}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          className="confirm-delete-button"
-                          onClick={() => confirmDelete(task.id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                      style={{
+                        backgroundColor:
+                          task.priority === "High"
+                            ? "#801220"
+                            : task.priority === "Medium"
+                            ? "#675C21"
+                            : "#232526",
+                      }}
+                      className="task-priority-indecator"
+                    ></div>
+                    <p className="later-tasks-card-title">{task.title}</p>
+                  </div>
+                  <p className="later-tasks-card-time">{task.time}</p>
                 </div>
+                <p className="later-tasks-card-description">
+                  {isMenuOpen || task.description.length <= maxDescriptionLength
+                    ? task.description
+                    : `${task.description.substring(
+                        0,
+                        maxDescriptionLength
+                      )}...`}
+                </p>
               </div>
-            )}
+            </div>
+            <ArrowDownIcon
+              className={`tasks-arrow-down-icon ${isMenuOpen ? "rotated" : ""}`}
+              onClick={toggleMenu}
+            />
           </div>
+
+          {/* Conditionally render the menu */}
+          {isMenuOpen && (
+            <div className="task-card-menu">
+              {/* Add onClick handler to the "move to Now" button */}
+              <button
+                className="menu-item"
+                onClick={() => handleMoveToNow(task.id)}
+              >
+                <NowIcon className="menu-icon" /> move to Now
+              </button>
+              <button
+                className="menu-item"
+                onClick={() => handleArchiveTask(task.id)}
+              >
+                <ArchiveIcon className="menu-icon" /> archive
+              </button>
+              <div style={{ position: "relative" }}>
+                <button
+                  className="menu-item delete"
+                  onClick={showDeleteConfirm}
+                >
+                  <BinIcon className="menu-icon" /> Delete
+                </button>
+
+                {/* Delete confirmation popup */}
+                {showDeleteConfirmation && (
+                  <div
+                    className={`delete-confirmation-popup ${
+                      isConfirmationClosing ? "fading-out" : ""
+                    }`}
+                  >
+                    <p className="delete-confirmation-text">Are you sure?</p>
+                    <div className="delete-confirmation-buttons">
+                      <button
+                        className="cancel-delete-button"
+                        onClick={hideDeleteConfirm}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="confirm-delete-button"
+                        onClick={() => confirmDelete(task.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     );
   };
@@ -1273,7 +1287,26 @@ const [taskDuration, setTaskDuration] = useState(() => {
               </div>
               <div className="later-tasks-card-text">
                 <div className="later-tasks-card-title-div">
-                  <p className="later-tasks-card-title">{task.title}</p>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        backgroundColor:
+                          task.priority === "High"
+                            ? "#801220"
+                            : task.priority === "Medium"
+                            ? "#675C21"
+                            : "#232526",
+                      }}
+                      className="task-priority-indecator"
+                    ></div>
+                    <p className="later-tasks-card-title">{task.title}</p>
+                  </div>
                   <p className="later-tasks-card-time">{task.time}</p>
                 </div>
                 <p className="later-tasks-card-description">
@@ -1398,7 +1431,26 @@ const [taskDuration, setTaskDuration] = useState(() => {
                 )}
                 <div className="now-tasks-card-text">
                   <div className="now-tasks-card-title-div">
-                    <p className="now-tasks-card-title">{nowTask.title}</p>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          backgroundColor:
+                            nowTask.priority === "High"
+                              ? "#801220"
+                              : nowTask.priority === "Medium"
+                              ? "#675C21"
+                              : "#232526",
+                        }}
+                        className="task-priority-indecator"
+                      ></div>
+                      <p className="later-tasks-card-title">{nowTask.title}</p>
+                    </div>
                     <p className="now-tasks-card-time">{nowTask.time}</p>
                   </div>
                   <p className="now-tasks-card-description">

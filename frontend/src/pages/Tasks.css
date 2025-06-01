@@ -243,6 +243,12 @@ background-color: transparent;
   height: 48px;
 }
 
+.task-priority-indecator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
 .later-tasks-card-title {
   color: #f1f1f1;
   font-size: 18px;
