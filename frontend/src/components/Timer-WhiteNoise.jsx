@@ -291,95 +291,102 @@ const getInitialTime = () => {
   };
 
   const endTimer = () => {
-      clearInterval(timerIntervalRef.current);
-      setIsActive(false);
-      setIsOvertime(false);
-      setOvertimeSeconds(0);
-      
-      // Set timer to default task length
-      const defaultLength = localStorage.getItem('defaultTaskLength');
-      const newInitialTime = defaultLength ? parseInt(defaultLength) * 60 : 1500; // Default to 25 minutes if not found
-      setInitialTime(newInitialTime);
-      setTimeRemaining(newInitialTime);
-  
-      // Clear all saved timer states
-      localStorage.removeItem("timerState");
-      localStorage.removeItem("timerIsActive");
-      localStorage.removeItem("timerIsOvertime");
-      localStorage.removeItem("timerOvertimeSeconds");
+    clearInterval(timerIntervalRef.current);
+    setIsActive(false);
+    setIsOvertime(false);
+    setOvertimeSeconds(0);
 
-  
-      if (nowTask) {
-          // Calculate time spent on the task
-          const taskTimeKey = `taskTimeSpent_${nowTask.id}`;
-          
-          const timeSpentSeconds = initialTime - timeRemaining + overtimeSeconds;
-          const hours = Math.floor(timeSpentSeconds / 3600);
-          const minutes = Math.floor((timeSpentSeconds % 3600) / 60);
-          const timeSpentFormatted = `${hours}h ${minutes}m`;
-           localStorage.setItem(taskTimeKey, timeSpentSeconds.toString());
-           setTimeSpent(0); 
-  
-          // Get current date and time
-          const now = new Date();
-          const timeString = now.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-          });
-  
-          // Create completed task object
-          const completedTask = {
-              ...nowTask,
-              completedAt: timeString,
-              timeSpent: timeSpentFormatted,
-              completedDate: now.toISOString(),
-              id: nowTask.id + "-" + Date.now(), // Ensure unique ID
-          };
-  
-          // Save to completedTasks
-          const existingCompletedTasks = JSON.parse(
-              localStorage.getItem("completedTasks") || "[]"
-          );
-          const updatedCompletedTasks = [completedTask, ...existingCompletedTasks];
-          localStorage.setItem(
-              "completedTasks",
-              JSON.stringify(updatedCompletedTasks)
-          );
-  
-          // Save to archivedTasks (using the same completedTask object)
-          const existingArchivedTasks = JSON.parse(
-              localStorage.getItem("archivedTasks") || "[]"
-          );
-          const updatedArchivedTasks = [completedTask, ...existingArchivedTasks];
-          localStorage.setItem(
-              "archivedTasks",
-              JSON.stringify(updatedArchivedTasks)
-          );
-  
-          // Clear nowTask from localStorage
-          localStorage.removeItem("nowTask");
-  
-          // Show notification
-          const notificationId = Date.now();
-          const newNotification = {
-              id: notificationId,
-              message: "Task completed and archived!", // Updated message
-          };
-  
-          window.location.reload();
-  
-  
-  
-          notificationTimeoutsRef.current[notificationId] = setTimeout(() => {
-              setNotifications((prevNotifications) =>
-                  prevNotifications.filter(
-                      (notification) => notification.id !== notificationId
-                  )
-              );
-              delete notificationTimeoutsRef.current[notificationId];
-          }, 2000);
+    // Set timer to default task length
+    const defaultLength = localStorage.getItem("defaultTaskLength");
+    const newInitialTime = defaultLength ? parseInt(defaultLength) * 60 : 1500; // Default to 25 minutes if not found
+    setInitialTime(newInitialTime);
+    setTimeRemaining(newInitialTime);
+
+    // Clear all saved timer states
+    localStorage.removeItem("timerState");
+    localStorage.removeItem("timerIsActive");
+    localStorage.removeItem("timerIsOvertime");
+    localStorage.removeItem("timerOvertimeSeconds");
+
+    if (nowTask) {
+      // Calculate time spent on the task
+      const taskTimeKey = `taskTimeSpent_${nowTask.id}`;
+      const timeSpentSeconds = initialTime - timeRemaining + overtimeSeconds;
+      const hours = Math.floor(timeSpentSeconds / 3600);
+      const minutes = Math.floor((timeSpentSeconds % 3600) / 60);
+      const timeSpentFormatted = `${hours}h ${minutes}m`;
+      localStorage.setItem(taskTimeKey, timeSpentSeconds.toString());
+      setTimeSpent(0);
+
+      // Get current date and time
+      const now = new Date();
+      const timeString = now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      // Create completed task object
+      const completedTask = {
+        ...nowTask,
+        completedAt: timeString,
+        timeSpent: timeSpentFormatted,
+        completedDate: now.toISOString(),
+        id: nowTask.id + "-" + Date.now(), // Ensure unique ID
+      };
+
+      // Save to completedTasks
+      const existingCompletedTasks = JSON.parse(
+        localStorage.getItem("completedTasks") || "[]"
+      );
+      const updatedCompletedTasks = [completedTask, ...existingCompletedTasks];
+      localStorage.setItem(
+        "completedTasks",
+        JSON.stringify(updatedCompletedTasks)
+      );
+
+      // Save to archivedTasks (using the same completedTask object)
+      const existingArchivedTasks = JSON.parse(
+        localStorage.getItem("archivedTasks") || "[]"
+      );
+      const updatedArchivedTasks = [completedTask, ...existingArchivedTasks];
+      localStorage.setItem(
+        "archivedTasks",
+        JSON.stringify(updatedArchivedTasks)
+      );
+
+      // Clear nowTask from localStorage
+      localStorage.removeItem("nowTask");
+
+      // Show notification
+      const notificationId = Date.now();
+      const newNotification = {
+        id: notificationId,
+        message: "Task completed and archived!", // Updated message
+      };
+
+      notificationTimeoutsRef.current[notificationId] = setTimeout(() => {
+        setNotifications((prevNotifications) =>
+          prevNotifications.filter(
+            (notification) => notification.id !== notificationId
+          )
+        );
+        delete notificationTimeoutsRef.current[notificationId];
+      }, 2000);
+    }
+
+    // Send notification when overtime is off
+    const autoArchive = localStorage.getItem("autoArchive");
+    if (autoArchive === "on") {
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("Timer Ended", {
+          body: "The timer has ended.",
+          icon: "../icones/icon.svg",
+        });
       }
+    }
+    window.location.reload();
   };
+
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
