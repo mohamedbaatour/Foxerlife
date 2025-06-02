@@ -900,6 +900,17 @@ const [taskDuration, setTaskDuration] = useState(() => {
     // If validation fails, return early
     if (!isValid) return;
 
+    // Request notification permission if not already granted
+    if (Notification.permission !== 'granted') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                console.log('Notification permission granted.');
+            } else {
+                console.log('Notification permission denied.');
+            }
+        });
+    }
+
     // Create new task object
     const newTask = {
       id: Date.now(), // Use timestamp as unique ID

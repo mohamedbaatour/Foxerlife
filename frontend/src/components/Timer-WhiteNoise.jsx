@@ -151,7 +151,7 @@ const getInitialTime = () => {
     if (!("Notification" in window)) {
       console.log("This browser does not support desktop notification");
     } else if (Notification.permission !== "granted") {
-      Notification.requestPermission();
+      // Notification.requestPermission(); // Removed as per plan
     }
   }, []);
 
