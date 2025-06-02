@@ -17,6 +17,16 @@ const Settings = () => {
       const savedDefaultTaskLength = localStorage.getItem("defaultTaskLength");
       return savedDefaultTaskLength ? savedDefaultTaskLength : "25"; // Default to 25m if not found
     });
+    
+    const [overtime, setOvertime] = useState(() => {
+      const savedOvertime = localStorage.getItem("overtime");
+      return savedOvertime ? savedOvertime : "on"; // Default to on if not found
+    });
+    
+    const [autoArchive, setAutoArchive] = useState(() => {
+      const savedAutoArchive = localStorage.getItem("autoArchive");
+      return savedAutoArchive ? savedAutoArchive : "off"; // Default to off if not found
+    });
 
     useEffect(() => {
       localStorage.setItem("timeFormat", timeFormat);
@@ -25,6 +35,14 @@ const Settings = () => {
     useEffect(() => {
       localStorage.setItem("defaultTaskLength", defaultTaskLength);
     }, [defaultTaskLength]);
+    
+    useEffect(() => {
+      localStorage.setItem("overtime", overtime);
+    }, [overtime]);
+    
+    useEffect(() => {
+      localStorage.setItem("autoArchive", autoArchive);
+    }, [autoArchive]);
 
     const handleTimeFormatChange = (event) => {
       setTimeFormat(event.target.value);
@@ -33,6 +51,14 @@ const Settings = () => {
 
     const handleDefaultTaskLengthChange = (event) => {
       setDefaultTaskLength(event.target.value);
+    };
+    
+    const handleOvertimeChange = (event) => {
+      setOvertime(event.target.value);
+    };
+    
+    const handleAutoArchiveChange = (event) => {
+      setAutoArchive(event.target.value);
     };
 
     return (
@@ -70,11 +96,26 @@ const Settings = () => {
               <option value="50">50m</option>
             </select>
           </div>
-          <div className="settings-option">
+          {/* <div className="settings-option">
             <p className="settings-option-text">Overtime</p>
-            <select className="settings-dropdown">
+            <select 
+              className="settings-dropdown"
+              value={overtime}
+              onChange={handleOvertimeChange}
+            >
               <option value="on">ON</option>
               <option value="off">OFF</option>
+            </select>
+          </div> */}
+          <div className="settings-option">
+            <p className="settings-option-text">Overtime</p>
+            <select 
+              className="settings-dropdown"
+              value={autoArchive}
+              onChange={handleAutoArchiveChange}
+            >
+              <option value="on">OFF</option>
+              <option value="off">ON</option>
             </select>
           </div>
         </div>

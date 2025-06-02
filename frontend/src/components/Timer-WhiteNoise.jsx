@@ -166,6 +166,14 @@ const getInitialTime = () => {
       clearInterval(timerIntervalRef.current);
       setIsOvertime(true);
 
+            const autoArchive = localStorage.getItem("autoArchive");
+      
+      // If auto-archive is enabled, call endTimer immediately
+      if (autoArchive === "on") {
+        endTimer();
+        return;
+      }
+
       // Trigger desktop notification
       if ("Notification" in window && Notification.permission === "granted") {
         new Notification("Timer Finished!", {
@@ -199,6 +207,10 @@ const getInitialTime = () => {
             setOvertimeSeconds(0); // Reset overtime counter
             // Optionally, you might want to reset the main timer or show a message here
             // setTimeRemaining(initialTime); // Example: reset to initial time
+                        const autoArchive = localStorage.getItem("autoArchive");
+                        if (autoArchive === "on") {
+                          endTimer();
+                        }
           }
           return newSeconds;
         });
