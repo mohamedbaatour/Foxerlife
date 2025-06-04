@@ -36,40 +36,41 @@ const Tasks = () => {
   // State for form inputs
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState(
-    localStorage.getItem('taskTitle') || ""
+    localStorage.getItem("taskTitle") || ""
   );
   const [taskDescription, setTaskDescription] = useState(
-    localStorage.getItem('taskDescription') || ""
+    localStorage.getItem("taskDescription") || ""
   );
   const [isDescriptionSuggested, setIsDescriptionSuggested] = useState(false);
-  const [suggestionText, setSuggestionText] = useState(''); // New state for suggestion text
+  const [suggestionText, setSuggestionText] = useState(""); // New state for suggestion text
 
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const debounceTimeout = useRef(null);
 
-const [taskDuration, setTaskDuration] = useState(() => {
-  const defaultTaskLength = localStorage.getItem("defaultTaskLength");
-  if (defaultTaskLength === "25") {
-    return "0h 25m";
-  } else if (defaultTaskLength === "50") {
-    return "0h 50m";
-  }
-  return "3h 45m"; // Fallback value
-});
+  const [taskDuration, setTaskDuration] = useState(() => {
+    const defaultTaskLength = localStorage.getItem("defaultTaskLength");
+    if (defaultTaskLength === "25") {
+      return "0h 25m";
+    } else if (defaultTaskLength === "50") {
+      return "0h 50m";
+    }
+    return "3h 45m"; // Fallback value
+  });
   const [taskPriority, setTaskPriority] = useState(
-    localStorage.getItem('taskPriority') || "Low"
+    localStorage.getItem("taskPriority") || "Low"
   );
   const [taskEmoji, setTaskEmoji] = useState(
-    localStorage.getItem('taskEmoji') || "😃"
+    localStorage.getItem("taskEmoji") || "😃"
   );
   const [taskTag, setTaskTag] = useState(() => {
-    const storedTag = localStorage.getItem('taskTag');
-    return storedTag ? JSON.parse(storedTag) : {
-      name: "Personal life",
-      color: "#6366F1",
-    };
+    const storedTag = localStorage.getItem("taskTag");
+    return storedTag
+      ? JSON.parse(storedTag)
+      : {
+          name: "Personal life",
+          color: "#6366F1",
+        };
   });
-
 
   // Add these new states and refs for notifications
   const [notifications, setNotifications] = useState([]);
@@ -749,6 +750,8 @@ const [taskDuration, setTaskDuration] = useState(() => {
   const [isClosing, setIsClosing] = useState(false);
   const modalContentRef = useRef(null);
 
+  // Effect for 'Ctrl + N' key press to open modal
+
   // Search functionality
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -789,13 +792,28 @@ const [taskDuration, setTaskDuration] = useState(() => {
       }
     }, 0);
 
-    window.dispatchEvent(new CustomEvent('modal-state-change', {
-      detail: { type: 'modal', isOpen: true }
-    }));
+    window.dispatchEvent(
+      new CustomEvent("modal-state-change", {
+        detail: { type: "modal", isOpen: true },
+      })
+    );
 
     setShowModal(true);
     setIsClosing(false);
   };
+
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key === "t") {
+        openModal();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [openModal]); // Depend on openModal to ensure it's up-to-date
 
   const closeModal = (shouldReset = false) => {
     setIsClosing(true);
@@ -816,9 +834,11 @@ const [taskDuration, setTaskDuration] = useState(() => {
         setSuggestionText("");
       }
     }, 300); // Match this with the animation duration (0.3s)
-    window.dispatchEvent(new CustomEvent('modal-state-change', {
-      detail: { type: 'modal', isOpen: false }
-    }));
+    window.dispatchEvent(
+      new CustomEvent("modal-state-change", {
+        detail: { type: "modal", isOpen: false },
+      })
+    );
   };
 
   // Add a function to show notifications
@@ -908,14 +928,14 @@ const [taskDuration, setTaskDuration] = useState(() => {
     if (!isValid) return;
 
     // Request notification permission if not already granted
-    if (Notification.permission !== 'granted') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                console.log('Notification permission granted.');
-            } else {
-                console.log('Notification permission denied.');
-            }
-        });
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          console.log("Notification permission granted.");
+        } else {
+          console.log("Notification permission denied.");
+        }
+      });
     }
 
     // Create new task object
@@ -1585,10 +1605,14 @@ const [taskDuration, setTaskDuration] = useState(() => {
                   </AnimatePresence>
                 </div>
               </div>
-              <button className="add-task-CTA" onClick={openModal}>
-                <PlusIcon className="add-task-icon" />
-                <p className="add-task-text">Add Task</p>
-              </button>
+
+              <div className="tooltip-wrap">
+                <div className="tooltip-button">T</div>
+                <button className="add-task-CTA" onClick={openModal}>
+                  <PlusIcon className="add-task-icon" />
+                  <p className="add-task-text">Add Task</p>
+                </button>
+              </div>
             </div>
           </div>
 

@@ -74,6 +74,9 @@ const TimerWhiteNoises = ({ nowTask }) => {
     return savedTimeSpent ? parseInt(savedTimeSpent) : 0;
   });
 
+  // Add a new state for the shortcut popup visibility
+  const [showShortcutPopup, setShowShortcutPopup] = useState(false);
+
     
 
   // Initialize timer based on nowTask duration and saved state if available
@@ -228,6 +231,19 @@ const getInitialTime = () => {
     if (isOvertime) return;
     setIsActive(!isActive);
   };
+  // Effect for 'Enter' key press to toggle timer
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key === "Enter") {
+        toggleTimer();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [toggleTimer]); // Depend on toggleTimer to ensure it's up-to-date
 
   // Save timer state when it changes
   useEffect(() => {
@@ -944,16 +960,19 @@ const getInitialTime = () => {
           <button onClick={resetTimer} className="timer-button reset-button">
             <ResetIcon className="reset-icon" /> Reset
           </button>
-          <button
-            onClick={toggleTimer}
-            className={`start-pause-button ${isActive ? "pause" : "start"} ${
-              isOvertime ? "disabled" : ""
-            }`}
-            disabled={isOvertime}
-          >
-            {isActive ? <PauseIcon /> : <StartIcon className="start-icon" />}{" "}
-            {isActive ? "Pause" : "Start"}{" "}
-          </button>
+          <div className="tooltip-wrap">
+            <div className="tooltip-button">Enter</div>
+            <button
+              onClick={toggleTimer}
+              className={`start-pause-button ${isActive ? "pause" : "start"} ${
+                isOvertime ? "disabled" : ""
+              }`}
+              disabled={isOvertime}
+            >
+              {isActive ? <PauseIcon /> : <StartIcon className="start-icon" />}{" "}
+              {isActive ? "Pause" : "Start"}{" "}
+            </button>
+          </div>
           <button
             onClick={endTimer}
             className={`timer-button end-button ${
