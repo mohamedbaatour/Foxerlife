@@ -789,6 +789,10 @@ const [taskDuration, setTaskDuration] = useState(() => {
       }
     }, 0);
 
+    window.dispatchEvent(new CustomEvent('modal-state-change', {
+      detail: { type: 'modal', isOpen: true }
+    }));
+
     setShowModal(true);
     setIsClosing(false);
   };
@@ -812,6 +816,9 @@ const [taskDuration, setTaskDuration] = useState(() => {
         setSuggestionText("");
       }
     }, 300); // Match this with the animation duration (0.3s)
+    window.dispatchEvent(new CustomEvent('modal-state-change', {
+      detail: { type: 'modal', isOpen: false }
+    }));
   };
 
   // Add a function to show notifications

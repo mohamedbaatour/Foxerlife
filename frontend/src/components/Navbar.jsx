@@ -208,18 +208,21 @@ const Navbar = () => {
 
       <ul className="navbar-center-section">
         <li className="navbar-menu-item">
+          <div className="tooltip">1</div>
           <NavLink to="/" className={getLinkClassName}>
             <TaskIcon className="navbar-menu-icon" />
             Tasks
           </NavLink>
         </li>
         <li className="navbar-menu-item">
+          <div className="tooltip">2</div>
           <NavLink to="/stats" className={getLinkClassName}>
             <StatsIcon className="navbar-menu-icon" />
             Stats
           </NavLink>
         </li>
         <li className="navbar-menu-item">
+          <div className="tooltip">3</div>
           <NavLink to="/settings" className={getLinkClassName}>
             <SettingsIcon className="navbar-menu-icon" />
             Settings

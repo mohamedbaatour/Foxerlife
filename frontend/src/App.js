@@ -14,9 +14,12 @@ import Tasks from "./pages/Tasks";
 import Stats from "./pages/Stats";
 import Settings from "./pages/Settings";
 import { AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 function App() {
   const location = useLocation();
+  const navigate = useNavigate(); // Initialize useNavigate
+    const [isModalOpen, setIsModalOpen] = useState(false); 
 
   // Add state for nowTask at App level
   const [nowTask, setNowTask] = useState(() => {
@@ -46,6 +49,47 @@ function App() {
       window.removeEventListener("nowTaskUpdated", handleNowTaskUpdate);
     };
   }, []);
+
+  // Effect for keyboard shortcuts
+  React.useEffect(() => {
+    const handleKeyPress = (event) => {
+          if (isModalOpen) return;
+      switch (event.key) {
+        case '1':
+          navigate('/');
+          break;
+        case '2':
+          navigate('/stats');
+          break;
+        case '3':
+          navigate('/settings');
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [navigate, isModalOpen]); // Depend on navigate to ensure the effect re-runs if navigate changes
+
+    React.useEffect(() => {
+      const handleModalStateChange = (e) => {
+        if (e.detail.type === "modal") {
+          setIsModalOpen(e.detail.isOpen);
+        }
+      };
+
+      window.addEventListener("modal-state-change", handleModalStateChange);
+      return () =>
+        window.removeEventListener(
+          "modal-state-change",
+          handleModalStateChange
+        );
+    }, []);
 
   return (
     <div className="App">

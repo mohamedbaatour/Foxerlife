@@ -67,6 +67,34 @@
     transition: fill 0.2s ease-in-out;
 }
 
+.navbar-menu-item {
+    position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  background-color: rgba(28, 28, 28, 0.9);
+  color: #fff;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 4px;
+  position: absolute;
+  bottom: -180%; /* Above the icon */
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  white-space: nowrap;
+  font-size: 13px;
+  z-index: 100;
+}
+
+.navbar-menu-item:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
 
 
 .navbar-menu-link {
