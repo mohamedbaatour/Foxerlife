@@ -391,6 +391,15 @@ const Tasks = () => {
     // Add state for menu visibility
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+      const handleContentChange = (e, field) => {
+        const updatedValue = e.target.innerText;
+        const updatedTasks = laterTasks.map((t) =>
+          t.id === task.id ? { ...t, [field]: updatedValue } : t
+        );
+        setLaterTasks(updatedTasks);
+        localStorage.setItem("laterTasks", JSON.stringify(updatedTasks));
+      };
+
     // Toggle menu visibility
     // For SortableItem component
     const toggleMenu = () => {
@@ -584,11 +593,27 @@ const Tasks = () => {
                       }}
                       className="task-priority-indecator"
                     ></div>
-                    <p className="later-tasks-card-title">{task.title}</p>
+                    <p
+                      suppressContentEditableWarning
+                      contentEditable
+                      onBlur={(e) => handleContentChange(e, "title")}
+                      className="later-tasks-card-title"
+                    >
+                      {task.title}
+                    </p>
                   </div>
-                  <p className="later-tasks-card-time">{task.time}</p>
+                  <p
+                    className="later-tasks-card-time"
+                  >
+                    {task.time}
+                  </p>
                 </div>
-                <p className="later-tasks-card-description">
+                <p
+                  className="later-tasks-card-description"
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange(e, "description")}
+                >
                   {isMenuOpen || task.description.length <= maxDescriptionLength
                     ? task.description
                     : `${task.description.substring(
@@ -804,7 +829,7 @@ const Tasks = () => {
 
   useEffect(() => {
     const handleKeyPress = (event) => {
-      if (event.key === "t") {
+      if (event.key === "t" || event.key === "T") {
         openModal();
       }
     };

@@ -234,8 +234,7 @@ const getInitialTime = () => {
   // Effect for 'Enter' key press to toggle timer
   useEffect(() => {
     const handleKeyPress = (event) => {
-      if (event.key === " ") {
-        event.preventDefault();
+      if ((event.shiftKey && event.key === "S") || event.key === "s") {
         toggleTimer();
       }
     };
@@ -964,7 +963,7 @@ const getInitialTime = () => {
             <ResetIcon className="reset-icon" /> Reset
           </button>
           <div className="tooltip-wrap">
-            <div className="tooltip-button">Space</div>
+            <div className="tooltip-button">Shift + S</div>
             <button
               onClick={toggleTimer}
               className={`start-pause-button ${isActive ? "pause" : "start"} ${
