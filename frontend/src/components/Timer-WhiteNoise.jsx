@@ -234,7 +234,8 @@ const getInitialTime = () => {
   // Effect for 'Enter' key press to toggle timer
   useEffect(() => {
     const handleKeyPress = (event) => {
-      if (event.key === "Enter") {
+      if (event.key === " ") {
+        event.preventDefault();
         toggleTimer();
       }
     };
@@ -269,7 +270,7 @@ const getInitialTime = () => {
       const newTime = parseDurationToSeconds(nowTask.time);
       setInitialTime(newTime);
       setTimeRemaining(newTime);
-          saveTaskInitialTime(nowTask.id, newTime);
+      saveTaskInitialTime(nowTask.id, newTime);
       // Clear all saved timer states when new task is added
       localStorage.removeItem("timerState");
       localStorage.removeItem("timerIsActive");
@@ -288,19 +289,19 @@ const getInitialTime = () => {
   const resetTimer = () => {
     clearInterval(timerIntervalRef.current);
     setIsActive(false);
-    
+
     // Clear timer state but NOT the task-specific initial time
     localStorage.removeItem("timerState");
     localStorage.removeItem("timerIsActive");
     localStorage.removeItem("timerIsOvertime");
     localStorage.removeItem("timerOvertimeSeconds");
     localStorage.removeItem(`taskTimeSpent_${nowTask.id}`);
-    
+
     // Get the initial time for this specific task
     const recalculatedInitialTime = getInitialTime();
     setInitialTime(recalculatedInitialTime);
     setTimeRemaining(recalculatedInitialTime);
-    
+
     setIsOvertime(false);
     setOvertimeSeconds(0);
     setTimeSpent(0); // Reset time spent for the current task
@@ -402,7 +403,6 @@ const getInitialTime = () => {
     }
     window.location.reload();
   };
-
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -780,7 +780,6 @@ const getInitialTime = () => {
     // localStorage.removeItem("timerIsActive");
     // localStorage.removeItem("timerIsOvertime");
     // localStorage.removeItem("timerOvertimeSeconds");
-
   }, [nowTask, isActive, isOvertime]);
 
   useEffect(() => {
@@ -799,40 +798,44 @@ const getInitialTime = () => {
   useEffect(() => {
     // Only update if timer is not active and there's no current task
     const handleStorageChange = (e) => {
-      if (e.key === 'defaultTaskLength' && !isActive && !nowTask) {
+      if (e.key === "defaultTaskLength" && !isActive && !nowTask) {
         const newDefaultLength = e.newValue;
-        const newTime = newDefaultLength ? parseInt(newDefaultLength) * 60 : 1500;
+        const newTime = newDefaultLength
+          ? parseInt(newDefaultLength) * 60
+          : 1500;
         setInitialTime(newTime);
         setTimeRemaining(newTime);
       }
     };
-    
-    window.addEventListener('storage', handleStorageChange);
-    
+
+    window.addEventListener("storage", handleStorageChange);
+
     // Also add a direct event listener for changes made in the same window
     const originalSetItem = localStorage.setItem;
-    localStorage.setItem = function(key, value) {
-      const event = new Event('localStorageChange');
+    localStorage.setItem = function (key, value) {
+      const event = new Event("localStorageChange");
       event.key = key;
       event.newValue = value;
       window.dispatchEvent(event);
       originalSetItem.apply(this, arguments);
     };
-    
+
     const handleLocalChange = (e) => {
-      if (e.key === 'defaultTaskLength' && !isActive && !nowTask) {
+      if (e.key === "defaultTaskLength" && !isActive && !nowTask) {
         const newDefaultLength = e.newValue;
-        const newTime = newDefaultLength ? parseInt(newDefaultLength) * 60 : 1500;
+        const newTime = newDefaultLength
+          ? parseInt(newDefaultLength) * 60
+          : 1500;
         setInitialTime(newTime);
         setTimeRemaining(newTime);
       }
     };
-    
-    window.addEventListener('localStorageChange', handleLocalChange);
-    
+
+    window.addEventListener("localStorageChange", handleLocalChange);
+
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('localStorageChange', handleLocalChange);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("localStorageChange", handleLocalChange);
       localStorage.setItem = originalSetItem;
     };
   }, [isActive, nowTask]);
@@ -961,7 +964,7 @@ const getInitialTime = () => {
             <ResetIcon className="reset-icon" /> Reset
           </button>
           <div className="tooltip-wrap">
-            <div className="tooltip-button">Enter</div>
+            <div className="tooltip-button">Space</div>
             <button
               onClick={toggleTimer}
               className={`start-pause-button ${isActive ? "pause" : "start"} ${

@@ -32,7 +32,7 @@ p {
   justify-content: center;
   align-items: start;
   gap: 80px;
-  margin-top: 12rem;
+  margin-top: 11rem;
   height: 100vh;
   transition: 0.3s all ease-in-out;
 }
