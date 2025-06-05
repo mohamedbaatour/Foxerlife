@@ -1315,6 +1315,15 @@ const Tasks = () => {
     const maxDescriptionLength = " task's description is long, so long..."
       .length;
 
+        const handleContentChange = (e, field) => {
+          const updatedValue = e.target.innerText;
+          const updatedTasks = archivedTasks.map((t) =>
+            t.id === task.id ? { ...t, [field]: updatedValue } : t
+          );
+          setArchivedTasks(updatedTasks);
+          localStorage.setItem("archivedTasks", JSON.stringify(updatedTasks));
+        };
+
     return (
       <div
         ref={setNodeRef}
@@ -1368,11 +1377,23 @@ const Tasks = () => {
                       }}
                       className="task-priority-indecator"
                     ></div>
-                    <p className="later-tasks-card-title">{task.title}</p>
+                    <p
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => handleContentChange(e, "title")}
+                      className="later-tasks-card-title"
+                    >
+                      {task.title}
+                    </p>
                   </div>
                   <p className="later-tasks-card-time">{task.time}</p>
                 </div>
-                <p className="later-tasks-card-description">
+                <p
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange(e, "description")}
+                  className="later-tasks-card-description"
+                >
                   {isMenuOpen || task.description.length <= maxDescriptionLength
                     ? task.description
                     : `${task.description.substring(
