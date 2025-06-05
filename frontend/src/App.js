@@ -53,7 +53,14 @@ function App() {
   // Effect for keyboard shortcuts
   React.useEffect(() => {
     const handleKeyPress = (event) => {
-          if (isModalOpen) return;
+      // Check if modal is open or if target is an input/contenteditable element
+      if (isModalOpen || 
+          event.target.isContentEditable || 
+          event.target.tagName === 'INPUT' || 
+          event.target.tagName === 'TEXTAREA') {
+        return;
+      }
+
       switch (event.key) {
         case '1':
           navigate('/');

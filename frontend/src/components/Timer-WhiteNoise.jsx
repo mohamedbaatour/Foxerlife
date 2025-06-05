@@ -234,7 +234,9 @@ const getInitialTime = () => {
   // Effect for 'Enter' key press to toggle timer
   useEffect(() => {
     const handleKeyPress = (event) => {
-      if (event.shiftKey && (event.key === "S" || event.key === "s")) {
+      if (event.shiftKey && (event.key === "S" || event.key === "s") &&
+                !event.target.isContentEditable && 
+          !['INPUT', 'TEXTAREA'].includes(event.target.tagName)) {
         toggleTimer();
       }
     };

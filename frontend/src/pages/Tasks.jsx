@@ -829,7 +829,9 @@ const Tasks = () => {
 
   useEffect(() => {
     const handleKeyPress = (event) => {
-      if (event.key === "t" || event.key === "T") {
+      if ((event.key === "t" || event.key === "T") && 
+          !event.target.isContentEditable && 
+          !['INPUT', 'TEXTAREA'].includes(event.target.tagName)) {
         openModal();
       }
     };
