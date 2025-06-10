@@ -1169,7 +1169,7 @@ const Tasks = () => {
         // Wait for animation to complete before updating state
         setTimeout(() => {
           setIsArchiveOpen(false);
-        }, 400); // Match with animation duration
+        }, 300); // Match with animation duration
       } else {
         setIsArchiveOpen(false);
       }
@@ -1214,7 +1214,7 @@ const Tasks = () => {
           // Wait for the animation to complete before hiding the menu
           setTimeout(() => {
             setIsMenuOpen(false);
-          }, 300); // Match this with the animation duration (0.3s)
+          }, 100); // Match this with the animation duration (0.3s)
         } else {
           setIsMenuOpen(false);
         }
