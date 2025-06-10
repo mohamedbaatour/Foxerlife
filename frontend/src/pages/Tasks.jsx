@@ -582,7 +582,7 @@ const Tasks = () => {
                       gap: "12px",
                     }}
                   >
-                    <div
+                    <motion.div
                       style={{
                         backgroundColor:
                           task.priority === "High"
@@ -592,7 +592,20 @@ const Tasks = () => {
                             : "#232526",
                       }}
                       className="task-priority-indecator"
-                    ></div>
+                      animate={
+                        task.priority === "High"
+                          ? {
+                              scale: [1, 1.3, 1],
+                              opacity: [1, 0.7, 1],
+                            }
+                          : {}
+                      }
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    />
                     <p
                       suppressContentEditableWarning
                       contentEditable
@@ -602,11 +615,7 @@ const Tasks = () => {
                       {task.title}
                     </p>
                   </div>
-                  <p
-                    className="later-tasks-card-time"
-                  >
-                    {task.time}
-                  </p>
+                  <p className="later-tasks-card-time">{task.time}</p>
                 </div>
                 <p
                   className="later-tasks-card-description"
