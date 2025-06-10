@@ -326,6 +326,9 @@ const Tasks = () => {
     return savedNowTask ? JSON.parse(savedNowTask) : null;
   });
 
+  // State for animating removal of a task when moving to Now
+  const [removingTaskId, setRemovingTaskId] = useState(null);
+
   // Load tasks from localStorage on component mount
   const [laterTasks, setLaterTasks] = useState(() => {
     const savedTasks = localStorage.getItem("laterTasks");
@@ -425,40 +428,27 @@ const Tasks = () => {
 
     // Add state for emoji picker visibility
 
-    // Handle moving a task to "Now"
+    // Handle moving a task to "Now" with animation
     const handleMoveToNow = (taskId) => {
-      // Find the task to move
-      const taskToMove = laterTasks.find((task) => task.id === taskId);
-
-      if (taskToMove) {
-        // Check if there is an existing task in "Now"
-        if (nowTask) {
-          // If yes, move the current "Now" task back to "Later" tasks
-          setLaterTasks((prevTasks) => [nowTask, ...prevTasks]); // Add it to the beginning of the later tasks list
+      setRemovingTaskId(taskId);
+      setTimeout(() => {
+        setLaterTasks((prevTasks) => {
+          const filtered = prevTasks.filter((task) => task.id !== taskId);
+          return nowTask ? [nowTask, ...filtered] : filtered;
+        });
+        const taskToMove = laterTasks.find((task) => task.id === taskId);
+        if (taskToMove) {
+          setNowTask(taskToMove);
+          showNotification("Nice pick buddy!");
+          setIsMenuOpen(false);
+          window.dispatchEvent(
+            new CustomEvent("nowTaskUpdated", { detail: taskToMove })
+          );
         }
-
-        // Set the selected task as the new "Now" task
-        setNowTask(taskToMove);
-
-        // Remove the selected task from "Later" tasks
-        setLaterTasks((prevTasks) =>
-          prevTasks.filter((task) => task.id !== taskId)
-        );
-
-        // Show notification
-        showNotification("Nice pick buddy!");
-
-        // Close the menu
-        setIsMenuOpen(false);
-
-        // Dispatch custom event to notify App.js about nowTask change
-        window.dispatchEvent(
-          new CustomEvent("nowTaskUpdated", {
-            detail: taskToMove,
-          })
-        );
-      }
+        setRemovingTaskId(null);
+      }, 300); // Match this to your exit animation duration
     };
+
 
     // Add state for delete confirmation popup
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -1704,9 +1694,21 @@ const Tasks = () => {
                 strategy={verticalListSortingStrategy}
               >
                 {laterTasks.length > 0 ? (
-                  laterTasks.map((task) => (
-                    <SortableItem key={task.id} task={task} />
-                  ))
+                  <AnimatePresence>
+                    {laterTasks.map((task) =>
+                      removingTaskId === task.id ? null : (
+                        <motion.div
+                          key={task.id}
+                          initial={{ opacity: 0, y: 30 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -30 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <SortableItem task={task} />
+                        </motion.div>
+                      )
+                    )}
+                  </AnimatePresence>
                 ) : (
                   <div className="now-tasks-no-task">
                     <LogoIcon className="now-tasks-no-task-logo" />
