@@ -50,6 +50,7 @@ background-color: transparent;
   font-weight: 800;
   color: #f1f1f1;
   margin-bottom: 1.5rem;
+  letter-spacing: -0.4px;
 }
 
 
@@ -103,7 +104,7 @@ background-color: transparent;
   color: #999;
   font-size: 14px;
   font-weight: 500;
-  margin-top: 14px;
+  margin-top: 12px;
 }
 
 .now-tasks-no-task {
@@ -141,15 +142,15 @@ background-color: transparent;
 }
 
 .later-icon {
-  color: #999;
+  color: #C4C4C4;
   width: 28px;
 }
 
 .later-tasks {
   font-size: 24px;
   font-weight: 800;
-  color: #999;
-
+  color: #C4C4C4;
+  letter-spacing: -0.4px;
 
 }
 
@@ -163,7 +164,7 @@ background-color: transparent;
   border-radius: 24px;
   width: 514px;
   height: 48px; /* Initial height */
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   position: relative; /* Keep for menu positioning */
   backdrop-filter: blur(8px);
   transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s;
@@ -266,7 +267,7 @@ background-color: transparent;
   color: #999;
   font-size: 14px;
   font-weight: 500;
-  margin-top: 14px;
+  margin-top: 12px;
 }
 
 .later-tasks-text-CTA {

@@ -1,0 +1,11 @@
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  background-color: #5e5e5e; /* Example color, you can change this */
+  border-radius: 50%;
+  pointer-events: none; /* Important: allows clicks to pass through */
+  z-index: 9999; /* Ensure it's on top of other elements */
+}

@@ -1,7 +1,7 @@
 import logo from './logo.svg';
-import React, { useState } from 'react';
-import './App.css';
-import Navbar from './components/Navbar';
+import React, { useState, useRef } from "react";
+import "./App.css";
+import Navbar from "./components/Navbar";
 import TimerWhiteNoises from "./components/Timer-WhiteNoise.jsx";
 import {
   BrowserRouter as Router,
@@ -9,17 +9,72 @@ import {
   Route,
   Routes,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import Tasks from "./pages/Tasks";
 import Stats from "./pages/Stats";
 import Settings from "./pages/Settings";
 import { AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { frame, motion, useSpring } from "motion/react";
+import CustomCursor from './components/CustomCursor'; // Import the new component
 
 function App() {
   const location = useLocation();
   const navigate = useNavigate(); // Initialize useNavigate
-    const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  //     function Drag() {
+  //       const ref = useRef < HTMLDivElement > null;
+  //       const { x, y } = useFollowPointer(ref);
+
+  //       return <motion.div ref={ref} style={{ ...ball, x, y }} />;
+  //     }
+
+  // const ball = {
+  //   width: 20,
+  //   height: 20,
+  //   backgroundColor: "#999",
+  //   borderRadius: "50%",
+  // };
+
+  // function useFollowPointer(ref) {
+  //   const x = useSpring(0);
+  //   const y = useSpring(0);
+
+  //   // We'll add event handling here
+
+  //   return { x, y };
+  // }
+
+  // const spring = { damping: 3, stiffness: 50, restDelta: 0.001 };
+
+  // function useFollowPointer(ref) {
+  //   const x = useSpring(0, spring);
+  //   const y = useSpring(0, spring);
+
+  //   // We'll add event handling here
+
+  //   return { x, y };
+  // }
+
+  // React.useEffect(() => {
+  //   if (!ref.current) return;
+
+  //   const handlePointerMove = ({ clientX, clientY }) => {
+  //     const element = ref.current;
+
+  //     frame.read(() => {
+  //       x.set(clientX - element.offsetLeft - element.offsetWidth / 2);
+  //       y.set(clientY - element.offsetTop - element.offsetHeight / 2);
+  //     });
+  //   };
+
+
+
+  //   window.addEventListener("pointermove", handlePointerMove);
+
+  //   return () => window.removeEventListener("pointermove", handlePointerMove);
+  // }, []);
 
   // Add state for nowTask at App level
   const [nowTask, setNowTask] = useState(() => {
@@ -54,56 +109,56 @@ function App() {
   React.useEffect(() => {
     const handleKeyPress = (event) => {
       // Check if modal is open or if target is an input/contenteditable element
-      if (isModalOpen || 
-          event.target.isContentEditable || 
-          event.target.tagName === 'INPUT' || 
-          event.target.tagName === 'TEXTAREA') {
+      if (
+        isModalOpen ||
+        event.target.isContentEditable ||
+        event.target.tagName === "INPUT" ||
+        event.target.tagName === "TEXTAREA"
+      ) {
         return;
       }
 
       switch (event.key) {
-        case '1':
-          navigate('/');
+        case "1":
+          navigate("/");
           break;
-        case '2':
-          navigate('/stats');
+        case "2":
+          navigate("/stats");
           break;
-        case '3':
-          navigate('/settings');
+        case "3":
+          navigate("/settings");
           break;
         default:
           break;
       }
     };
 
-    window.addEventListener('keydown', handleKeyPress);
+    window.addEventListener("keydown", handleKeyPress);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyPress);
+      window.removeEventListener("keydown", handleKeyPress);
     };
   }, [navigate, isModalOpen]); // Depend on navigate to ensure the effect re-runs if navigate changes
 
-    React.useEffect(() => {
-      const handleModalStateChange = (e) => {
-        if (e.detail.type === "modal") {
-          setIsModalOpen(e.detail.isOpen);
-        }
-      };
+  React.useEffect(() => {
+    const handleModalStateChange = (e) => {
+      if (e.detail.type === "modal") {
+        setIsModalOpen(e.detail.isOpen);
+      }
+    };
 
-      window.addEventListener("modal-state-change", handleModalStateChange);
-      return () =>
-        window.removeEventListener(
-          "modal-state-change",
-          handleModalStateChange
-        );
-    }, []);
+    window.addEventListener("modal-state-change", handleModalStateChange);
+    return () =>
+      window.removeEventListener("modal-state-change", handleModalStateChange);
+  }, []);
 
   return (
     <div className="App">
+      <CustomCursor /> {/* Add the CustomCursor component here */}
       <Navbar />
       {/* Timer component now persists across all pages */}
       <div className="main-content-container">
-       <TimerWhiteNoises nowTask={nowTask} />
+        <TimerWhiteNoises nowTask={nowTask} />
         {/* Wrap Routes in a new container div */}
 
         <AnimatePresence mode="wait">

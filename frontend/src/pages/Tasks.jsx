@@ -1802,7 +1802,7 @@ const Tasks = () => {
                 <div className="modal-body">
                   <div className="form-group">
                     <label>Title</label>
-                    <input
+                    <motion.input
                       type="text"
                       placeholder="My first task..."
                       className={`modal-input ${
