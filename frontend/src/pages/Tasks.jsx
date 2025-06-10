@@ -414,7 +414,7 @@ const Tasks = () => {
           // Wait for the animation to complete before hiding the menu
           setTimeout(() => {
             setIsMenuOpen(false);
-          }, 300); // Match this with the animation duration (0.3s)
+          }, 100); // Match this with the animation duration (0.3s)
         } else {
           setIsMenuOpen(false);
         }
@@ -844,7 +844,7 @@ const Tasks = () => {
 
   const closeModal = (shouldReset = false) => {
     setIsClosing(true);
-    setTimeout(() => {
+
       setShowModal(false);
       setIsClosing(false);
       if (shouldReset) {
@@ -860,7 +860,7 @@ const Tasks = () => {
         setIsDescriptionSuggested(false);
         setSuggestionText("");
       }
-    }, 300); // Match this with the animation duration (0.3s)
+ // Match this with the animation duration (0.3s)
     window.dispatchEvent(
       new CustomEvent("modal-state-change", {
         detail: { type: "modal", isOpen: false },
