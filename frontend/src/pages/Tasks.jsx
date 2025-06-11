@@ -393,6 +393,7 @@ const Tasks = () => {
 
     // Add state for menu visibility
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isClosing, setIsClosing] = useState(false);
 
       const handleContentChange = (e, field) => {
         const updatedValue = e.target.innerText;
@@ -415,9 +416,10 @@ const Tasks = () => {
           // Add the fading-out class
           menuElement.classList.add("fading-out");
           // Wait for the animation to complete before hiding the menu
-          setTimeout(() => {
+
             setIsMenuOpen(false);
-          }, 100); // Match this with the animation duration (0.3s)
+            setIsClosing(false)
+ // Match this with the animation duration (0.3s)
         } else {
           setIsMenuOpen(false);
         }
@@ -548,7 +550,6 @@ const Tasks = () => {
                 <SixDotsIcon
                   className="later-tasks-card-emoji-dots"
                   {...listeners}
-                  style={{ cursor: "grab" }}
                 />
                 {typeof task.emoji === "string" &&
                 task.emoji.startsWith("http") ? (
@@ -629,8 +630,8 @@ const Tasks = () => {
           </div>
 
           {/* Conditionally render the menu */}
-          {isMenuOpen && (
-            <div className="task-card-menu">
+          {(isMenuOpen || isClosing) && (
+            <div className={`task-card-menu ${isClosing ? "fading-out" : ""}`}>
               {/* Add onClick handler to the "move to Now" button */}
               <button
                 className="menu-item"
@@ -1203,6 +1204,7 @@ const Tasks = () => {
     // For SortableArchiveItem component
     const toggleMenu = () => {
       if (isMenuOpen) {
+         setIsClosing(true);
         // Get the menu element
         const menuElement = document.querySelector(
           `#archive-task-${task.id} .task-card-menu`
@@ -1343,7 +1345,6 @@ const Tasks = () => {
                 <SixDotsIcon
                   className="later-tasks-card-emoji-dots"
                   {...listeners}
-                  style={{ cursor: "grab" }}
                 />
                 {typeof task.emoji === "string" &&
                 task.emoji.startsWith("http") ? (

@@ -203,7 +203,7 @@ const Navbar = () => {
           <LogoIcon className="logo" />
         )}
         <p className="navbar-brand-name">Foxerlife</p>
-        <p className="navbar-brand-version">Pre-Alpha</p>
+        <p className="navbar-brand-version">Alpha</p>
       </div>
 
       <ul className="navbar-center-section">

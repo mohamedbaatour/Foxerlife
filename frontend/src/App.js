@@ -152,9 +152,25 @@ function App() {
       window.removeEventListener("modal-state-change", handleModalStateChange);
   }, []);
 
+  // Ensure the state is initialized from localStorage
+  const [customCursor, setCustomCursor] = useState(() => {
+    const savedCustomCursor = localStorage.getItem("customCursor");
+    return savedCustomCursor ? savedCustomCursor : "on";
+  });
+  
+  // Ensure the CustomCursor component is conditionally rendered
+  React.useEffect(() => {
+    const handleCustomCursorChange = (e) => {
+      setCustomCursor(e.detail);
+    };
+
+    window.addEventListener("customCursorChanged", handleCustomCursorChange);
+    return () => window.removeEventListener("customCursorChanged", handleCustomCursorChange);
+  }, []);
+
   return (
     <div className="App">
-      <CustomCursor /> {/* Add the CustomCursor component here */}
+      {customCursor === "on" && <CustomCursor />}
       <Navbar />
       {/* Timer component now persists across all pages */}
       <div className="main-content-container">

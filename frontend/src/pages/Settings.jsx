@@ -27,7 +27,12 @@ const Settings = () => {
       const savedAutoArchive = localStorage.getItem("autoArchive");
       return savedAutoArchive ? savedAutoArchive : "off"; // Default to off if not found
     });
-
+    
+    const [customCursor, setCustomCursor] = useState(() => {
+      const savedCustomCursor = localStorage.getItem("customCursor");
+      return savedCustomCursor ? savedCustomCursor : "on"; // Default to on if not found
+    });
+    
     useEffect(() => {
       localStorage.setItem("timeFormat", timeFormat);
     }, [timeFormat]);
@@ -59,6 +64,19 @@ const Settings = () => {
     
     const handleAutoArchiveChange = (event) => {
       setAutoArchive(event.target.value);
+    };
+
+    // Ensure this useEffect is present
+    useEffect(() => {
+      localStorage.setItem("customCursor", customCursor);
+    }, [customCursor]);
+    
+    // Ensure the dropdown updates the state
+    const handleCustomCursorChange = (event) => {
+      const newValue = event.target.value;
+      setCustomCursor(newValue);
+      localStorage.setItem("customCursor", newValue);
+      window.dispatchEvent(new CustomEvent("customCursorChanged", { detail: newValue }));
     };
 
     return (
@@ -116,6 +134,13 @@ const Settings = () => {
             >
               <option value="on">OFF</option>
               <option value="off">ON</option>
+            </select>
+          </div>
+          <div className="settings-option">
+            <p className="settings-option-text">Custom Cursor</p>
+            <select className="settings-dropdown" value={customCursor} onChange={handleCustomCursorChange}>
+              <option value="on">ON</option>
+              <option value="off">OFF</option>
             </select>
           </div>
         </div>
