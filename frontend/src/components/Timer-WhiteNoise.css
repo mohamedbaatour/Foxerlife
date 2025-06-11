@@ -68,7 +68,7 @@
 .timer-time {
   font-size: 2.625rem;
   font-weight: 800;
-  color: #f1f1f1;
+  color: #EDEDED;
   letter-spacing: -9%;
   display: flex;
   align-items: baseline;
@@ -121,9 +121,9 @@
 
 .start-pause-button {
   padding: 0.625rem 1.5rem 0.625rem 1.25rem;
-  box-shadow: inset 0px 0px 1.5rem -0.3rem white;
+  box-shadow: inset 0px 0px 1.5rem -0.3rem #EDEDED;
   font-weight: 500;
-  color: #f1f1f1;
+  color: #EDEDED;
   font-size: 1.125rem;
   border-radius: 0.625rem;
   border: none;
@@ -139,7 +139,7 @@
 .start-icon {
   width: 2rem;
   height: 2rem;
-  fill: white;
+  fill: #EDEDED;
 }
 
 .end-icon, .reset-icon {
@@ -148,18 +148,18 @@
 }
 
 .end-icon.overtime {
-stroke: white;
+stroke: #EDEDED;
 stroke-width: 1px;
 }
 
 .start-pause-button.start {
   background-color: #119DFF;
-  color: white;
+  color: #EDEDED;
   transition: all 0.2s ease;
 }
 
 .start-pause-button.start:hover {
-  box-shadow: inset 0px 0px 1.5rem 0rem white;
+  box-shadow: inset 0px 0px 1.5rem 0rem #EDEDED;
   transform: scale(1.01);
 }
 
@@ -199,7 +199,7 @@ stroke-width: 1px;
 .white-noise-player-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #f1f1f1;
+  color: #EDEDED;
 }
 
 .white-noise-player-playing {
@@ -429,7 +429,7 @@ stroke-width: 1px;
 }
 
 .white-noise-controls .play-pause-main-button {
-  background-color: #FFF;
+  background-color: #EDEDED;
   border-radius: 50%;
   width: 2.1875rem;
   height: 2.1875rem;
@@ -439,7 +439,7 @@ stroke-width: 1px;
 
 
 .white-noise-controls .play-pause-main-button svg {
-  background-color: #FFF;
+  background-color: #EDEDED;
   border-radius: 50%;
   width: 1.5rem;
   height: 1.5rem;
@@ -476,7 +476,7 @@ stroke-width: 1px;
   bottom: 1.875rem;
   left: 1.875rem;
   background-color: #131517;
-  color: #f1f1f1;
+  color: #EDEDED;
   padding: 0.75rem 1.25rem;
   border-radius: 99px;
   font-size: 0.875rem;
@@ -558,8 +558,8 @@ stroke-width: 1px;
 
 .timer-button.end-button.overtime {
   background-color: #119DFF;
-  box-shadow: inset 0px 0px 1.5rem -0.4375rem white;
-  color: white;
+  box-shadow: inset 0px 0px 1.5rem -0.4375rem #EDEDED;
+  color: #EDEDED;
 }
 
 
@@ -594,7 +594,7 @@ stroke-width: 1px;
 }
 
 .confirmation-content p {
-  color: #f1f1f1;
+  color: #EDEDED;
   margin: 0;
   font-size: 0.875rem;
   text-align: center;
@@ -627,7 +627,7 @@ stroke-width: 1px;
 .confirmation-buttons button:last-child {
   background-color: #119DFF;
   border: none;
-  color: white;
+  color: #EDEDED;
 }
 
 .confirmation-buttons button:last-child:hover {
@@ -668,7 +668,7 @@ stroke-width: 1px;
 }
 
 .timer-confirmation-text {
-  color: #f1f1f1;
+  color: #EDEDED;
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 12px;
@@ -684,7 +684,7 @@ stroke-width: 1px;
 
 .confirm-timer-button {
   background-color: #e53e3e;
-  color: white;
+  color: #EDEDED;
   border: none;
   border-radius: 4px;
   padding: 4px 8px;
@@ -718,7 +718,7 @@ stroke-width: 1px;
   opacity: 0;
   background-color: #181A1C;
   border: 1px solid #232526;
-  color: #f1f1f1;
+  color: #EDEDED;
   text-align: center;
   padding: 6px 10px;
   border-radius: 8px;

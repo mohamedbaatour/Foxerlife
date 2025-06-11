@@ -6,7 +6,7 @@
   gap: 80px;
   width: 100vw;
   margin-top: 32px;
-color: white;
+color: #EDEDED;
 background-color: transparent;
 } */
 
@@ -40,7 +40,7 @@ background-color: transparent;
 }
 
 .now-icon {
-  color: #f1f1f1;
+  color: #EDEDED;
   width: 28px;
 }
 
@@ -48,7 +48,7 @@ background-color: transparent;
 .now-tasks {
   font-size: 24px;
   font-weight: 800;
-  color: #f1f1f1;
+  color: #EDEDED;
   margin-bottom: 1.5rem;
   letter-spacing: -0.4px;
 }
@@ -88,7 +88,7 @@ background-color: transparent;
 }
 
 .now-tasks-card-title {
-  color: #f1f1f1;
+  color: #EDEDED;
   font-size: 18px;
   font-weight: 600;
 
@@ -126,7 +126,7 @@ background-color: transparent;
 
 .tasks-arrow-down-icon {
   cursor: pointer;
-  color: white;
+  color: #EDEDED;
 }
 
 .later-tasks-container {
@@ -260,7 +260,7 @@ background-color: transparent;
 }
 
 .later-tasks-card-title {
-  color: #f1f1f1;
+  color: #EDEDED;
   font-size: 18px;
   font-weight: 600;
 
@@ -316,8 +316,8 @@ background-color: transparent;
   border-radius: 10px;
   border: 1px solid #232526;
   background-color: #119DFF;
-    box-shadow: inset 0px 0px 1.5rem -0.4375rem white;
-  color: #f1f1f1;
+    box-shadow: inset 0px 0px 1.5rem -0.4375rem #EDEDED;
+  color: #EDEDED;
   cursor: pointer;
 
 }
@@ -330,7 +330,7 @@ background-color: transparent;
 }
 
 .filter-button {
-  color: white;
+  color: #EDEDED;
   background-color: #181A1C;
   border: 1px solid #232526;
   border-radius: 10px;
@@ -392,7 +392,7 @@ background-color: transparent;
   padding: 8px;
   background: none;
   border: none;
-  color: #f1f1f1;
+  color: #EDEDED;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -449,7 +449,7 @@ background-color: transparent;
 .search-icon, .filter-icon {
   width: 24px;
   height: 24px;
-  color: #f1f1f1; /* Make icon more visible */
+  color: #EDEDED; /* Make icon more visible */
   z-index: 0;
 }
 
@@ -459,7 +459,7 @@ background-color: transparent;
   width: 24px;
   height: 24px;
   translate: -5px;
-  color: #f1f1f1;
+  color: #EDEDED;
   pointer-events: none;
 }
 
@@ -473,7 +473,7 @@ background-color: transparent;
 .search-input {
   background: none;
   border: none;
-  color: white;
+  color: #EDEDED;
   font-family: "Manrope", sans-serif;
   font-size: 14px;
   width: 100%;
@@ -631,7 +631,7 @@ background-color: transparent;
   margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #f1f1f1;
+  color: #EDEDED;
 }
 
 .close-button {
@@ -668,7 +668,7 @@ background-color: transparent;
     background-color: #181A1C;
     border: 1px solid #232526;
     border-radius: 12px;
-    color: #f1f1f1;
+    color: #EDEDED;
     font-size: 14px;
     font-family: "Manrope", sans-serif;
     box-sizing: border-box;
@@ -689,7 +689,7 @@ background-color: transparent;
   background-color: #181A1C;
   border: 1px solid #232526;
   border-radius: 12px;
-  color: #f1f1f1;
+  color: #EDEDED;
   font-size: 14px;
   font-family: "Manrope", sans-serif;
   box-sizing: border-box;
@@ -718,7 +718,7 @@ textarea.modal-input {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #f1f1f1;
+  color: #EDEDED;
 }
 
 .tag-dot {
@@ -777,11 +777,11 @@ textarea.modal-input {
   background-color: #119DFF;
   border: 1px solid #232526;
   border-radius: 8px;
-  color: #f1f1f1;
+  color: #EDEDED;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: inset 0px 0px 1.5rem -0.4375rem white;
+  box-shadow: inset 0px 0px 1.5rem -0.4375rem #EDEDED;
   font-family: "Manrope", sans-serif;
 }
 
@@ -863,7 +863,7 @@ textarea.modal-input {
   gap: 8px;
   background: none;
   border: none;
-  color: #f1f1f1; /* Text color */;
+  color: #EDEDED; /* Text color */;
   background-color: #181A1C; /* Text color */
   font-size: 14px;
   font-weight: 600;
@@ -881,7 +881,7 @@ textarea.modal-input {
 .menu-item .menu-icon {
     width: 16px;
     height: 16px;
-    color: #f1f1f1; /* Icon color */
+    color: #EDEDED; /* Icon color */
 }
 
 .menu-item.delete {
@@ -1021,7 +1021,7 @@ textarea.modal-input {
 }
 
 .delete-confirmation-text {
-  color: #f1f1f1;
+  color: #EDEDED;
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 12px;
@@ -1037,7 +1037,7 @@ textarea.modal-input {
 
 .confirm-delete-button {
   background-color: #e53e3e;
-  color: white;
+  color: #EDEDED;
   border: none;
   border-radius: 4px;
   padding: 4px 8px;
@@ -1087,7 +1087,7 @@ textarea.modal-input {
 
 .task-notification {
   background-color: #181A1C;
-  color: #f1f1f1;
+  color: #EDEDED;
   padding: 0.6rem 1.4rem;
   border-radius: 99px;
   font-size: 0.875rem;
@@ -1128,7 +1128,7 @@ textarea.modal-input {
   opacity: 0;
   background-color: #181A1C;
   border: 1px solid #232526;
-  color: #f1f1f1;
+  color: #EDEDED;
   text-align: center;
   padding: 6px 10px;
   border-radius: 8px;

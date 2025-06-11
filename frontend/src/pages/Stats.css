@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: start;
   justify-content: start;
-  color: #f1f1f1;
+  color: #EDEDED;
   width: 580px;
 }
 
@@ -20,13 +20,13 @@
 .stats-icon {
     width: 24px;
     height: 24px;
-    color: #f1f1f1;
+    color: #EDEDED;
 }
 
 .stats-title {
     font-size: 24px;
     font-weight: 700;
-    color: #f1f1f1;
+    color: #EDEDED;
       letter-spacing: -0.4px;
 }
 
@@ -73,13 +73,13 @@
 .general-stats-card-text {
   font-size: 14px;
   font-weight: 400;
-  color: #f1f1f1;
+  color: #EDEDED;
 }
 
 .general-stats-card-number {
   font-size: 22px;
   font-weight: 600;
-  color: #f1f1f1; 
+  color: #EDEDED; 
   margin-bottom: 8px;
 }
 
@@ -123,7 +123,7 @@ background-color: #131517;
 .task-completed-duration,
 .task-remaining-time,
 .task-remaining-duration  {
-  color: #f1f1f1;
+  color: #EDEDED;
   font-size: 14px;
   font-weight: 500;
 }
@@ -149,7 +149,7 @@ background-color: #131517;
 .completed-tasks-header-icon, .remaining-tasks-header-icon {
   width: 24px;
   height: 24px;
-  color: #f1f1f1;
+  color: #EDEDED;
 }
 
 .tasks-completed-container, .tasks-remaining-container {
@@ -166,7 +166,7 @@ background-color: #131517;
 .task-completed-card-title, .task-remaining-card-title {
   font-size: 14px;
   font-weight: 500;
-  color: #f1f1f1;
+  color: #EDEDED;
   margin: 0;
 }
 
