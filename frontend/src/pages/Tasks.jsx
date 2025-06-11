@@ -948,6 +948,11 @@ const Tasks = () => {
       isValid = false;
     }
 
+    if (!taskDuration.trim()) {
+      newErrors.duration = "Please enter a task duration";
+      isValid = false;
+    }
+
     // Update error state
     setErrors(newErrors);
 
@@ -1204,7 +1209,7 @@ const Tasks = () => {
     // For SortableArchiveItem component
     const toggleMenu = () => {
       if (isMenuOpen) {
-         setIsClosing(true);
+        setIsClosing(true);
         // Get the menu element
         const menuElement = document.querySelector(
           `#archive-task-${task.id} .task-card-menu`
@@ -1318,14 +1323,14 @@ const Tasks = () => {
     const maxDescriptionLength = " task's description is long, so long..."
       .length;
 
-        const handleContentChange = (e, field) => {
-          const updatedValue = e.target.innerText;
-          const updatedTasks = archivedTasks.map((t) =>
-            t.id === task.id ? { ...t, [field]: updatedValue } : t
-          );
-          setArchivedTasks(updatedTasks);
-          localStorage.setItem("archivedTasks", JSON.stringify(updatedTasks));
-        };
+    const handleContentChange = (e, field) => {
+      const updatedValue = e.target.innerText;
+      const updatedTasks = archivedTasks.map((t) =>
+        t.id === task.id ? { ...t, [field]: updatedValue } : t
+      );
+      setArchivedTasks(updatedTasks);
+      localStorage.setItem("archivedTasks", JSON.stringify(updatedTasks));
+    };
 
     return (
       <div
@@ -1872,12 +1877,17 @@ const Tasks = () => {
                       <label>Duration</label>
                       <input
                         type="text"
-                        className="modal-input"
+                        className={`modal-input ${
+                          formSubmitted && errors.duration ? "input-error" : ""
+                        }`}
                         value={taskDuration}
                         onChange={(e) => setTaskDuration(e.target.value)}
                         ref={durationInputRef}
                         onKeyDown={handleKeyDown}
                       />
+                      {formSubmitted && errors.duration && (
+                      <p className="error-message">{errors.duration}</p>
+                    )}
                     </div>
 
                     <div className="form-group half">

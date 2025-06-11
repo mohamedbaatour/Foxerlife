@@ -792,8 +792,8 @@ textarea.modal-input {
 
 /* Error styles */
 .input-error {
-  border-color: #e53e3e !important;
-  box-shadow: 0 0 0 1px #e53e3e;
+  border-color: #c50000 !important;
+  box-shadow: 0 0 0 1px #c50000;
 }
 
 .error-message {
