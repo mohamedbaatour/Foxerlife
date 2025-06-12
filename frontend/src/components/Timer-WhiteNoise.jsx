@@ -923,7 +923,7 @@ const getInitialTime = () => {
             {/* The dot at the end of the progress */}
             <circle
               className={`timer-progress-dot ${isOvertime ? "overtime" : ""}`}
-              r={6}
+              r={5}
               fill={isOvertime ? "#FF3B30" : "#119DFF"}
               style={{
                 filter: `drop-shadow(0 0 5px ${
