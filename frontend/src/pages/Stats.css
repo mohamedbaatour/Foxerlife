@@ -180,14 +180,14 @@ background-color: #131517;
 .right-columns {
   display: flex;
   gap: 40px;
-  color: #999;
+  color: #888888;
   font-size: 14px;
   margin-bottom: 8px;
   justify-content: center; /* Added to center horizontally */
 }
 
   .no-completed-tasks, .no-remaining-tasks {
-    color: #999;
+    color: #888888;
     font-size: 14px;
     text-align: center;
     padding: 20px 0;

@@ -33,7 +33,7 @@ function App() {
   // const ball = {
   //   width: 20,
   //   height: 20,
-  //   backgroundColor: "#999",
+  //   backgroundColor: "#888888",
   //   borderRadius: "50%",
   // };
 
@@ -68,8 +68,6 @@ function App() {
   //       y.set(clientY - element.offsetTop - element.offsetHeight / 2);
   //     });
   //   };
-
-
 
   //   window.addEventListener("pointermove", handlePointerMove);
 
@@ -157,7 +155,7 @@ function App() {
     const savedCustomCursor = localStorage.getItem("customCursor");
     return savedCustomCursor ? savedCustomCursor : "on";
   });
-  
+
   // Ensure the CustomCursor component is conditionally rendered
   React.useEffect(() => {
     const handleCustomCursorChange = (e) => {
@@ -165,7 +163,11 @@ function App() {
     };
 
     window.addEventListener("customCursorChanged", handleCustomCursorChange);
-    return () => window.removeEventListener("customCursorChanged", handleCustomCursorChange);
+    return () =>
+      window.removeEventListener(
+        "customCursorChanged",
+        handleCustomCursorChange
+      );
   }, []);
 
   return (

@@ -95,13 +95,13 @@ background-color: transparent;
 }
 
 .now-tasks-card-time {
-  color: #999;
+  color: #888888;
   font-size: 12px;
   font-weight: 500;
 }
 
 .now-tasks-card-description {
-  color: #999;
+  color: #888888;
   font-size: 14px;
   font-weight: 500;
   margin-top: 12px;
@@ -121,7 +121,7 @@ background-color: transparent;
 }
 
 .now-tasks-no-task-title {
-  color: #999;
+  color: #888888;
 }
 
 .tasks-arrow-down-icon {
@@ -267,13 +267,13 @@ background-color: transparent;
 }
 
 .later-tasks-card-time {
-  color: #999;
+  color: #888888;
   font-size: 12px;
   font-weight: 500;
 }
 
 .later-tasks-card-description {
-  color: #999;
+  color: #888888;
   font-size: 14px;
   font-weight: 500;
   margin-top: 12px;
@@ -379,7 +379,7 @@ background-color: transparent;
 }
 
 .filter-menu-header {
-  color: #999;
+  color: #888888;
   font-size: 12px;
   font-weight: 600;
   padding: 4px 8px;
@@ -413,7 +413,7 @@ background-color: transparent;
 .filter-option.clear {
   margin-top: 4px;
   border-top: 1px solid #232526;
-  color: #999;
+  color: #888888;
 }
 
 .filtered-results-container {
@@ -509,7 +509,7 @@ background-color: transparent;
 }
 
 .no-results {
-  color: #999;
+  color: #888888;
   text-align: center;
   padding: 16px;
   border-radius: 10px;
@@ -522,21 +522,21 @@ background-color: transparent;
 
 /* Style for the suggested description placeholder */
 .modal-input::placeholder {
-  color: #999; /* Gray color */
+  color: #888888; /* Gray color */
   /* font-style: italic; */
   opacity: 1; /* Ensure placeholder is visible */
 }
 
 /* For Firefox */
 .modal-input:-moz-placeholder {
-  color: #999;
+  color: #888888;
   /* font-style: italic; */
   opacity: 1;
 }
 
 /* For Internet Explorer */
 .modal-input:-ms-input-placeholder {
-  color: #999;
+  color: #888888;
   /* font-style: italic; */
 }
 
@@ -637,7 +637,7 @@ background-color: transparent;
 .close-button {
   background: none;
   border: none;
-  color: #999;
+  color: #888888;
   font-size: 24px;
   cursor: pointer;
   padding: 0;
@@ -731,7 +731,7 @@ textarea.modal-input {
 .add-tag-button, .duration-dropdown {
   background: none;
   border: none;
-  color: #999;
+  color: #888888;
   cursor: pointer;
   width: 16px;
   height: 16px;
@@ -761,7 +761,7 @@ textarea.modal-input {
   background: none;
   border: 1px solid #232526;
   border-radius: 8px;
-  color: #999;
+  color: #888888;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -960,7 +960,7 @@ textarea.modal-input {
 .archive-header-text {
   font-size: 16px;
   font-weight: 500;
-  color: #999;
+  color: #888888;
   margin-bottom: 16px;
   cursor: pointer;
 }
@@ -1049,7 +1049,7 @@ textarea.modal-input {
 
 .cancel-delete-button {
   background-color: transparent;
-  color: #999;
+  color: #888888;
   border: 1px solid #232526;
   border-radius: 4px;
   padding: 4px 8px;

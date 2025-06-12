@@ -20,7 +20,7 @@
 
   p.navbar-brand-version {
     font-size: 0.75rem;
-    color: #C4C4C4;
+    color: #a1a1a1;
     font-weight: 800;
     margin-top: -1rem;
     margin-left: -1.4rem;
@@ -101,7 +101,7 @@
 
 .navbar-menu-link {
   text-decoration: none;
-  color: #595959;
+  color: #A1A1A1;
   font-weight: 600;
   font-size: 0.875rem;
   transition: color 0.2s ease-in-out, font-weight 0.2s ease-in-out;
@@ -110,7 +110,7 @@
 }
 
 .navbar-menu-link{
-  fill: #595959;
+  fill: #A1A1A1;
 }
 
 .navbar-menu-link.active {
@@ -130,7 +130,7 @@ li {
 }
 
 .navbar-current-location {
-    color: #595959;
+    color: #666666;
     font-weight: 400;
     font-size: 0.75rem;
 }
