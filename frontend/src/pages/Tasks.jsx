@@ -12,6 +12,7 @@ import { ReactComponent as SixDotsIcon } from "../icones/six-dots.svg";
 import { ReactComponent as ArchiveIcon } from "../icones/archive.svg";
 import { ReactComponent as BinIcon } from "../icones/bin.svg";
 import { ReactComponent as LogoIcon } from "../icones/icon.svg";
+import { ReactComponent as AIIcon } from "../icones/AI.svg";
 
 import {
   DndContext,
@@ -395,14 +396,14 @@ const Tasks = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
 
-      const handleContentChange = (e, field) => {
-        const updatedValue = e.target.innerText;
-        const updatedTasks = laterTasks.map((t) =>
-          t.id === task.id ? { ...t, [field]: updatedValue } : t
-        );
-        setLaterTasks(updatedTasks);
-        localStorage.setItem("laterTasks", JSON.stringify(updatedTasks));
-      };
+    const handleContentChange = (e, field) => {
+      const updatedValue = e.target.innerText;
+      const updatedTasks = laterTasks.map((t) =>
+        t.id === task.id ? { ...t, [field]: updatedValue } : t
+      );
+      setLaterTasks(updatedTasks);
+      localStorage.setItem("laterTasks", JSON.stringify(updatedTasks));
+    };
 
     // Toggle menu visibility
     // For SortableItem component
@@ -417,9 +418,9 @@ const Tasks = () => {
           menuElement.classList.add("fading-out");
           // Wait for the animation to complete before hiding the menu
 
-            setIsMenuOpen(false);
-            setIsClosing(false)
- // Match this with the animation duration (0.3s)
+          setIsMenuOpen(false);
+          setIsClosing(false);
+          // Match this with the animation duration (0.3s)
         } else {
           setIsMenuOpen(false);
         }
@@ -450,7 +451,6 @@ const Tasks = () => {
         setRemovingTaskId(null);
       }, 300); // Match this to your exit animation duration
     };
-
 
     // Add state for delete confirmation popup
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -829,9 +829,11 @@ const Tasks = () => {
 
   useEffect(() => {
     const handleKeyPress = (event) => {
-      if ((event.key === "t" || event.key === "T") && 
-          !event.target.isContentEditable && 
-          !['INPUT', 'TEXTAREA'].includes(event.target.tagName)) {
+      if (
+        (event.key === "t" || event.key === "T") &&
+        !event.target.isContentEditable &&
+        !["INPUT", "TEXTAREA"].includes(event.target.tagName)
+      ) {
         openModal();
       }
     };
@@ -845,22 +847,22 @@ const Tasks = () => {
   const closeModal = (shouldReset = false) => {
     setIsClosing(true);
 
-      setShowModal(false);
-      setIsClosing(false);
-      if (shouldReset) {
-        setTaskTitle("");
-        setTaskDescription("");
-        setTaskDuration("3h 45m");
-        setTaskPriority("Low");
-        setTaskEmoji("😃");
-        setTaskTag({
-          name: "Personal life",
-          color: "#6366F1",
-        });
-        setIsDescriptionSuggested(false);
-        setSuggestionText("");
-      }
- // Match this with the animation duration (0.3s)
+    setShowModal(false);
+    setIsClosing(false);
+    if (shouldReset) {
+      setTaskTitle("");
+      setTaskDescription("");
+      setTaskDuration("3h 45m");
+      setTaskPriority("Low");
+      setTaskEmoji("😃");
+      setTaskTag({
+        name: "Personal life",
+        color: "#6366F1",
+      });
+      setIsDescriptionSuggested(false);
+      setSuggestionText("");
+    }
+    // Match this with the animation duration (0.3s)
     window.dispatchEvent(
       new CustomEvent("modal-state-change", {
         detail: { type: "modal", isOpen: false },
@@ -1043,9 +1045,30 @@ const Tasks = () => {
     }
   };
 
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (
+        (event.key === "s" || event.key === "S") &&
+        !event.target.isContentEditable &&
+        !["INPUT", "TEXTAREA"].includes(event.target.tagName) &&
+        !event.shiftKey
+      ) {
+        toggleSearch();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [toggleSearch]); // Depend on openModal to ensure it's up-to-date
+
   const closeSearch = () => {
     setIsSearchExpanded(false);
     setSearchQuery("");
+    if (searchInputRef.current) {
+      searchInputRef.current.blur(); // Unfocus the input when closing
+    }
     setSearchResults([]);
   };
 
@@ -1072,6 +1095,23 @@ const Tasks = () => {
   const handleFilterClick = () => {
     setIsFilterMenuOpen(!isFilterMenuOpen);
   };
+
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (
+        (event.key === "f" || event.key === "F") &&
+        !event.target.isContentEditable &&
+        !["INPUT", "TEXTAREA"].includes(event.target.tagName)
+      ) {
+        handleFilterClick();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [handleFilterClick]); // Depend on openModal to ensure it's up-to-date
 
   // Apply a filter
   const applyFilter = (filterRange) => {
@@ -1570,92 +1610,100 @@ const Tasks = () => {
             </div>
             <div className="later-tasks-CTA">
               <div className="search-filter-container">
-                <div className="search-container" ref={searchContainerRef}>
-                  <button
-                    ref={searchButtonRef}
-                    className={`search-button ${
-                      isSearchExpanded ? "expanded" : ""
-                    }`}
-                    onClick={toggleSearch}
-                  >
-                    <SearchIcon className="search-icon" />
-                    <input
-                      ref={searchInputRef}
-                      type="text"
-                      className={`search-input ${
-                        isSearchExpanded ? "visible" : ""
+                <div className="tooltip-wrap">
+                  <div className="tooltip-button">S</div>
+                  <div className="search-container" ref={searchContainerRef}>
+                    <button
+                      ref={searchButtonRef}
+                      className={`search-button ${
+                        isSearchExpanded ? "expanded" : ""
                       }`}
-                      placeholder="Search tasks..."
-                      value={searchQuery}
-                      onChange={handleSearchInput}
-                    />
-                  </button>
+                      onClick={toggleSearch}
+                    >
+                      <SearchIcon className="search-icon" />
+                      <input
+                        ref={searchInputRef}
+                        type="text"
+                        className={`search-input ${
+                          isSearchExpanded ? "visible" : ""
+                        }`}
+                        placeholder="Search tasks..."
+                        value={searchQuery}
+                        onChange={handleSearchInput}
+                      />
+                    </button>
+                  </div>
                 </div>
-                <div
-                  className="filter-container"
-                  style={{ position: "relative" }}
-                >
-                  <button
-                    className={`filter-button ${activeFilter ? "active" : ""}`}
-                    onClick={handleFilterClick}
+                <div className="tooltip-wrap">
+                  <div className="tooltip-button">F</div>
+                  <div
+                    className="filter-container"
+                    style={{ position: "relative" }}
                   >
-                    <FilterIcon className="filter-icon" />
-                  </button>
-                  <AnimatePresence>
-                    {isFilterMenuOpen && (
-                      <motion.div
-                        initial={{ y: -20, opacity: 0, filter: "blur(8px)" }}
-                        animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                        exit={{ y: -20, opacity: 0, filter: "blur(8px)" }} // Fade-out animation
-                        transition={{ duration: 0.3 }}
-                        className="filter-menu"
-                      >
-                        <div className="filter-menu-header">
-                          Filter by duration
-                        </div>
-                        <button
-                          className={`filter-option ${
-                            activeFilter === "1m-10m" ? "active" : ""
-                          }`}
-                          onClick={() => applyFilter("1m-10m")}
+                    <button
+                      className={`filter-button ${
+                        activeFilter ? "active" : ""
+                      }`}
+                      onClick={handleFilterClick}
+                    >
+                      <FilterIcon className="filter-icon" />
+                    </button>
+                    <AnimatePresence>
+                      {isFilterMenuOpen && (
+                        <motion.div
+                          initial={{ y: -20, opacity: 0, filter: "blur(8px)" }}
+                          animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                          exit={{ y: -20, opacity: 0, filter: "blur(8px)" }} // Fade-out animation
+                          transition={{ duration: 0.3 }}
+                          className="filter-menu"
                         >
-                          1m - 10m
-                        </button>
-                        <button
-                          className={`filter-option ${
-                            activeFilter === "10m-20m" ? "active" : ""
-                          }`}
-                          onClick={() => applyFilter("10m-20m")}
-                        >
-                          10m - 20m
-                        </button>
-                        <button
-                          className={`filter-option ${
-                            activeFilter === "20m-30m" ? "active" : ""
-                          }`}
-                          onClick={() => applyFilter("20m-30m")}
-                        >
-                          20m - 30m
-                        </button>
-                        <button
-                          className={`filter-option ${
-                            activeFilter === "30m+" ? "active" : ""
-                          }`}
-                          onClick={() => applyFilter("30m+")}
-                        >
-                          30m+
-                        </button>
-                        {activeFilter && (
+                          <div className="filter-menu-header">
+                            Filter by duration
+                          </div>
                           <button
-                            className="filter-option clear"
-                            onClick={() => applyFilter(null)}
+                            className={`filter-option ${
+                              activeFilter === "1m-10m" ? "active" : ""
+                            }`}
+                            onClick={() => applyFilter("1m-10m")}
                           >
-                            Clear filter
+                            1m - 10m
                           </button>
-                        )}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                          <button
+                            className={`filter-option ${
+                              activeFilter === "10m-20m" ? "active" : ""
+                            }`}
+                            onClick={() => applyFilter("10m-20m")}
+                          >
+                            10m - 20m
+                          </button>
+                          <button
+                            className={`filter-option ${
+                              activeFilter === "20m-30m" ? "active" : ""
+                            }`}
+                            onClick={() => applyFilter("20m-30m")}
+                          >
+                            20m - 30m
+                          </button>
+                          <button
+                            className={`filter-option ${
+                              activeFilter === "30m+" ? "active" : ""
+                            }`}
+                            onClick={() => applyFilter("30m+")}
+                          >
+                            30m+
+                          </button>
+                          {activeFilter && (
+                            <button
+                              className="filter-option clear"
+                              onClick={() => applyFilter(null)}
+                            >
+                              Clear filter
+                            </button>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
               </div>
 
@@ -1886,8 +1934,8 @@ const Tasks = () => {
                         onKeyDown={handleKeyDown}
                       />
                       {formSubmitted && errors.duration && (
-                      <p className="error-message">{errors.duration}</p>
-                    )}
+                        <p className="error-message">{errors.duration}</p>
+                      )}
                     </div>
 
                     <div className="form-group half">
