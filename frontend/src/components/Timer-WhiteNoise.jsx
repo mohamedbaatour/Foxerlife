@@ -974,7 +974,7 @@ const getInitialTime = () => {
               disabled={isOvertime}
             >
               {isActive ? <PauseIcon /> : <StartIcon className="start-icon" />}{" "}
-              {isActive ? "Pause" : "Start"}{" "}
+              {isActive ? "PAUSE" : "START"}{" "}
             </button>
           </div>
           <button

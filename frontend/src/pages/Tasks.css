@@ -257,19 +257,44 @@ background-color: transparent;
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  margin-top: 2px;
+}
+
+.task-priority-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 50px;
+  border: 1px solid #232526;
+  background-color: #181A1C !important;
 }
 
 .later-tasks-card-title {
   color: #EDEDED;
   font-size: 18px;
   font-weight: 600;
+  transition: all 0.3s ease-in-out;
+}
 
+.later-tasks-card-title:hover {
+  border-radius: 3px;
+border: 1px solid #EDEDED;
 }
 
 .later-tasks-card-time {
   color: #888888;
   font-size: 12px;
   font-weight: 500;
+  transition: all 0.3s ease-in-out;
+}
+
+.later-tasks-card-time:hover {
+  border-radius: 3px;
+border: 1px solid #EDEDED;  
 }
 
 .later-tasks-card-description {
@@ -277,6 +302,14 @@ background-color: transparent;
   font-size: 14px;
   font-weight: 500;
   margin-top: 12px;
+  display: flex;
+  width: auto;
+    transition: all 0.3s ease-in-out;
+}
+
+.later-tasks-card-description:hover {
+  border-radius: 3px;
+border: 1px solid #EDEDED;
 }
 
 .later-tasks-text-CTA {

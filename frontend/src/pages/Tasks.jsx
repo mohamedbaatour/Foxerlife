@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./Tasks.css";
 import TimerWhiteNoises from "../components/Timer-WhiteNoise.jsx";
@@ -30,11 +30,9 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-// Import the EmojiPicker component
 import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 
 const Tasks = () => {
-  // State for form inputs
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState(
     localStorage.getItem("taskTitle") || ""
@@ -43,7 +41,7 @@ const Tasks = () => {
     localStorage.getItem("taskDescription") || ""
   );
   const [isDescriptionSuggested, setIsDescriptionSuggested] = useState(false);
-  const [suggestionText, setSuggestionText] = useState(""); // New state for suggestion text
+  const [suggestionText, setSuggestionText] = useState("");
 
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const debounceTimeout = useRef(null);
@@ -55,7 +53,7 @@ const Tasks = () => {
     } else if (defaultTaskLength === "50") {
       return "0h 50m";
     }
-    return "3h 45m"; // Fallback value
+    return "3h 45m";
   });
   const [taskPriority, setTaskPriority] = useState(
     localStorage.getItem("taskPriority") || "Low"
@@ -73,7 +71,6 @@ const Tasks = () => {
         };
   });
 
-  // Add these new states and refs for notifications
   const [notifications, setNotifications] = useState([]);
   const notificationTimeoutsRef = useRef({});
 
@@ -108,9 +105,8 @@ const Tasks = () => {
 
     let content = data.choices?.[0]?.message?.content?.trim() || "";
 
-    // Remove leading and trailing double quotes if they exist
     if (content.startsWith('"') && content.endsWith('"')) {
-      content = content.slice(1, -1); // Remove the first and last character
+      content = content.slice(1, -1);
     }
 
     return content;
@@ -138,13 +134,12 @@ const Tasks = () => {
     const data = await res.json();
     let content = data.choices?.[0]?.message?.content?.trim();
 
-    // Normalize and validate response
     const validPriorities = ["Low", "Medium", "High"];
     if (validPriorities.includes(content)) {
       return content;
     }
 
-    return "Low"; // Default fallback
+    return "Low";
   };
 
   const generateEmoji = async (title) => {
@@ -171,9 +166,8 @@ const Tasks = () => {
 
     let content = data.choices?.[0]?.message?.content?.trim() || "";
 
-    // Ensure only one emoji is returned
     const emojiMatch = content.match(/[\p{Emoji}]/u);
-    return emojiMatch ? emojiMatch[0] : "😃"; // default emoji fallback
+    return emojiMatch ? emojiMatch[0] : "😃";
   };
 
   const estimateDuration = async (title) => {
@@ -200,7 +194,6 @@ const Tasks = () => {
 
     let content = data.choices?.[0]?.message?.content?.trim() || "";
 
-    // Cleanup any quotes or extras
     content = content.replace(/^"|"$/g, "");
     return content.match(/^(\d+h\s*)?(\d+m)?$/) ? content : "1h";
   };
@@ -209,7 +202,6 @@ const Tasks = () => {
     const value = e.target.value;
     setTaskTitle(value);
 
-    // Debounce GPT call
     clearTimeout(debounceTimeout.current);
     debounceTimeout.current = setTimeout(async () => {
       if (value.length > 3 && taskDescription.trim() === "") {
@@ -234,31 +226,21 @@ const Tasks = () => {
   };
 
   const handleDescriptionChange = (e) => {
-    // When the user types, the suggestion is no longer active
     if (isDescriptionSuggested) {
       setIsDescriptionSuggested(false);
-      setSuggestionText(""); // Clear the suggestion text
+      setSuggestionText("");
     }
-    setTaskDescription(e.target.value); // Update the actual input value
+    setTaskDescription(e.target.value);
   };
 
   const handleDescriptionKeyDown = (e) => {
-    // Handle Tab key press to accept the suggestion
     if (e.key === "Tab" && isDescriptionSuggested) {
-      e.preventDefault(); // Prevent default tab behavior
-      setTaskDescription(suggestionText); // Set the suggestion as the actual value
-      setIsDescriptionSuggested(false); // Suggestion is accepted
-      setSuggestionText(""); // Clear the suggestion text
-      // Optionally, move focus to the next input field (Duration)
+      e.preventDefault();
+      setTaskDescription(suggestionText);
+      setIsDescriptionSuggested(false);
+      setSuggestionText("");
     }
-    // else if (isDescriptionSuggested && e.key !== 'Tab') {
-    //   // If any other key is pressed while suggestion is active, turn off suggestion
-    //   setIsDescriptionSuggested(false);
-    //   setSuggestionText(''); // Clear the suggestion text
-    //   // The character typed will be handled by the onChange event
-    // }
 
-    // Existing logic for arrow key navigation
     const inputs = [
       titleInputRef.current,
       descriptionInputRef.current,
@@ -279,7 +261,7 @@ const Tasks = () => {
       const prevIndex = (currentIndex - 1 + inputs.length) % inputs.length;
       inputs[prevIndex].focus();
     } else if (e.key === "Enter") {
-      e.preventDefault(); // Prevent default behavior to avoid double submission
+      e.preventDefault();
       addTask();
     }
   };
@@ -290,7 +272,7 @@ const Tasks = () => {
       descriptionInputRef.current,
       durationInputRef.current,
       emojiButtonRef.current,
-    ].filter(Boolean); // Filter out any null refs
+    ].filter(Boolean);
 
     const currentIndex = inputs.findIndex(
       (input) => input === document.activeElement
@@ -305,32 +287,24 @@ const Tasks = () => {
       const prevIndex = (currentIndex - 1 + inputs.length) % inputs.length;
       inputs[prevIndex].focus();
     } else if (e.key === "Enter") {
-      // Stop propagation to prevent the event from bubbling up
       e.stopPropagation();
-      // Prevent default to avoid form submission
       e.preventDefault();
-      // Call addTask only once
       addTask();
     }
   };
 
-  // Handle emoji selection
   const onEmojiClick = (emojiObject) => {
     setTaskEmoji(emojiObject.emoji);
-    setShowEmojiPicker(false); // Hide the picker after selection
+    setShowEmojiPicker(false);
   };
 
-  // Add state for the currently active "Now" task
-  // Initialize nowTask directly from localStorage
   const [nowTask, setNowTask] = useState(() => {
     const savedNowTask = localStorage.getItem("nowTask");
     return savedNowTask ? JSON.parse(savedNowTask) : null;
   });
 
-  // State for animating removal of a task when moving to Now
   const [removingTaskId, setRemovingTaskId] = useState(null);
 
-  // Load tasks from localStorage on component mount
   const [laterTasks, setLaterTasks] = useState(() => {
     const savedTasks = localStorage.getItem("laterTasks");
     if (savedTasks) {
@@ -368,7 +342,6 @@ const Tasks = () => {
     }
   });
 
-  // Add state for archived tasks
   const [archivedTasks, setArchivedTasks] = useState(() => {
     const savedArchivedTasks = localStorage.getItem("archivedTasks");
     return savedArchivedTasks ? JSON.parse(savedArchivedTasks) : [];
@@ -382,17 +355,15 @@ const Tasks = () => {
       transform,
       transition,
       isDragging,
-    } = // Add isDragging here
-      useSortable({ id: task.id });
+    } = useSortable({ id: task.id });
 
     const style = {
       transform: CSS.Transform.toString(transform),
       transition: isDragging
         ? "none"
-        : "transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)", // Apply transition here
+        : "transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
     };
 
-    // Add state for menu visibility
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
 
@@ -405,22 +376,16 @@ const Tasks = () => {
       localStorage.setItem("laterTasks", JSON.stringify(updatedTasks));
     };
 
-    // Toggle menu visibility
-    // For SortableItem component
     const toggleMenu = () => {
       if (isMenuOpen) {
-        // Get the menu element
         const menuElement = document.querySelector(
           `#task-${task.id} .task-card-menu`
         );
         if (menuElement) {
-          // Add the fading-out class
           menuElement.classList.add("fading-out");
-          // Wait for the animation to complete before hiding the menu
 
           setIsMenuOpen(false);
           setIsClosing(false);
-          // Match this with the animation duration (0.3s)
         } else {
           setIsMenuOpen(false);
         }
@@ -429,9 +394,6 @@ const Tasks = () => {
       }
     };
 
-    // Add state for emoji picker visibility
-
-    // Handle moving a task to "Now" with animation
     const handleMoveToNow = (taskId) => {
       setRemovingTaskId(taskId);
       setTimeout(() => {
@@ -449,104 +411,83 @@ const Tasks = () => {
           );
         }
         setRemovingTaskId(null);
-      }, 300); // Match this to your exit animation duration
+      }, 300);
     };
 
-    // Add state for delete confirmation popup
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [isConfirmationClosing, setIsConfirmationClosing] = useState(false);
 
-    // Function to show delete confirmation
     const showDeleteConfirm = (e) => {
-      e.stopPropagation(); // Prevent event bubbling
+      e.stopPropagation();
       setShowDeleteConfirmation(true);
     };
 
-    // Function to hide delete confirmation
     const hideDeleteConfirm = () => {
       setIsConfirmationClosing(true);
       setTimeout(() => {
         setShowDeleteConfirmation(false);
         setIsConfirmationClosing(false);
-      }, 300); // Match with animation duration
+      }, 300);
     };
 
-    // Function to confirm deletion
     const confirmDelete = (taskId) => {
-      // Get the menu element
       const menuElement = document.querySelector(
         `#task-${taskId} .task-card-menu`
       );
       if (menuElement) {
-        // Add the fading-out class
         menuElement.classList.add("fading-out");
-        // Wait for the animation to complete before removing the task
         setTimeout(() => {
-          // Remove the task from laterTasks
           setLaterTasks((prevTasks) =>
             prevTasks.filter((task) => task.id !== taskId)
           );
-          // Show notification
           showNotification("Task deleted");
-          // Close the menu
           setIsMenuOpen(false);
-        }, 300); // Match this with the animation duration
+        }, 300);
       } else {
-        // Remove the task from laterTasks
         setLaterTasks((prevTasks) =>
           prevTasks.filter((task) => task.id !== taskId)
         );
-        // Show notification
         showNotification("Task deleted");
-        // Close the menu
         setIsMenuOpen(false);
       }
     };
 
-    // Add the handleArchiveTask function
     const handleArchiveTask = (taskId) => {
-      // Find the task to archive
       const taskToArchive = laterTasks.find((task) => task.id === taskId);
 
       if (taskToArchive) {
-        // Add to archived tasks
         setArchivedTasks((prevTasks) => [taskToArchive, ...prevTasks]);
 
-        // Remove from later tasks
         setLaterTasks((prevTasks) =>
           prevTasks.filter((task) => task.id !== taskId)
         );
 
-        // Show notification
         showNotification("Task archived");
 
-        // Close the menu
         setIsMenuOpen(false);
       }
     };
 
-    // Define the maximum length for the truncated description
     const maxDescriptionLength =
       "My second task's description is long is so long".length;
 
-    // In the SortableItem component
     return (
-      // Apply attributes to the main div
       <div
         ref={setNodeRef}
         style={style}
         {...attributes}
-        className={isDragging ? "is-dragging" : ""} // Add class when dragging
+        className={isDragging ? "is-dragging" : ""}
       >
         <div
           className={`later-tasks-card ${isMenuOpen ? "expanded" : ""}`}
           key={task.id}
           id={`task-${task.id}`}
+          onMouseEnter={() => setIsMenuOpen(true)}
+          onMouseLeave={() => setIsMenuOpen(false)}
         >
           <div className="later-tasks-card-top-row">
             <div className="later-tasks-card-emoji-text-container">
               <div className="later-tasks-card-emoji-container">
-                {/* Apply listeners and cursor style to the SixDotsIcon */}
                 <SixDotsIcon
                   className="later-tasks-card-emoji-dots"
                   {...listeners}
@@ -570,33 +511,39 @@ const Tasks = () => {
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: "12px",
+                      gap: "8px",
                     }}
                   >
-                    <motion.div
+                    <div
                       style={{
-                        backgroundColor:
+                        color:
                           task.priority === "High"
                             ? "#801220"
                             : task.priority === "Medium"
                             ? "#675C21"
-                            : "#232526",
+                            : "#666666",
+                        // backgroundColor:
+                        //   task.priority === "High"
+                        //     ? "#cc4d4d"
+                        //     : task.priority === "Medium"
+                        //     ? "#675C21"
+                        //     : "#a1a1a1",
                       }}
-                      className="task-priority-indecator"
-                      animate={
-                        task.priority === "High"
-                          ? {
-                              scale: [1, 1.3, 1],
-                              opacity: [1, 0.7, 1],
-                            }
-                          : {}
-                      }
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                    />
+                      className="task-priority-container"
+                    >
+                      <div
+                        style={{
+                          backgroundColor:
+                            task.priority === "High"
+                              ? "#801220"
+                              : task.priority === "Medium"
+                              ? "#675C21"
+                              : "#666666",
+                        }}
+                        className="task-priority-indecator"
+                      />
+                      {task.priority}
+                    </div>
                     <p
                       suppressContentEditableWarning
                       contentEditable
@@ -606,7 +553,14 @@ const Tasks = () => {
                       {task.title}
                     </p>
                   </div>
-                  <p className="later-tasks-card-time">{task.time}</p>
+                  <p
+                    className="later-tasks-card-time"
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={(e) => handleContentChange(e, "time")}
+                  >
+                    {task.time}
+                  </p>
                 </div>
                 <p
                   className="later-tasks-card-description"
@@ -625,14 +579,11 @@ const Tasks = () => {
             </div>
             <ArrowDownIcon
               className={`tasks-arrow-down-icon ${isMenuOpen ? "rotated" : ""}`}
-              onClick={toggleMenu}
             />
           </div>
 
-          {/* Conditionally render the menu */}
           {(isMenuOpen || isClosing) && (
             <div className={`task-card-menu ${isClosing ? "fading-out" : ""}`}>
-              {/* Add onClick handler to the "move to Now" button */}
               <button
                 className="menu-item"
                 onClick={() => handleMoveToNow(task.id)}
@@ -653,7 +604,6 @@ const Tasks = () => {
                   <BinIcon className="menu-icon" /> Delete
                 </button>
 
-                {/* Delete confirmation popup */}
                 {showDeleteConfirmation && (
                   <div
                     className={`delete-confirmation-popup ${
@@ -685,16 +635,12 @@ const Tasks = () => {
     );
   };
 
-  // 2. In your component body, below states:
   const sensors = useSensors(useSensor(PointerSensor));
 
-  // 3. Handle drag end:
-  // Update the handleDragEnd function
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      // Check if the task is in laterTasks
       const laterTaskIndex = laterTasks.findIndex(
         (task) => task.id === active.id
       );
@@ -702,7 +648,6 @@ const Tasks = () => {
         (task) => task.id === over?.id
       );
 
-      // Check if the task is in archivedTasks
       const archivedTaskIndex = archivedTasks.findIndex(
         (task) => task.id === active.id
       );
@@ -710,14 +655,11 @@ const Tasks = () => {
         (task) => task.id === over?.id
       );
 
-      // If both tasks are in laterTasks, reorder laterTasks
       if (laterTaskIndex !== -1 && overLaterTaskIndex !== -1) {
         setLaterTasks((tasks) =>
           arrayMove(tasks, laterTaskIndex, overLaterTaskIndex)
         );
-      }
-      // If both tasks are in archivedTasks, reorder archivedTasks
-      else if (archivedTaskIndex !== -1 && overArchivedTaskIndex !== -1) {
+      } else if (archivedTaskIndex !== -1 && overArchivedTaskIndex !== -1) {
         setArchivedTasks((tasks) =>
           arrayMove(tasks, archivedTaskIndex, overArchivedTaskIndex)
         );
@@ -725,15 +667,13 @@ const Tasks = () => {
     }
   };
 
-  // Save tasks to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem("laterTasks", JSON.stringify(laterTasks));
   }, [laterTasks]);
 
-  // Keep the useEffect to save nowTask whenever it changes
   useEffect(() => {
     localStorage.setItem("nowTask", JSON.stringify(nowTask));
-  }, [nowTask]); // Save whenever nowTask changes
+  }, [nowTask]);
 
   useEffect(() => {
     localStorage.setItem("taskTitle", taskTitle);
@@ -759,7 +699,6 @@ const Tasks = () => {
     localStorage.setItem("taskTag", JSON.stringify(taskTag));
   }, [taskTag]);
 
-  // Add cross-tab synchronization
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === "nowTask") {
@@ -775,9 +714,6 @@ const Tasks = () => {
   const [isClosing, setIsClosing] = useState(false);
   const modalContentRef = useRef(null);
 
-  // Effect for 'Ctrl + N' key press to open modal
-
-  // Search functionality
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -785,20 +721,17 @@ const Tasks = () => {
   const searchButtonRef = useRef(null);
   const searchContainerRef = useRef(null);
 
-  // Filter functionality
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
-  const [activeFilter, setActiveFilter] = useState(null); // null means no filter
+  const [activeFilter, setActiveFilter] = useState(null);
   const [filteredResults, setFilteredResults] = useState([]);
 
   const openModal = () => {
-    // Use values from localStorage if they exist, otherwise use defaults
     setTaskTitle(localStorage.getItem("taskTitle") || "");
     setTaskDescription(localStorage.getItem("taskDescription") || "");
     setTaskDuration(localStorage.getItem("taskDuration") || "3h 45m");
     setTaskPriority(localStorage.getItem("taskPriority") || "Low");
     setTaskEmoji(localStorage.getItem("taskEmoji") || "😃");
 
-    // For taskTag, we need to parse the JSON string
     const storedTag = localStorage.getItem("taskTag");
     setTaskTag(
       storedTag
@@ -842,7 +775,7 @@ const Tasks = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [openModal]); // Depend on openModal to ensure it's up-to-date
+  }, [openModal]);
 
   const closeModal = (shouldReset = false) => {
     setIsClosing(true);
@@ -862,7 +795,6 @@ const Tasks = () => {
       setIsDescriptionSuggested(false);
       setSuggestionText("");
     }
-    // Match this with the animation duration (0.3s)
     window.dispatchEvent(
       new CustomEvent("modal-state-change", {
         detail: { type: "modal", isOpen: false },
@@ -870,32 +802,26 @@ const Tasks = () => {
     );
   };
 
-  // Add a function to show notifications
   const showNotification = (message) => {
-    // Create a new notification with unique ID
     const notificationId = Date.now();
     const newNotification = {
       id: notificationId,
       message: message,
     };
 
-    // Add the new notification to the array (limit to 3)
     setNotifications((prevNotifications) => {
-      // If we already have 3 notifications, remove the oldest one
       const updatedNotifications = [...prevNotifications];
       if (updatedNotifications.length >= 3) {
         const oldestId = updatedNotifications[0].id;
-        // Clear the timeout for the oldest notification
         if (notificationTimeoutsRef.current[oldestId]) {
           clearTimeout(notificationTimeoutsRef.current[oldestId]);
           delete notificationTimeoutsRef.current[oldestId];
         }
-        updatedNotifications.shift(); // Remove the oldest notification
+        updatedNotifications.shift();
       }
       return [...updatedNotifications, newNotification];
     });
 
-    // Set timeout to remove this specific notification
     notificationTimeoutsRef.current[notificationId] = setTimeout(() => {
       setNotifications((prevNotifications) =>
         prevNotifications.filter(
@@ -906,38 +832,29 @@ const Tasks = () => {
     }, 2300);
   };
 
-  // Clean up timeouts when component unmounts
   useEffect(() => {
     return () => {
-      // Clear all notification timeouts
       Object.values(notificationTimeoutsRef.current).forEach((timeout) => {
         clearTimeout(timeout);
       });
     };
   }, []);
 
-  // Add new task
-  // Add these state variables at the top with your other state declarations
   const [errors, setErrors] = useState({
     title: "",
     description: "",
   });
 
-  // Add a state to track if form has been submitted
   const [formSubmitted, setFormSubmitted] = useState(false);
 
-  // Modify the addTask function
   const addTask = () => {
-    // Set form as submitted to activate validation display
     setFormSubmitted(true);
 
-    // Reset errors first
     const newErrors = {
       title: "",
       description: "",
     };
 
-    // Validate fields
     let isValid = true;
 
     if (!taskTitle.trim()) {
@@ -955,13 +872,10 @@ const Tasks = () => {
       isValid = false;
     }
 
-    // Update error state
     setErrors(newErrors);
 
-    // If validation fails, return early
     if (!isValid) return;
 
-    // Request notification permission if not already granted
     if (Notification.permission !== "granted") {
       Notification.requestPermission().then((permission) => {
         if (permission === "granted") {
@@ -972,9 +886,8 @@ const Tasks = () => {
       });
     }
 
-    // Create new task object
     const newTask = {
-      id: Date.now(), // Use timestamp as unique ID
+      id: Date.now(),
       title: taskTitle,
       description: taskDescription,
       time: taskDuration,
@@ -983,25 +896,20 @@ const Tasks = () => {
       tag: taskTag,
     };
 
-    // Add to tasks array
     setLaterTasks((prevTasks) => [newTask, ...prevTasks]);
 
-    // Reset form submitted state
     setFormSubmitted(false);
 
-    // Close modal
     closeModal(true);
   };
 
-  // Handle ESC key press
   useEffect(() => {
     const handleEscKey = (event) => {
       if (event.key === "Escape") {
-        // Close the emoji picker if it's open
         if (showEmojiPicker) {
           setShowEmojiPicker(false);
         } else if (showModal) {
-          closeModal(); // Close without resetting
+          closeModal();
         } else if (isSearchExpanded) {
           closeSearch();
         }
@@ -1012,29 +920,25 @@ const Tasks = () => {
     return () => {
       window.removeEventListener("keydown", handleEscKey);
     };
-  }, [showModal, isSearchExpanded, showEmojiPicker]); // Add showEmojiPicker to dependencies
+  }, [showModal, isSearchExpanded, showEmojiPicker]);
 
-  // Handle click outside modal
   const handleOverlayClick = (event) => {
-    // Close the emoji picker if it's open
     if (showEmojiPicker) {
       setShowEmojiPicker(false);
-      return; // Prevent closing the modal if only the emoji picker was clicked
+      return;
     }
 
     if (
       modalContentRef.current &&
       !modalContentRef.current.contains(event.target)
     ) {
-      closeModal(); // Close without resetting
+      closeModal();
     }
   };
 
-  // Handle search expansion
   const toggleSearch = () => {
     if (!isSearchExpanded) {
       setIsSearchExpanded(true);
-      // Focus the input after the expansion animation completes
       setTimeout(() => {
         if (searchInputRef.current) {
           searchInputRef.current.focus();
@@ -1061,18 +965,17 @@ const Tasks = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [toggleSearch]); // Depend on openModal to ensure it's up-to-date
+  }, [toggleSearch]);
 
   const closeSearch = () => {
     setIsSearchExpanded(false);
     setSearchQuery("");
     if (searchInputRef.current) {
-      searchInputRef.current.blur(); // Unfocus the input when closing
+      searchInputRef.current.blur();
     }
     setSearchResults([]);
   };
 
-  // Helper function to parse duration strings to minutes
   const parseDurationToMinutes = (timeString) => {
     if (!timeString) return 0;
 
@@ -1091,7 +994,6 @@ const Tasks = () => {
     return totalMinutes;
   };
 
-  // Handle filter click
   const handleFilterClick = () => {
     setIsFilterMenuOpen(!isFilterMenuOpen);
   };
@@ -1111,14 +1013,12 @@ const Tasks = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [handleFilterClick]); // Depend on openModal to ensure it's up-to-date
+  }, [handleFilterClick]);
 
-  // Apply a filter
   const applyFilter = (filterRange) => {
     setActiveFilter(filterRange);
 
     if (!filterRange) {
-      // Clear filter
       setFilteredResults([]);
       setIsFilterMenuOpen(false);
       return;
@@ -1160,7 +1060,6 @@ const Tasks = () => {
     showNotification(`Fox filtered your focus: ${filterRange}`);
   };
 
-  // Handle search input
   const handleSearchInput = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -1170,7 +1069,6 @@ const Tasks = () => {
       return;
     }
 
-    // Filter tasks based on search query - only search in laterTasks
     const filteredTasks = laterTasks.filter(
       (task) =>
         task.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -1180,7 +1078,6 @@ const Tasks = () => {
     setSearchResults(filteredTasks);
   };
 
-  // Handle click outside search
   useEffect(() => {
     const handleClick = (event) => {
       if (
@@ -1198,34 +1095,28 @@ const Tasks = () => {
     };
   }, [isSearchExpanded]);
 
-  // Save archived tasks to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem("archivedTasks", JSON.stringify(archivedTasks));
   }, [archivedTasks]);
 
   const toggleArchive = () => {
     if (isArchiveOpen) {
-      // If we're closing the archive, animate it out
       const archiveSection = document.querySelector(".archive-section");
       if (archiveSection) {
         archiveSection.classList.remove("visible");
         archiveSection.classList.add("hidden");
 
-        // Wait for animation to complete before updating state
         setTimeout(() => {
           setIsArchiveOpen(false);
-        }, 300); // Match with animation duration
+        }, 300);
       } else {
         setIsArchiveOpen(false);
       }
     } else {
-      // If we're opening the archive, update state immediately
       setIsArchiveOpen(true);
     }
   };
 
-  // Add ArchivedTaskItem component for archived tasks
-  // Replace the ArchivedTaskItem with SortableArchiveItem
   const SortableArchiveItem = ({ task }) => {
     const {
       attributes,
@@ -1234,33 +1125,26 @@ const Tasks = () => {
       transform,
       transition,
       isDragging,
-    } = // Add isDragging here
-      useSortable({ id: task.id });
+    } = useSortable({ id: task.id });
 
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
     };
 
-    // Add state for menu visibility
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    // Toggle menu visibility
-    // For SortableArchiveItem component
     const toggleMenu = () => {
       if (isMenuOpen) {
         setIsClosing(true);
-        // Get the menu element
         const menuElement = document.querySelector(
           `#archive-task-${task.id} .task-card-menu`
         );
         if (menuElement) {
-          // Add the fading-out class
           menuElement.classList.add("fading-out");
-          // Wait for the animation to complete before hiding the menu
           setTimeout(() => {
             setIsMenuOpen(false);
-          }, 100); // Match this with the animation duration (0.3s)
+          }, 100);
         } else {
           setIsMenuOpen(false);
         }
@@ -1269,55 +1153,40 @@ const Tasks = () => {
       }
     };
 
-    // Handle restoring a task to Later
     const handleRestoreToLater = (taskId) => {
-      // Find the task to restore
       const taskToRestore = archivedTasks.find((task) => task.id === taskId);
 
       if (taskToRestore) {
-        // Add to later tasks
         setLaterTasks((prevTasks) => [taskToRestore, ...prevTasks]);
 
-        // Remove from archived tasks
         setArchivedTasks((prevTasks) =>
           prevTasks.filter((task) => task.id !== taskId)
         );
 
-        // Show notification
         showNotification("Task restored to Later");
 
-        // Close the menu
         setIsMenuOpen(false);
       }
     };
 
-    // Handle moving a task from Archive to Now
     const handleMoveToNowFromArchive = (taskId) => {
-      // Find the task to move
       let taskToMove = archivedTasks.find((task) => task.id === taskId);
 
       if (taskToMove) {
-        // Check if there is an existing task in "Now"
         if (nowTask) {
-          // If yes, move the current "Now" task back to "Later" tasks
-          setLaterTasks((prevTasks) => [nowTask, ...prevTasks]); // Add it to the beginning of the later tasks list
+          setLaterTasks((prevTasks) => [nowTask, ...prevTasks]);
         }
 
-        // Set the selected task as the new "Now" task
         setNowTask(taskToMove);
 
-        // Remove the selected task from archived tasks
         setArchivedTasks((prevTasks) =>
           prevTasks.filter((task) => task.id !== taskId)
         );
 
-        // Show notification
         showNotification("Task revived!");
 
-        // Close the menu
         setIsMenuOpen(false);
 
-        // Dispatch custom event to notify App.js about nowTask change
         window.dispatchEvent(
           new CustomEvent("nowTaskUpdated", {
             detail: taskToMove,
@@ -1326,40 +1195,32 @@ const Tasks = () => {
       }
     };
 
-    // Add state for delete confirmation popup
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [isConfirmationClosing, setIsConfirmationClosing] = useState(false);
 
-    // Function to show delete confirmation
     const showDeleteConfirm = (e) => {
-      e.stopPropagation(); // Prevent event bubbling
+      e.stopPropagation();
       setShowDeleteConfirmation(true);
     };
 
-    // Function to hide delete confirmation
     const hideDeleteConfirm = () => {
       setIsConfirmationClosing(true);
       setTimeout(() => {
         setShowDeleteConfirmation(false);
         setIsConfirmationClosing(false);
-      }, 300); // Match with animation duration
+      }, 300);
     };
 
-    // Function to confirm deletion
     const confirmDelete = (taskId) => {
-      // Remove the task from archivedTasks
       setArchivedTasks((prevTasks) =>
         prevTasks.filter((task) => task.id !== taskId)
       );
 
-      // Show notification
       showNotification("Task deleted");
 
-      // Close the menu
       setIsMenuOpen(false);
     };
 
-    // Define the maximum length for the truncated description
     const maxDescriptionLength = " task's description is long, so long..."
       .length;
 
@@ -1377,7 +1238,7 @@ const Tasks = () => {
         ref={setNodeRef}
         style={style}
         {...attributes}
-        className={isDragging ? "is-dragging" : ""} // Add class when dragging
+        className={isDragging ? "is-dragging" : ""}
       >
         <div
           className={`later-tasks-card ${isMenuOpen ? "expanded" : ""}`}
@@ -1415,15 +1276,34 @@ const Tasks = () => {
                   >
                     <div
                       style={{
-                        backgroundColor:
+                        color:
                           task.priority === "High"
                             ? "#801220"
                             : task.priority === "Medium"
                             ? "#675C21"
-                            : "#232526",
+                            : "#666666",
+                        // backgroundColor:
+                        //   task.priority === "High"
+                        //     ? "#cc4d4d"
+                        //     : task.priority === "Medium"
+                        //     ? "#675C21"
+                        //     : "#a1a1a1",
                       }}
-                      className="task-priority-indecator"
-                    ></div>
+                      className="task-priority-container"
+                    >
+                      <div
+                        style={{
+                          backgroundColor:
+                            task.priority === "High"
+                              ? "#801220"
+                              : task.priority === "Medium"
+                              ? "#675C21"
+                              : "#666666",
+                        }}
+                        className="task-priority-indecator"
+                      />
+                      {task.priority}
+                    </div>
                     <p
                       contentEditable
                       suppressContentEditableWarning
@@ -1456,7 +1336,6 @@ const Tasks = () => {
             />
           </div>
 
-          {/* Conditionally render the menu */}
           {isMenuOpen && (
             <div className="task-card-menu">
               <button
@@ -1479,7 +1358,6 @@ const Tasks = () => {
                   <BinIcon className="menu-icon" /> Delete
                 </button>
 
-                {/* Delete confirmation popup */}
                 {showDeleteConfirmation && (
                   <div
                     className={`delete-confirmation-popup ${
@@ -1519,7 +1397,6 @@ const Tasks = () => {
       exit={{ y: 50, opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {/* Render stacked notifications */}
       <div className="notifications-container">
         <AnimatePresence>
           {notifications.map((notification) => (
@@ -1537,14 +1414,12 @@ const Tasks = () => {
           ))}
         </AnimatePresence>
       </div>
-      {/* Pass the nowTask to the TimerWhiteNoises component */}
       <div className="right-section">
         <div className="now-tasks-container">
           <div className="now-tasks-text">
             <NowIcon className="now-icon" />
             <p className="now-tasks">Now</p>
           </div>
-          {/* Conditionally render the Now task card based on nowTask state */}
           {nowTask ? (
             <div className="now-tasks-card">
               <div className="now-tasks-card-emoji-text-container">
@@ -1571,16 +1446,35 @@ const Tasks = () => {
                     >
                       <div
                         style={{
-                          backgroundColor:
+                          color:
                             nowTask.priority === "High"
                               ? "#801220"
                               : nowTask.priority === "Medium"
                               ? "#675C21"
-                              : "#232526",
+                              : "#666666",
+                          // backgroundColor:
+                          //   task.priority === "High"
+                          //     ? "#cc4d4d"
+                          //     : task.priority === "Medium"
+                          //     ? "#675C21"
+                          //     : "#a1a1a1",
                         }}
-                        className="task-priority-indecator"
-                      ></div>
-                      <p className="later-tasks-card-title">{nowTask.title}</p>
+                        className="task-priority-container"
+                      >
+                        <div
+                          style={{
+                            backgroundColor:
+                              nowTask.priority === "High"
+                                ? "#801220"
+                                : nowTask.priority === "Medium"
+                                ? "#675C21"
+                                : "#666666",
+                          }}
+                          className="task-priority-indecator"
+                        />
+                        {nowTask.priority}
+                      </div>
+                      <p className="now-tasks-card-title">{nowTask.title}</p>
                     </div>
                     <p className="now-tasks-card-time">{nowTask.time}</p>
                   </div>
@@ -1589,15 +1483,12 @@ const Tasks = () => {
                   </p>
                 </div>
               </div>
-              {/* Add a button or icon to clear the Now task if needed */}
-              {/* <button onClick={() => setNowTask(null)}>Clear</button> */}
-              {/* Keep the arrow if needed */}
             </div>
           ) : (
             <div className="now-tasks-no-task">
               <LogoIcon className="now-tasks-no-task-logo" />
               <p className="now-tasks-no-task-title">
-                I’m bored! Pick something for us to do!
+                I'm bored! Pick something for us to do!
               </p>
             </div>
           )}
@@ -1653,7 +1544,7 @@ const Tasks = () => {
                         <motion.div
                           initial={{ y: -20, opacity: 0, filter: "blur(8px)" }}
                           animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                          exit={{ y: -20, opacity: 0, filter: "blur(8px)" }} // Fade-out animation
+                          exit={{ y: -20, opacity: 0, filter: "blur(8px)" }}
                           transition={{ duration: 0.3 }}
                           className="filter-menu"
                         >
@@ -1717,10 +1608,8 @@ const Tasks = () => {
             </div>
           </div>
 
-          {/* Display search results, filtered results, or regular tasks */}
           {searchQuery.trim() !== "" && searchResults.length > 0 ? (
             <div className="search-results-container">
-              {/* Use SortableItem for search results as well for consistency */}
               {searchResults.map((task) => (
                 <SortableItem key={task.id} task={task} />
               ))}
@@ -1729,7 +1618,6 @@ const Tasks = () => {
             <div className="no-results">No tasks found</div>
           ) : activeFilter && filteredResults.length > 0 ? (
             <div className="filtered-results-container">
-              {/* Display filtered tasks */}
               {filteredResults.map((task) => (
                 <SortableItem key={task.id} task={task} />
               ))}
@@ -1737,7 +1625,6 @@ const Tasks = () => {
           ) : activeFilter && filteredResults.length === 0 ? (
             <div className="no-results">No tasks match the selected filter</div>
           ) : (
-            // Regular tasks (only shown when not searching or filtering)
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
@@ -1775,7 +1662,6 @@ const Tasks = () => {
             </DndContext>
           )}
         </div>
-        {/* Archive section */}
         <div
           className="archive-header"
           style={{
@@ -1829,7 +1715,6 @@ const Tasks = () => {
         </motion.div>
       </div>
 
-      {/* Task Modal */}
       <AnimatePresence>
         {showModal && (
           <motion.div
@@ -1890,13 +1775,13 @@ const Tasks = () => {
                         isDescriptionSuggested
                           ? suggestionText
                           : "My first task's description..."
-                      } // Use suggestionText as placeholder
+                      }
                       className={`modal-input ${
                         formSubmitted && errors.description ? "input-error" : ""
                       }`}
                       rows="2"
-                      maxLength={60} // Limit description length to 150 characters
-                      value={taskDescription} // Value is the actual input
+                      maxLength={60}
+                      value={taskDescription}
                       onChange={handleDescriptionChange}
                       onKeyDown={handleDescriptionKeyDown}
                       ref={descriptionInputRef}
@@ -1907,20 +1792,6 @@ const Tasks = () => {
                   </div>
 
                   <div className="form-row">
-                    {/* <div className="form-group half">
-                      <label>Tag</label>
-                      <div className="tag-selector">
-                        <div className="selected-tag">
-                          <span
-                            className="tag-dot"
-                            style={{ backgroundColor: taskTag.color }}
-                          ></span>
-                          <span>{taskTag.name}</span>
-                        </div>
-                        <PlusIcon className="add-tag-button" />
-                      </div>
-                    </div> */}
-
                     <div className="form-group half">
                       <label>Duration</label>
                       <input
@@ -1954,19 +1825,6 @@ const Tasks = () => {
                   </div>
 
                   <div className="form-row">
-                    {/* <div className="form-group half">
-                      <label>Priority</label>
-                      <select
-                        className="modal-input"
-                        value={taskPriority}
-                        onChange={(e) => setTaskPriority(e.target.value)}
-                      >
-                        <option>Low</option>
-                        <option>Medium</option>
-                        <option>High</option>
-                      </select>
-                    </div> */}
-
                     <div className="form-group half">
                       <label>Emoji</label>
                       <div style={{ position: "relative" }}>
@@ -1987,8 +1845,7 @@ const Tasks = () => {
                             style={{
                               position: "absolute",
                               zIndex: 1000,
-                              // Change 'top' to 'bottom' and adjust the value
-                              bottom: "45px", // Adjust this value as needed for spacing
+                              bottom: "45px",
                               right: "0px",
                             }}
                           >
@@ -2027,6 +1884,3 @@ const Tasks = () => {
 };
 
 export default Tasks;
-
-
-
