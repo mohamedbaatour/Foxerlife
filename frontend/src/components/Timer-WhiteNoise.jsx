@@ -1056,6 +1056,7 @@ const getInitialTime = () => {
         </div>
         <audio ref={audioRef} />
       </div>
+      <p className="special-thanks">Thanks r/idesigntech07 for helping improve FoxerLife!</p>
       <div className="tasks-main-content-left-column">
         {/* Render stacked notifications */}
         <div className="notifications-container">

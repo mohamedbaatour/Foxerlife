@@ -347,6 +347,8 @@ const Tasks = () => {
     return savedArchivedTasks ? JSON.parse(savedArchivedTasks) : [];
   });
 
+  const [isDragging, setIsDragging] = useState(false);
+
   const SortableItem = ({ task }) => {
     const {
       attributes,
@@ -437,8 +439,15 @@ const Tasks = () => {
       if (menuElement) {
         menuElement.classList.add("fading-out");
         setTimeout(() => {
+          // Update laterTasks, searchResults, and filteredResults
           setLaterTasks((prevTasks) =>
             prevTasks.filter((task) => task.id !== taskId)
+          );
+          setSearchResults((prevResults) =>
+            prevResults.filter((task) => task.id !== taskId)
+          );
+          setFilteredResults((prevFiltered) =>
+            prevFiltered.filter((task) => task.id !== taskId)
           );
           showNotification("Task deleted");
           setIsMenuOpen(false);
@@ -446,6 +455,12 @@ const Tasks = () => {
       } else {
         setLaterTasks((prevTasks) =>
           prevTasks.filter((task) => task.id !== taskId)
+        );
+        setSearchResults((prevResults) =>
+          prevResults.filter((task) => task.id !== taskId)
+        );
+        setFilteredResults((prevFiltered) =>
+          prevFiltered.filter((task) => task.id !== taskId)
         );
         showNotification("Task deleted");
         setIsMenuOpen(false);
@@ -482,7 +497,7 @@ const Tasks = () => {
           className={`later-tasks-card ${isMenuOpen ? "expanded" : ""}`}
           key={task.id}
           id={`task-${task.id}`}
-          onMouseEnter={() => setIsMenuOpen(true)}
+          onMouseEnter={() => !isDragging && setIsMenuOpen(true)}
           onMouseLeave={() => setIsMenuOpen(false)}
         >
           <div className="later-tasks-card-top-row">
@@ -577,9 +592,7 @@ const Tasks = () => {
                 </p>
               </div>
             </div>
-            <ArrowDownIcon
-              className={`tasks-arrow-down-icon ${isMenuOpen ? "rotated" : ""}`}
-            />
+
           </div>
 
           {(isMenuOpen || isClosing) && (
@@ -588,13 +601,13 @@ const Tasks = () => {
                 className="menu-item"
                 onClick={() => handleMoveToNow(task.id)}
               >
-                <NowIcon className="menu-icon" /> move to Now
+                <NowIcon className="menu-icon" /> Move To Now
               </button>
               <button
                 className="menu-item"
                 onClick={() => handleArchiveTask(task.id)}
               >
-                <ArchiveIcon className="menu-icon" /> archive
+                <ArchiveIcon className="menu-icon" /> Archive
               </button>
               <div style={{ position: "relative" }}>
                 <button
@@ -1251,6 +1264,7 @@ const Tasks = () => {
                 <SixDotsIcon
                   className="later-tasks-card-emoji-dots"
                   {...listeners}
+                  
                 />
                 {typeof task.emoji === "string" &&
                 task.emoji.startsWith("http") ? (
@@ -1342,13 +1356,13 @@ const Tasks = () => {
                 className="menu-item"
                 onClick={() => handleMoveToNowFromArchive(task.id)}
               >
-                <NowIcon className="menu-icon" /> Move to Now
+                <NowIcon className="menu-icon" /> Move To Now
               </button>
               <button
                 className="menu-item"
                 onClick={() => handleRestoreToLater(task.id)}
               >
-                <LaterIcon className="menu-icon" /> Restore to Later
+                <LaterIcon className="menu-icon" /> Restore To Later
               </button>
               <div style={{ position: "relative" }}>
                 <button
@@ -1388,6 +1402,27 @@ const Tasks = () => {
       </div>
     );
   };
+
+  // Add new ref for filter menu
+  const filterMenuRef = useRef(null);
+
+  // Add useEffect for click outside handling
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        filterMenuRef.current && 
+        !filterMenuRef.current.contains(event.target) &&
+        !activeFilter // Only close if there's no active filter
+      ) {
+        setIsFilterMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [activeFilter]); // Add activeFilter as dependency
 
   return (
     <motion.div
@@ -1547,6 +1582,7 @@ const Tasks = () => {
                           exit={{ y: -20, opacity: 0, filter: "blur(8px)" }}
                           transition={{ duration: 0.3 }}
                           className="filter-menu"
+                          ref={filterMenuRef} // Add ref here
                         >
                           <div className="filter-menu-header">
                             Filter by duration
@@ -1627,8 +1663,27 @@ const Tasks = () => {
           ) : (
             <DndContext
               sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
+              onDragStart={(event) => {
+                setIsDragging(true);
+                // Force close any open menus
+                const openMenus = document.querySelectorAll('.task-card');
+                openMenus.forEach(card => {
+                  card.style.pointerEvents = 'none';
+                  const menu = card.querySelector('.task-card-menu');
+                  if (menu) {
+                    menu.classList.remove('visible');
+                  }
+                });
+              }}
+              onDragEnd={(event) => {
+                setIsDragging(false);
+                // Re-enable pointer events
+                const cards = document.querySelectorAll('.task-card');
+                cards.forEach(card => {
+                  card.style.pointerEvents = 'auto';
+                });
+                handleDragEnd(event);
+              }}
             >
               <SortableContext
                 items={laterTasks.map((task) => task.id)}
