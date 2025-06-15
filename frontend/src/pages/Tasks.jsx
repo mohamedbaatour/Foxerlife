@@ -349,6 +349,12 @@ const Tasks = () => {
 
   const [isDragging, setIsDragging] = useState(false);
 
+  const menuVariants = {
+    hidden: { opacity: 0, y: -10, pointerEvents: "none" },
+    visible: { opacity: 1, y: 0, pointerEvents: "auto" },
+    exit: { opacity: 0, y: 10, pointerEvents: "none" },
+  };
+
   const SortableItem = ({ task }) => {
     const {
       attributes,
@@ -377,24 +383,7 @@ const Tasks = () => {
       setLaterTasks(updatedTasks);
       localStorage.setItem("laterTasks", JSON.stringify(updatedTasks));
     };
-
-    const toggleMenu = () => {
-      if (isMenuOpen) {
-        const menuElement = document.querySelector(
-          `#task-${task.id} .task-card-menu`
-        );
-        if (menuElement) {
-          menuElement.classList.add("fading-out");
-
-          setIsMenuOpen(false);
-          setIsClosing(false);
-        } else {
-          setIsMenuOpen(false);
-        }
-      } else {
-        setIsMenuOpen(true);
-      }
-    };
+    
 
     const handleMoveToNow = (taskId) => {
       setRemovingTaskId(taskId);
@@ -595,54 +584,66 @@ const Tasks = () => {
 
           </div>
 
-          {(isMenuOpen || isClosing) && (
-            <div className={`task-card-menu ${isClosing ? "fading-out" : ""}`}>
-              <button
-                className="menu-item"
-                onClick={() => handleMoveToNow(task.id)}
+          <AnimatePresence>
+            {isMenuOpen && (
+              <motion.div
+                className="task-card-menu"
+                initial="hidden"
+                animate="visible"
+                variants={menuVariants}
+                transition={{ duration: 0.22, ease: "easeIn" }}
               >
-                <NowIcon className="menu-icon" /> Move To Now
-              </button>
-              <button
-                className="menu-item"
-                onClick={() => handleArchiveTask(task.id)}
-              >
-                <ArchiveIcon className="menu-icon" /> Archive
-              </button>
-              <div style={{ position: "relative" }}>
                 <button
-                  className="menu-item delete"
-                  onClick={showDeleteConfirm}
+                  className="menu-item"
+                  onClick={() => handleMoveToNow(task.id)}
                 >
-                  <BinIcon className="menu-icon" /> Delete
+                  <NowIcon className="menu-icon" /> Move To Now
                 </button>
-
-                {showDeleteConfirmation && (
-                  <div
-                    className={`delete-confirmation-popup ${
-                      isConfirmationClosing ? "fading-out" : ""
-                    }`}
+                <button
+                  className="menu-item"
+                  onClick={() => handleArchiveTask(task.id)}
+                >
+                  <ArchiveIcon className="menu-icon" /> Archive
+                </button>
+                <div style={{ position: "relative" }}>
+                  <button
+                    className="menu-item delete"
+                    onClick={showDeleteConfirm}
                   >
-                    <p className="delete-confirmation-text">Are you sure?</p>
-                    <div className="delete-confirmation-buttons">
-                      <button
-                        className="cancel-delete-button"
-                        onClick={hideDeleteConfirm}
+                    <BinIcon className="menu-icon" /> Delete
+                  </button>
+
+                  <AnimatePresence>
+                    {showDeleteConfirmation && (
+                      <motion.div
+                        className={`delete-confirmation-popup`}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.18 }}
                       >
-                        Cancel
-                      </button>
-                      <button
-                        className="confirm-delete-button"
-                        onClick={() => confirmDelete(task.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+                        <p className="delete-confirmation-text">Are you sure?</p>
+                        <div className="delete-confirmation-buttons">
+                          <button
+                            className="cancel-delete-button"
+                            onClick={hideDeleteConfirm}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="confirm-delete-button"
+                            onClick={() => confirmDelete(task.id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     );
@@ -875,11 +876,6 @@ const Tasks = () => {
       isValid = false;
     }
 
-    if (!taskDescription.trim()) {
-      newErrors.description = "Please enter a task description";
-      isValid = false;
-    }
-
     if (!taskDuration.trim()) {
       newErrors.duration = "Please enter a task duration";
       isValid = false;
@@ -902,7 +898,7 @@ const Tasks = () => {
     const newTask = {
       id: Date.now(),
       title: taskTitle,
-      description: taskDescription,
+      description: taskDescription.trim() || "There is no description for this task.",
       time: taskDuration,
       emoji: taskEmoji,
       priority: taskPriority,
@@ -910,9 +906,7 @@ const Tasks = () => {
     };
 
     setLaterTasks((prevTasks) => [newTask, ...prevTasks]);
-
     setFormSubmitted(false);
-
     closeModal(true);
   };
 
@@ -925,6 +919,8 @@ const Tasks = () => {
           closeModal();
         } else if (isSearchExpanded) {
           closeSearch();
+        } else if (isFilterMenuOpen) {
+          setIsFilterMenuOpen(false);
         }
       }
     };
@@ -1155,9 +1151,9 @@ const Tasks = () => {
         );
         if (menuElement) {
           menuElement.classList.add("fading-out");
-          setTimeout(() => {
+
             setIsMenuOpen(false);
-          }, 100);
+
         } else {
           setIsMenuOpen(false);
         }
@@ -1831,9 +1827,7 @@ const Tasks = () => {
                           ? suggestionText
                           : "My first task's description..."
                       }
-                      className={`modal-input ${
-                        formSubmitted && errors.description ? "input-error" : ""
-                      }`}
+                      className={`modal-input`}
                       rows="2"
                       maxLength={60}
                       value={taskDescription}

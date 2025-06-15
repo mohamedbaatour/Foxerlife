@@ -15,7 +15,6 @@ background-color: transparent;
   flex-direction: column;
   align-items: center;
   justify-content: start;
-
 }
 
 /* .left-section {
@@ -40,19 +39,17 @@ background-color: transparent;
 }
 
 .now-icon {
-  color: #EDEDED;
+  color: #ededed;
   width: 28px;
 }
-
 
 .now-tasks {
   font-size: 24px;
   font-weight: 800;
-  color: #EDEDED;
+  color: #ededed;
   margin-bottom: 1.5rem;
   letter-spacing: -0.4px;
 }
-
 
 .now-tasks-card {
   display: flex;
@@ -60,12 +57,11 @@ background-color: transparent;
   align-items: center;
   justify-content: left;
   border: 1px solid #232526;
-  background-color: #181A1C;
+  background-color: #181a1c;
   padding: 38px 40px 38px 24px;
   border-radius: 24px;
   width: 514px;
   height: 48px;
-
 }
 
 .now-tasks-card-emoji-text-container {
@@ -88,10 +84,9 @@ background-color: transparent;
 }
 
 .now-tasks-card-title {
-  color: #EDEDED;
+  color: #ededed;
   font-size: 18px;
   font-weight: 600;
-
 }
 
 .now-tasks-card-time {
@@ -117,7 +112,6 @@ background-color: transparent;
 
 .now-tasks-no-task-logo {
   width: 24px;
-  
 }
 
 .now-tasks-no-task-title {
@@ -126,12 +120,11 @@ background-color: transparent;
 
 .tasks-arrow-down-icon {
   cursor: pointer;
-  color: #EDEDED;
+  color: #ededed;
 }
 
 .later-tasks-container {
   margin-top: 84px;
-
 }
 
 .later-tasks-text {
@@ -142,16 +135,15 @@ background-color: transparent;
 }
 
 .later-icon {
-  color: #C4C4C4;
+  color: #c4c4c4;
   width: 28px;
 }
 
 .later-tasks {
   font-size: 24px;
   font-weight: 800;
-  color: #C4C4C4;
+  color: #c4c4c4;
   letter-spacing: -0.4px;
-
 }
 
 .later-tasks-card {
@@ -167,8 +159,10 @@ background-color: transparent;
   margin-bottom: 16px;
   position: relative; /* Keep for menu positioning */
   backdrop-filter: blur(8px);
-    overflow: hidden;
-  transition: max-height 0.3s cubic-bezier(0.22, 1, 0.36, 1), transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s, padding 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s,
+    padding 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .later-tasks-card-emoji-dots {
@@ -177,7 +171,6 @@ background-color: transparent;
   color: #232526;
   cursor: grab;
 }
-
 
 .later-tasks-card-emoji-dots:hover ~ .later-tasks-card {
   transform: scale(1.05);
@@ -219,7 +212,6 @@ background-color: transparent;
 
 /* Adjust layout when menu is open */
 
-
 .tasks-arrow-down-icon {
   cursor: pointer;
   transition: transform 0.3s ease; /* Smooth rotation */
@@ -239,14 +231,10 @@ background-color: transparent;
 .later-tasks-card-emoji-container {
   display: flex;
   flex-direction: row;
-  align-items: center;  
+  align-items: center;
   justify-content: center;
   gap: -2px;
 }
-
-
-
-
 
 .later-tasks-card-emoji {
   width: 48px;
@@ -270,11 +258,11 @@ background-color: transparent;
   padding: 2px 8px;
   border-radius: 50px;
   border: 1px solid #232526;
-  background-color: #181A1C !important;
+  background-color: #181a1c !important;
 }
 
 .later-tasks-card-title {
-  color: #EDEDED;
+  color: #ededed;
   font-size: 18px;
   font-weight: 600;
   transition: all 0.3s ease-in-out;
@@ -282,7 +270,7 @@ background-color: transparent;
 
 .later-tasks-card-title:hover {
   border-radius: 3px;
-border: 1px solid #EDEDED;
+  border: 1px solid #ededed;
 }
 
 .later-tasks-card-time {
@@ -294,7 +282,7 @@ border: 1px solid #EDEDED;
 
 .later-tasks-card-time:hover {
   border-radius: 3px;
-border: 1px solid #EDEDED;  
+  border: 1px solid #ededed;
 }
 
 .later-tasks-card-description {
@@ -304,12 +292,12 @@ border: 1px solid #EDEDED;
   margin-top: 12px;
   display: flex;
   width: auto;
-    transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 .later-tasks-card-description:hover {
   border-radius: 3px;
-border: 1px solid #EDEDED;
+  border: 1px solid #ededed;
 }
 
 .later-tasks-text-CTA {
@@ -342,20 +330,17 @@ border: 1px solid #EDEDED;
   align-items: center;
   justify-content: center;
   padding: 12px 24px;
-  gap: 8px;  
+  gap: 8px;
   font-family: "Manrope";
   font-size: 14px;
   font-weight: 600;
   border-radius: 10px;
   border: 1px solid #232526;
-  background-color: #119DFF;
-    box-shadow: inset 0px 0px 1.5rem -0.4375rem #EDEDED;
-  color: #EDEDED;
+  background-color: #119dff;
+  box-shadow: inset 0px 0px 1.5rem -0.4375rem #ededed;
+  color: #ededed;
   cursor: pointer;
-
 }
-
-
 
 .add-task-icon {
   width: 24px;
@@ -363,8 +348,8 @@ border: 1px solid #EDEDED;
 }
 
 .filter-button {
-  color: #EDEDED;
-  background-color: #181A1C;
+  color: #ededed;
+  background-color: #181a1c;
   border: 1px solid #232526;
   border-radius: 10px;
   padding: 12px;
@@ -375,9 +360,8 @@ border: 1px solid #EDEDED;
   transition: all 0.2s ease;
 }
 
-
 .filter-button.active {
-  border-color: #119DFF;
+  border-color: #119dff;
 }
 
 .filter-menu {
@@ -385,7 +369,7 @@ border: 1px solid #EDEDED;
   top: 55px;
   right: 0;
   width: 150px;
-  background-color: #181A1C;
+  background-color: #181a1c;
   border: 1px solid #232526;
   border-radius: 12px;
   padding: 8px;
@@ -425,7 +409,7 @@ border: 1px solid #EDEDED;
   padding: 8px;
   background: none;
   border: none;
-  color: #EDEDED;
+  color: #ededed;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -440,7 +424,7 @@ border: 1px solid #EDEDED;
 
 .filter-option.active {
   background-color: rgba(17, 157, 255, 0.1);
-  color: #119DFF;
+  color: #119dff;
 }
 
 .filter-option.clear {
@@ -455,7 +439,6 @@ border: 1px solid #EDEDED;
   gap: 8px;
   width: 100%;
 }
-
 
 /* Expandable Search Styles */
 .search-container {
@@ -472,17 +455,18 @@ border: 1px solid #EDEDED;
   width: 48px;
   height: 48px;
   padding: 12px;
-  background-color: #181A1C;
+  background-color: #181a1c;
   border: 1px solid #232526;
   border-radius: 10px;
   transition: all 0.3s ease;
   cursor: pointer;
   overflow: hidden;
 }
-.search-icon, .filter-icon {
+.search-icon,
+.filter-icon {
   width: 24px;
   height: 24px;
-  color: #EDEDED; /* Make icon more visible */
+  color: #ededed; /* Make icon more visible */
   z-index: 0;
 }
 
@@ -492,7 +476,7 @@ border: 1px solid #EDEDED;
   width: 24px;
   height: 24px;
   translate: -5px;
-  color: #EDEDED;
+  color: #ededed;
   pointer-events: none;
 }
 
@@ -500,13 +484,12 @@ border: 1px solid #EDEDED;
   width: 200px;
   padding-left: 48px; /* make room for the icon */
   display: flex;
-  
 }
 
 .search-input {
   background: none;
   border: none;
-  color: #EDEDED;
+  color: #ededed;
   font-family: "Manrope", sans-serif;
   font-size: 14px;
   width: 100%;
@@ -525,11 +508,10 @@ border: 1px solid #EDEDED;
   outline: none;
 }
 
-
 .search-input.visible {
   opacity: 1;
   pointer-events: auto;
-    display: flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
@@ -548,10 +530,6 @@ border: 1px solid #EDEDED;
   border-radius: 10px;
   margin-top: 16px;
 }
-
-
-
-
 
 /* Style for the suggested description placeholder */
 .modal-input::placeholder {
@@ -572,7 +550,6 @@ border: 1px solid #EDEDED;
   color: #888888;
   /* font-style: italic; */
 }
-
 
 /* Modal Styles */
 .modal-overlay {
@@ -664,7 +641,7 @@ border: 1px solid #EDEDED;
   margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #EDEDED;
+  color: #ededed;
 }
 
 .close-button {
@@ -696,33 +673,33 @@ border: 1px solid #EDEDED;
 }
 
 .modal-input {
-    width: 100%;
-    padding: 12px;
-    background-color: #181A1C;
-    border: 1px solid #232526;
-    border-radius: 12px;
-    color: #EDEDED;
-    font-size: 14px;
-    font-family: "Manrope", sans-serif;
-    box-sizing: border-box;
-    cursor: pointer;
+  width: 100%;
+  padding: 12px;
+  background-color: #181a1c;
+  border: 1px solid #232526;
+  border-radius: 12px;
+  color: #ededed;
+  font-size: 14px;
+  font-family: "Manrope", sans-serif;
+  box-sizing: border-box;
+  cursor: pointer;
 }
 
 .form-group label {
   display: block;
   margin-bottom: 8px;
   font-size: 14px;
-  color: #C4C4C4;
+  color: #c4c4c4;
   font-weight: 500;
 }
 
 .modal-input {
   width: 100%;
   padding: 12px;
-  background-color: #181A1C;
+  background-color: #181a1c;
   border: 1px solid #232526;
   border-radius: 12px;
-  color: #EDEDED;
+  color: #ededed;
   font-size: 14px;
   font-family: "Manrope", sans-serif;
   box-sizing: border-box;
@@ -730,19 +707,20 @@ border: 1px solid #EDEDED;
 
 .modal-input:focus {
   outline: none;
-  border-color: #119DFF;
+  border-color: #119dff;
 }
 
 textarea.modal-input {
   resize: none;
 }
 
-.tag-selector, .duration-input {
+.tag-selector,
+.duration-input {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
-  background-color: #181A1C;
+  background-color: #181a1c;
   border: 1px solid #232526;
   border-radius: 8px;
 }
@@ -751,7 +729,7 @@ textarea.modal-input {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #EDEDED;
+  color: #ededed;
 }
 
 .tag-dot {
@@ -761,7 +739,8 @@ textarea.modal-input {
   display: inline-block;
 }
 
-.add-tag-button, .duration-dropdown {
+.add-tag-button,
+.duration-dropdown {
   background: none;
   border: none;
   color: #888888;
@@ -773,7 +752,7 @@ textarea.modal-input {
 .emoji-selector {
   width: 100%;
   padding: 8px;
-  background-color: #181A1C;
+  background-color: #181a1c;
   border: 1px solid #232526;
   border-radius: 8px;
   font-size: 24px;
@@ -798,7 +777,7 @@ textarea.modal-input {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-    font-family: "Manrope", sans-serif;
+  font-family: "Manrope", sans-serif;
 }
 
 .add-task-button {
@@ -807,14 +786,14 @@ textarea.modal-input {
   justify-content: center;
   gap: 8px;
   padding: 10px 16px;
-  background-color: #119DFF;
+  background-color: #119dff;
   border: 1px solid #232526;
   border-radius: 8px;
-  color: #EDEDED;
+  color: #ededed;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: inset 0px 0px 1.5rem -0.4375rem #EDEDED;
+  box-shadow: inset 0px 0px 1.5rem -0.4375rem #ededed;
   font-family: "Manrope", sans-serif;
 }
 
@@ -881,7 +860,7 @@ textarea.modal-input {
   margin-right: auto;
   justify-content: center; /* Center the buttons within the menu */
   opacity: 1;
-    transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
 /* Add this new class for fading out */
@@ -896,8 +875,8 @@ textarea.modal-input {
   gap: 8px;
   background: none;
   border: none;
-  color: #EDEDED; /* Text color */;
-  background-color: #181A1C; /* Text color */
+  color: #ededed; /* Text color */
+  background-color: #181a1c; /* Text color */
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -912,23 +891,23 @@ textarea.modal-input {
 }
 
 .menu-item .menu-icon {
-    width: 16px;
-    height: 16px;
-    color: #EDEDED; /* Icon color */
+  width: 16px;
+  height: 16px;
+  color: #ededed; /* Icon color */
 }
 
 .menu-item.delete {
-    color: #e53e3e; /* Red color for delete */
+  color: #e53e3e; /* Red color for delete */
 }
 
 .menu-item.delete .menu-icon {
-    color: #e53e3e; /* Red color for delete icon */
+  color: #e53e3e; /* Red color for delete icon */
 }
 
 /* Adjust layout when menu is open */
 .later-tasks-card.expanded .later-tasks-card-emoji-text-container {
-    width: 100%; /* Allow text container to take full width */
-    margin-bottom: 16px; /* Add space between text and menu */
+  width: 100%; /* Allow text container to take full width */
+  margin-bottom: 16px; /* Add space between text and menu */
 }
 
 .later-tasks-card-emoji-text {
@@ -1036,7 +1015,7 @@ textarea.modal-input {
   left: -80%;
   transform: translateX(-50%);
   margin-bottom: 6px;
-  background-color: #181A1C;
+  background-color: #181a1c;
   border: 1px solid #232526;
   width: 200px;
   border-radius: 8px;
@@ -1054,7 +1033,7 @@ textarea.modal-input {
 }
 
 .delete-confirmation-text {
-  color: #EDEDED;
+  color: #ededed;
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 12px;
@@ -1070,7 +1049,7 @@ textarea.modal-input {
 
 .confirm-delete-button {
   background-color: #e53e3e;
-  color: #EDEDED;
+  color: #ededed;
   border: none;
   border-radius: 4px;
   padding: 4px 8px;
@@ -1105,13 +1084,12 @@ textarea.modal-input {
   top: 120px;
   left: 50%;
   transform: translateX(-50%);
-  
+
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
   z-index: 2000;
   pointer-events: none;
-
 }
 
 .notification-logo {
@@ -1119,8 +1097,8 @@ textarea.modal-input {
 }
 
 .task-notification {
-  background-color: #181A1C;
-  color: #EDEDED;
+  background-color: #181a1c;
+  color: #ededed;
   padding: 0.6rem 1.4rem;
   border-radius: 99px;
   font-size: 0.875rem;
@@ -1129,11 +1107,11 @@ textarea.modal-input {
   pointer-events: none;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   display: flex;
-    justify-content: center;
+  justify-content: center;
   align-items: center;
   gap: 0.625rem;
 }
-  
+
 /* Add this media query at the end of the file */
 /* @media screen and (max-width: 625px) {
 
@@ -1149,19 +1127,17 @@ textarea.modal-input {
 
 } */
 
-
-
 .tooltip-wrap {
-    position: relative;
+  position: relative;
   display: inline-block;
 }
 
 .tooltip-button {
   visibility: hidden;
   opacity: 0;
-  background-color: #181A1C;
+  background-color: #181a1c;
   border: 1px solid #232526;
-  color: #EDEDED;
+  color: #ededed;
   text-align: center;
   padding: 6px 10px;
   border-radius: 8px;
