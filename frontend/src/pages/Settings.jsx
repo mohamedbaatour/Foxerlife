@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion , AnimatePresence } from 'framer-motion';
+
 
 import './Settings.css';
 
 import { ReactComponent as SettingsIcon } from '../icones/settings.svg';
-import { ReactComponent as ArrowDownIcon } from '../icones/arrow-down.svg';
+import { ReactComponent as ExportIcon } from '../icones/export.svg';
+import { ReactComponent as ImportIcon } from '../icones/import.svg';
+import { ReactComponent as LogoIcon } from '../icones/icon.svg';
 
 
 const Settings = () => {
@@ -33,6 +36,8 @@ const Settings = () => {
       return savedCustomCursor ? savedCustomCursor : "on"; // Default to on if not found
     });
     
+    const [notifications, setNotifications] = useState([]);
+
     useEffect(() => {
       localStorage.setItem("timeFormat", timeFormat);
     }, [timeFormat]);
@@ -48,6 +53,15 @@ const Settings = () => {
     useEffect(() => {
       localStorage.setItem("autoArchive", autoArchive);
     }, [autoArchive]);
+
+    // Helper to show notification
+    const showNotification = (message) => {
+      const id = Date.now();
+      setNotifications((prev) => [...prev, { id, message }]);
+      setTimeout(() => {
+        setNotifications((prev) => prev.filter((n) => n.id !== id));
+      }, 3000);
+    };
 
     const handleTimeFormatChange = (event) => {
       setTimeFormat(event.target.value);
@@ -79,6 +93,62 @@ const Settings = () => {
       window.dispatchEvent(new CustomEvent("customCursorChanged", { detail: newValue }));
     };
 
+    const exportTasks = () => {
+      const laterTasks = JSON.parse(localStorage.getItem("laterTasks") || "[]");
+      const archivedTasks = JSON.parse(localStorage.getItem("archivedTasks") || "[]");
+      const nowTask = JSON.parse(localStorage.getItem("nowTask") || "null");
+
+      const exportData = {
+        laterTasks,
+        archivedTasks,
+        nowTask: nowTask ? nowTask : null,
+        exportedAt: new Date().toISOString(),
+      };
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", "foxerlife_tasks_export.json");
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+
+      showNotification("Your tasks are packed and ready to go!");
+    };
+
+    const handleImportTasks = (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+
+          if (
+            typeof data === "object" &&
+            (Array.isArray(data.laterTasks) || Array.isArray(data.archivedTasks) || data.nowTask)
+          ) {
+            if (Array.isArray(data.laterTasks)) localStorage.setItem("laterTasks", JSON.stringify(data.laterTasks));
+            if (Array.isArray(data.archivedTasks)) localStorage.setItem("archivedTasks", JSON.stringify(data.archivedTasks));
+            if (data.nowTask && typeof data.nowTask === "object") {
+              localStorage.setItem("nowTask", JSON.stringify(data.nowTask));
+            } else {
+              localStorage.removeItem("nowTask");
+            }
+
+            showNotification("Fox unpacked your tasks—you're all set!");
+            setTimeout(() => window.location.reload(), 1200); // Give user time to see notification
+          } else {
+            showNotification("Hmm… Fox can't read this file. Try a valid task file");
+          }
+        } catch (err) {
+          showNotification("Fox couldn't read the file... Mind double-checking it?");
+        }
+      };
+      reader.readAsText(file);
+    };
+
     return (
       <motion.div
         className="settings-page-container"
@@ -93,7 +163,7 @@ const Settings = () => {
         </div>
         <div className="settings-options">
           <div className="settings-option">
-            <p className="settings-option-text">Time format</p>
+            <p className="settings-option-text">Time Format</p>
             <select
               className="settings-dropdown"
               value={timeFormat}
@@ -104,7 +174,7 @@ const Settings = () => {
             </select>
           </div>
           <div className="settings-option">
-            <p className="settings-option-text">Default task length</p>
+            <p className="settings-option-text">Default Task Length</p>
             <select
               className="settings-dropdown"
               value={defaultTaskLength}
@@ -143,9 +213,67 @@ const Settings = () => {
               <option value="off">OFF</option>
             </select>
           </div>
+          <div className="settings-option">
+          <p className="settings-option-text">Export Tasks</p>
+            <button className="export-import-button" onClick={exportTasks}>
+              <ExportIcon className="export-import-icon" />
+              Export Tasks
+            </button>
+          </div>
+          <div className="settings-option">
+          <p className="settings-option-text">Import Tasks</p>
+          
+          <input
+            type="file"
+            accept=".json,application/json"
+            style={{ display: "none" }}
+            id="import-tasks-input"
+            onChange={handleImportTasks}
+          />
+          <button
+            className="export-import-button"
+            onClick={() => document.getElementById("import-tasks-input").click()}
+          >
+            <ImportIcon className="export-import-icon" />
+            Import Tasks
+          </button>
+          </div>
         </div>
+        <div className="notifications-container">
+        <AnimatePresence>
+          {notifications.map((notification) => (
+            <motion.div
+              key={notification.id}
+              className="task-notification"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <LogoIcon className="notification-logo" />
+              {notification.message}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
       </motion.div>
     );
 }
 
 export default Settings;
+
+// Optionally, add some CSS for the button:
+// .settings-export-button {
+//   padding: 8px 18px;
+//   border-radius: 8px;
+//   background: #119dff;
+//   color: #fff;
+//   border: none;
+//   font-weight: 600;
+//   cursor: pointer;
+//   margin-top: 12px;
+//   transition: background 0.2s;
+// }
+// .settings-export-button:hover {
+//   background: #0b7bc1;
+// }
