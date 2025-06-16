@@ -33,6 +33,7 @@ import { CSS } from "@dnd-kit/utilities";
 import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 
 const Tasks = () => {
+  
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState(
     localStorage.getItem("taskTitle") || ""
@@ -211,6 +212,8 @@ const Tasks = () => {
         setTaskDescription("");
         setIsDescriptionSuggested(true);
         setIsGeneratingDesc(false);
+        setDescChroma(true);
+        setTimeout(() => setDescChroma(false), 900); // Reset after animation
       }
 
       const suggestedEmoji = await generateEmoji(value);
@@ -218,10 +221,14 @@ const Tasks = () => {
 
       const suggestedDuration = await estimateDuration(value);
       setTaskDuration(suggestedDuration);
+      setDurationChroma(true);
+      setTimeout(() => setDurationChroma(false), 900);
 
       const aiPriority = await generatePriority(value);
       setTaskPriority(aiPriority);
       localStorage.setItem("taskPriority", aiPriority);
+      setPriorityChroma(true);
+      setTimeout(() => setPriorityChroma(false), 900);
     }, 1000);
   };
 
@@ -314,7 +321,7 @@ const Tasks = () => {
         {
           id: 1,
           title: "First Task",
-          description: "My first task's description is long, so long...",
+          description: "My first task's description is long, so long",
           time: "0h 40m",
           emoji: "😃",
           priority: "Medium",
@@ -323,7 +330,7 @@ const Tasks = () => {
         {
           id: 2,
           title: "Second Task",
-          description: "My second task's description is long, so long...",
+          description: "My second task's description is long, so long",
           time: "0h 10m",
           emoji: "🤔",
           priority: "Low",
@@ -332,7 +339,7 @@ const Tasks = () => {
         {
           id: 3,
           title: "Third Task",
-          description: "My third task's description is long, so long...",
+          description: "My third task's description is long, so long",
           time: "1h 20m",
           emoji: "😎",
           priority: "High",
@@ -350,9 +357,9 @@ const Tasks = () => {
   const [isDragging, setIsDragging] = useState(false);
 
   const menuVariants = {
-    hidden: { opacity: 0, y: -10, pointerEvents: "none" },
-    visible: { opacity: 1, y: 0, pointerEvents: "auto" },
-    exit: { opacity: 0, y: 10, pointerEvents: "none" },
+    hidden: { opacity: 0, pointerEvents: "none" },
+    visible: { opacity: 1, pointerEvents: "auto" },
+    exit: { opacity: 0, pointerEvents: "none" },
   };
 
   const SortableItem = ({ task }) => {
@@ -415,10 +422,10 @@ const Tasks = () => {
 
     const hideDeleteConfirm = () => {
       setIsConfirmationClosing(true);
-      setTimeout(() => {
+
         setShowDeleteConfirmation(false);
         setIsConfirmationClosing(false);
-      }, 300);
+
     };
 
     const confirmDelete = (taskId) => {
@@ -427,7 +434,7 @@ const Tasks = () => {
       );
       if (menuElement) {
         menuElement.classList.add("fading-out");
-        setTimeout(() => {
+
           // Update laterTasks, searchResults, and filteredResults
           setLaterTasks((prevTasks) =>
             prevTasks.filter((task) => task.id !== taskId)
@@ -440,7 +447,7 @@ const Tasks = () => {
           );
           showNotification("Task deleted");
           setIsMenuOpen(false);
-        }, 300);
+
       } else {
         setLaterTasks((prevTasks) =>
           prevTasks.filter((task) => task.id !== taskId)
@@ -473,7 +480,7 @@ const Tasks = () => {
     };
 
     const maxDescriptionLength =
-      "My second task's description is long is so long".length;
+      "My second task's description is long is so lo".length;
 
     return (
       <div
@@ -481,9 +488,9 @@ const Tasks = () => {
         style={style}
         {...attributes}
         className={isDragging ? "is-dragging" : ""}
-      >
+      > 
         <div
-          className={`later-tasks-card ${isMenuOpen ? "expanded" : ""}`}
+          className={`later-tasks-card`}
           key={task.id}
           id={`task-${task.id}`}
           onMouseEnter={() => !isDragging && setIsMenuOpen(true)}
@@ -590,14 +597,16 @@ const Tasks = () => {
                 className="task-card-menu"
                 initial="hidden"
                 animate="visible"
+                exit="hidden"
                 variants={menuVariants}
-                transition={{ duration: 0.22, ease: "easeIn" }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                
               >
                 <button
                   className="menu-item"
                   onClick={() => handleMoveToNow(task.id)}
                 >
-                  <NowIcon className="menu-icon" /> Move To Now
+                  <NowIcon className="menu-icon" /> Do Now
                 </button>
                 <button
                   className="menu-item"
@@ -620,7 +629,7 @@ const Tasks = () => {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 0.18 }}
+                        transition={{ duration: 0.2, ease: "easeInOut" }}
                       >
                         <p className="delete-confirmation-text">Are you sure?</p>
                         <div className="delete-confirmation-buttons">
@@ -647,6 +656,7 @@ const Tasks = () => {
         </div>
       </div>
     );
+
   };
 
   const sensors = useSensors(useSensor(PointerSensor));
@@ -1138,10 +1148,14 @@ const Tasks = () => {
 
     const style = {
       transform: CSS.Transform.toString(transform),
-      transition,
+      transition: isDragging
+        ? "none"
+        : "transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
     };
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [isConfirmationClosing, setIsConfirmationClosing] = useState(false);
 
     const toggleMenu = () => {
       if (isMenuOpen) {
@@ -1162,18 +1176,24 @@ const Tasks = () => {
       }
     };
 
+    const handleContentChange = (e, field) => {
+      const updatedValue = e.target.innerText;
+      const updatedTasks = archivedTasks.map((t) =>
+        t.id === task.id ? { ...t, [field]: updatedValue } : t
+      );
+      setArchivedTasks(updatedTasks);
+      localStorage.setItem("archivedTasks", JSON.stringify(updatedTasks));
+    };
+
     const handleRestoreToLater = (taskId) => {
       const taskToRestore = archivedTasks.find((task) => task.id === taskId);
 
       if (taskToRestore) {
         setLaterTasks((prevTasks) => [taskToRestore, ...prevTasks]);
-
         setArchivedTasks((prevTasks) =>
           prevTasks.filter((task) => task.id !== taskId)
         );
-
         showNotification("Task restored to Later");
-
         setIsMenuOpen(false);
       }
     };
@@ -1185,17 +1205,12 @@ const Tasks = () => {
         if (nowTask) {
           setLaterTasks((prevTasks) => [nowTask, ...prevTasks]);
         }
-
         setNowTask(taskToMove);
-
         setArchivedTasks((prevTasks) =>
           prevTasks.filter((task) => task.id !== taskId)
         );
-
         showNotification("Task revived!");
-
         setIsMenuOpen(false);
-
         window.dispatchEvent(
           new CustomEvent("nowTaskUpdated", {
             detail: taskToMove,
@@ -1203,9 +1218,6 @@ const Tasks = () => {
         );
       }
     };
-
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-    const [isConfirmationClosing, setIsConfirmationClosing] = useState(false);
 
     const showDeleteConfirm = (e) => {
       e.stopPropagation();
@@ -1224,23 +1236,11 @@ const Tasks = () => {
       setArchivedTasks((prevTasks) =>
         prevTasks.filter((task) => task.id !== taskId)
       );
-
       showNotification("Task deleted");
-
       setIsMenuOpen(false);
     };
 
-    const maxDescriptionLength = " task's description is long, so long..."
-      .length;
-
-    const handleContentChange = (e, field) => {
-      const updatedValue = e.target.innerText;
-      const updatedTasks = archivedTasks.map((t) =>
-        t.id === task.id ? { ...t, [field]: updatedValue } : t
-      );
-      setArchivedTasks(updatedTasks);
-      localStorage.setItem("archivedTasks", JSON.stringify(updatedTasks));
-    };
+    const maxDescriptionLength = " task's description is long, so long...".length;
 
     return (
       <div
@@ -1250,9 +1250,11 @@ const Tasks = () => {
         className={isDragging ? "is-dragging" : ""}
       >
         <div
-          className={`later-tasks-card ${isMenuOpen ? "expanded" : ""}`}
+          className={`later-tasks-card`}
           key={task.id}
           id={`archive-task-${task.id}`}
+          onMouseEnter={() => !isDragging && setIsMenuOpen(true)}
+          onMouseLeave={() => setIsMenuOpen(false)}
         >
           <div className="later-tasks-card-top-row">
             <div className="later-tasks-card-emoji-text-container">
@@ -1340,25 +1342,31 @@ const Tasks = () => {
                 </p>
               </div>
             </div>
-            <ArrowDownIcon
-              className={`tasks-arrow-down-icon ${isMenuOpen ? "rotated" : ""}`}
-              onClick={toggleMenu}
-            />
+
           </div>
 
+          <AnimatePresence>
           {isMenuOpen && (
-            <div className="task-card-menu">
+                          <motion.div
+                          className="task-card-menu"
+                          initial="hidden"
+                          animate="visible"
+                          exit="hidden"
+                          variants={menuVariants}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                          
+                        >
               <button
                 className="menu-item"
                 onClick={() => handleMoveToNowFromArchive(task.id)}
               >
-                <NowIcon className="menu-icon" /> Move To Now
+                <NowIcon className="menu-icon" /> Do Now
               </button>
               <button
                 className="menu-item"
                 onClick={() => handleRestoreToLater(task.id)}
               >
-                <LaterIcon className="menu-icon" /> Restore To Later
+                <LaterIcon className="menu-icon" /> Later
               </button>
               <div style={{ position: "relative" }}>
                 <button
@@ -1392,8 +1400,10 @@ const Tasks = () => {
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
+            
           )}
+          </AnimatePresence>
         </div>
       </div>
     );
@@ -1419,6 +1429,25 @@ const Tasks = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [activeFilter]); // Add activeFilter as dependency
+
+  const [descChroma, setDescChroma] = useState(false);
+const [durationChroma, setDurationChroma] = useState(false);
+const [priorityChroma, setPriorityChroma] = useState(false);
+const [aiIconActive, setAiIconActive] = useState(false);
+const [animateSort, setAnimateSort] = useState(false);
+
+  const handleAISort = () => {
+    const priorityOrder = { High: 0, Medium: 1, Low: 2 };
+    setLaterTasks((prev) =>
+      [...prev].sort(
+        (a, b) =>
+          (priorityOrder[a.priority] ?? 3) - (priorityOrder[b.priority] ?? 3)
+      )
+    );
+    showNotification("Tasks sorted");
+    setAiIconActive(true);
+    setTimeout(() => setAiIconActive(false), 2000);
+  };
 
   return (
     <motion.div
@@ -1532,6 +1561,7 @@ const Tasks = () => {
             </div>
             <div className="later-tasks-CTA">
               <div className="search-filter-container">
+                
                 <div className="tooltip-wrap">
                   <div className="tooltip-button">S</div>
                   <div className="search-container" ref={searchContainerRef}>
@@ -1628,6 +1658,12 @@ const Tasks = () => {
                     </AnimatePresence>
                   </div>
                 </div>
+                <div className="tooltip-wrap">
+                <div className="tooltip-button">Sort By Priority</div>
+                <button className="ai-button" onClick={handleAISort}>
+                  <AIIcon className={`ai-icon${aiIconActive ? " ai-icon-active" : ""}`} />
+                </button>
+                </div>
               </div>
 
               <div className="tooltip-wrap">
@@ -1691,10 +1727,11 @@ const Tasks = () => {
                       removingTaskId === task.id ? null : (
                         <motion.div
                           key={task.id}
+                          layout
                           initial={{ opacity: 0, y: 30 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -30 }}
-                          transition={{ duration: 0.3 }}
+                          transition={isDragging ? { duration: 0 } : { duration: 0.3 }}
                         >
                           <SortableItem task={task} />
                         </motion.div>
@@ -1739,7 +1776,6 @@ const Tasks = () => {
           {isArchiveOpen && (
             <>
               <DndContext
-                sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}
               >
@@ -1821,13 +1857,14 @@ const Tasks = () => {
 
                   <div className="form-group">
                     <label>Description</label>
+                    <div className="text-area-wrapper">
                     <textarea
                       placeholder={
                         isDescriptionSuggested
                           ? suggestionText
                           : "My first task's description..."
                       }
-                      className={`modal-input`}
+               className={`modal-input${descChroma ? " chroma-text" : ""}`}
                       rows="2"
                       maxLength={60}
                       value={taskDescription}
@@ -1835,6 +1872,8 @@ const Tasks = () => {
                       onKeyDown={handleDescriptionKeyDown}
                       ref={descriptionInputRef}
                     ></textarea>
+                    </div>
+       
                     {formSubmitted && errors.description && (
                       <p className="error-message">{errors.description}</p>
                     )}
@@ -1843,11 +1882,10 @@ const Tasks = () => {
                   <div className="form-row">
                     <div className="form-group half">
                       <label>Duration</label>
+                      <div className="text-area-wrapper">
                       <input
                         type="text"
-                        className={`modal-input ${
-                          formSubmitted && errors.duration ? "input-error" : ""
-                        }`}
+                        className={`modal-input${durationChroma ? " chroma-text" : ""}`}
                         value={taskDuration}
                         onChange={(e) => setTaskDuration(e.target.value)}
                         ref={durationInputRef}
@@ -1856,13 +1894,15 @@ const Tasks = () => {
                       {formSubmitted && errors.duration && (
                         <p className="error-message">{errors.duration}</p>
                       )}
+                      </div>
                     </div>
 
                     <div className="form-group half">
                       <label htmlFor="priority">Priority</label>
+                      <div className="text-area-wrapper">
                       <select
                         id="priority"
-                        className="modal-input"
+                        className={`modal-input${priorityChroma ? " chroma-text" : ""}`}
                         value={taskPriority}
                         onChange={(e) => setTaskPriority(e.target.value)}
                       >
@@ -1870,6 +1910,7 @@ const Tasks = () => {
                         <option value="Medium">Medium</option>
                         <option value="High">High</option>
                       </select>
+                    </div>
                     </div>
                   </div>
 
