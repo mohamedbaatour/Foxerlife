@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion , AnimatePresence } from 'framer-motion';
 
 
+
 import './Settings.css';
 
 import { ReactComponent as SettingsIcon } from '../icones/settings.svg';
 import { ReactComponent as ExportIcon } from '../icones/export.svg';
 import { ReactComponent as ImportIcon } from '../icones/import.svg';
 import { ReactComponent as LogoIcon } from '../icones/icon.svg';
+import { ReactComponent as BoxIcon } from '../icones/box.svg';
+import { ReactComponent as ColorLensIcon } from '../icones/color-lens.svg';
 
 
 const Settings = () => {
@@ -206,12 +209,20 @@ const Settings = () => {
               <option value="off">ON</option>
             </select>
           </div>
+          <div className='settings-seperator'>
+          <ColorLensIcon className='settings-seperator-icon' />
+          <p className='settings-seperator-text'>Personalization</p>
+          </div>
           <div className="settings-option">
             <p className="settings-option-text">Custom Cursor</p>
             <select className="settings-dropdown" value={customCursor} onChange={handleCustomCursorChange}>
               <option value="on">ON</option>
               <option value="off">OFF</option>
             </select>
+          </div>
+          <div className='settings-seperator'>
+          <BoxIcon className='settings-seperator-icon' />
+          <p className='settings-seperator-text'>Task Management</p>
           </div>
           <div className="settings-option">
           <p className="settings-option-text">Export Tasks</p>

@@ -109,8 +109,9 @@
   align-items: center;
 }
 
-.navbar-menu-link{
-  fill: #A1A1A1;
+.navbar-menu-link:hover {
+  color: #c4c4c4;
+  
 }
 
 .navbar-menu-link.active {

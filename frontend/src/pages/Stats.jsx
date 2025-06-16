@@ -9,6 +9,8 @@ import { ReactComponent as LaterIcon } from "../icones/later.svg";
 
 import {ReactComponent as LogoIcon } from "../icones/icon.svg";
 
+import { ReactComponent as ArchiveIcon } from "../icones/archive.svg";
+
 import { motion } from "framer-motion";
 
 const Stats = () => {
@@ -144,18 +146,21 @@ const Stats = () => {
             <p className="general-stats-card-number">{formatTime(timeSpent)}</p>
           </div>
         </div>
+        {/* Completed Tasks Section */}
         <div className="completed-tasks-section">
           <div className="completed-tasks-header">
             <CheckMarkIcon className="completed-tasks-header-icon" />
             <p className="completed-tasks-header-text">Completed tasks</p>
           </div>
-          <div className="tasks-header-columns">
-            <div className="left-column"></div>
-            <div className="right-columns">
-              <span>Completed</span>
-              <span>Spent</span>
+          {completedTasks.length > 0 && (
+            <div className="tasks-header-columns">
+              <div className="left-column"></div>
+              <div className="right-columns">
+                <span>Completed</span>
+                <span>Spent</span>
+              </div>
             </div>
-          </div>
+          )}
           <div className="tasks-completed-container">
             {completedTasks.length > 0 ? (
               completedTasks.map((task) => (
@@ -180,19 +185,23 @@ const Stats = () => {
             )}
           </div>
         </div>
+
+        {/* Remaining Tasks Section */}
         <div className="remaining-tasks-section">
           <div className="remaining-tasks-header">
             <LaterIcon className="remaining-tasks-header-icon" />
             <p className="remaining-tasks-header-text">Remaining tasks</p>
           </div>
-          <div className="tasks-header-columns">
-            <div className="left-column"></div>
-            <div className="right-columns">
-              <span>Planned</span>
-              <span>Spent</span>
-              <span>Remaining</span>
+          {(laterTasks.length > 0 || nowTask) && (
+            <div className="tasks-header-columns">
+              <div className="left-column"></div>
+              <div className="right-columns">
+                <span>Planned</span>
+                <span>Spent</span>
+                <span>Remaining</span>
+              </div>
             </div>
-          </div>
+          )}
           <div className="tasks-remaining-container">
             {nowTask &&
               !completedTasks.some((task) => task.id === nowTask.id) && (
@@ -242,6 +251,48 @@ const Stats = () => {
                 <div className="no-remaining-tasks">
                   <LogoIcon className="logo-icon" />
                 Nothing left to do — go enjoy a snack!
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Archived Tasks Section */}
+        <div className="remaining-tasks-section">
+          <div className="remaining-tasks-header">
+            <ArchiveIcon className="remaining-tasks-header-icon" />
+            <p className="remaining-tasks-header-text">Archived tasks</p>
+          </div>
+          {archivedTasks.length > 0 && (
+            <div className="tasks-header-columns">
+              <div className="left-column"></div>
+              <div className="right-columns">
+                <span>Planned</span>
+                <span>Spent</span>
+                <span>Remaining</span>
+              </div>
+            </div>
+          )}
+          <div className="tasks-remaining-container">
+            {archivedTasks.length > 0 ? (
+              archivedTasks.map((task) => (
+                <div key={task.id} className="task-remaining-card">
+                  <div className="task-remaining-info">
+                    <span className="task-remaining-card-emoji">
+                      {task.emoji}
+                    </span>
+                    <p className="task-remaining-card-title">{task.title}</p>
+                  </div>
+                  <div className="task-remaining-times">
+                    <p className="task-remaining-time">{task.time}</p>
+                    <p className="task-remaining-duration">0h 0m</p>
+                    <p className="task-remaining-duration">{task.time}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="no-remaining-tasks">
+                <LogoIcon className="logo-icon" />
+                No archived tasks yet!
               </div>
             )}
           </div>

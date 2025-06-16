@@ -1,4 +1,4 @@
-import logo from './logo.svg';
+import logo from "./logo.svg";
 import React, { useState, useRef } from "react";
 import "./App.css";
 import Navbar from "./components/Navbar";
@@ -16,7 +16,9 @@ import Stats from "./pages/Stats";
 import Settings from "./pages/Settings";
 import { AnimatePresence } from "framer-motion";
 import { frame, motion, useSpring } from "motion/react";
-import CustomCursor from './components/CustomCursor'; // Import the new component
+import CustomCursor from "./components/CustomCursor"; // Import the new component
+
+import ThankYou from "./pages/ThankYou.jsx";
 
 function App() {
   const location = useLocation();
@@ -170,20 +172,23 @@ function App() {
       );
   }, []);
 
+  // Check if current path is thank-you page
+  const isThankYouPage = location.pathname === "/thank-you";
+
   return (
     <div className="App">
       {customCursor === "on" && <CustomCursor />}
       <Navbar />
-      {/* Timer component now persists across all pages */}
       <div className="main-content-container">
-        <TimerWhiteNoises nowTask={nowTask} />
-        {/* Wrap Routes in a new container div */}
+        {/* Only show TimerWhiteNoises if not on thank-you page */}
+        {!isThankYouPage && <TimerWhiteNoises nowTask={nowTask} />}
 
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<Tasks setNowTask={setNowTask} />} />
             <Route path="/stats" element={<Stats />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/thank-you" element={<ThankYou />} />
           </Routes>
         </AnimatePresence>
       </div>
