@@ -1727,7 +1727,7 @@ const [animateSort, setAnimateSort] = useState(false);
                       removingTaskId === task.id ? null : (
                         <motion.div
                           key={task.id}
-                          layout
+                          {...(!isDragging ? { layout: true } : {})} // Only apply layout when NOT dragging
                           initial={{ opacity: 0, y: 30 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -30 }}
