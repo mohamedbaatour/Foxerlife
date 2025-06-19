@@ -7,7 +7,6 @@
   width: 100vw;
   color: #ededed;
   font-family: "Manrope", sans-serif;
-
 }
 
 .title-container {
@@ -16,15 +15,16 @@
   align-items: center;
   justify-content: center;
   gap: 16px;
-margin-top: 48px;
+  margin-top: 48px;
 }
 
 .title {
-    font-size: 48px;
-    font-weight: 800;
-    color: #ededed;
-    margin-bottom: 32px;
-    letter-spacing: -1px;
+  font-size: 48px;
+  font-weight: 800;
+  color: #ededed;
+  margin-bottom: 32px;
+  letter-spacing: -1px;
+  text-align: center;
 }
 
 .subtitle {
@@ -41,4 +41,61 @@ margin-top: 48px;
   margin-top: -24px;
 }
 
+.thank-you-reddit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1152px;
+  margin-left: 32px;
+  margin-top: 32px;
+}
 
+.thank-you-reddit-title {
+  display: flex;
+  gap: 8px;
+  justify-content: start;
+  margin-top: 24px;
+  width: 100%;
+  align-items: center;
+}
+
+.thank-you-reddit-title-text {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.thank-you-reddit-title-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.thank-you-reddit-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: left;
+  align-items: center;
+  margin-top: 32px;
+  width: 100%;
+  max-width: 1152px;
+  gap: 80px;
+}
+
+.thank-you-reddit-link {
+  color: #999999;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 16px;
+  display: inline-block;
+  margin-right: 0;
+  margin-bottom: 8px;
+  text-align: center;
+  transition: color 0.3s;
+  word-break: break-all;
+}
+
+.thank-you-reddit-link:hover {
+  color: #ff7849;
+  text-decoration: underline;
+}

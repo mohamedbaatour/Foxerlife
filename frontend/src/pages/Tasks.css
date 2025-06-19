@@ -90,7 +90,7 @@ background-color: transparent;
 .now-tasks-card-title {
   color: #ededed;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .now-tasks-card-time {
@@ -170,16 +170,12 @@ background-color: transparent;
 }
 
 .task-card-menu {
-  margin-top: 0px;
   border-radius: 12px;
   display: flex;
   flex-direction: column; /* Arrange buttons horizontally */
   gap: 10px; /* Space between buttons */
-  padding: 8px 16px; /* Padding inside the menu */
+  padding: 8px 8px 8px 0px; /* Padding inside the menu */
   z-index: 10; /* Ensure menu is above other elements */
-  align-self: center; /* Center horizontally in the parent */
-  margin-left: auto; /* These two margin properties help with centering */
-  margin-right: auto;
   justify-content: center; /* Center the buttons within the menu */
 }
 
@@ -318,7 +314,7 @@ background-color: transparent;
 .later-tasks-card-title {
   color: #ededed;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   transition: all 0.3s ease-in-out;
 }
 
@@ -955,7 +951,7 @@ background-color: transparent;
 .delete-confirmation-popup {
   position: absolute;
   bottom: 100%;
-  left: -100%;
+  left: -118%;
   transform: translateX(-50%);
   margin-bottom: 6px;
   background-color: #181a1c;

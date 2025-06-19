@@ -28,8 +28,7 @@ import cricket from "../../src/white-noises/cricket.mp3";
 
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-
-
+import { useNavigate } from "react-router-dom"; // Add this import
 
 // Define sounds array with their properties
 const sounds = [
@@ -40,32 +39,30 @@ const sounds = [
   { name: "Airport buzz", src: airportSound, Icon: PlaneIcon },
 ];
 
-
-
-
 // Update the JSX to render multiple notifications
 
 // Add a helper function to parse time string (e.g., "3h 45m") to seconds
 const parseDurationToSeconds = (timeString) => {
   if (!timeString) return 0;
-  
+
   let totalSeconds = 0;
   const hourMatch = timeString.match(/(\d+)h/);
   const minuteMatch = timeString.match(/(\d+)m/);
-  
+
   if (hourMatch && hourMatch[1]) {
     totalSeconds += parseInt(hourMatch[1]) * 3600;
   }
-  
+
   if (minuteMatch && minuteMatch[1]) {
     totalSeconds += parseInt(minuteMatch[1]) * 60;
   }
-  
+
   return totalSeconds;
 };
 
 // Update the component to accept nowTask prop
 const TimerWhiteNoises = ({ nowTask }) => {
+  const navigate = useNavigate(); // Add this line
 
   const [timeSpent, setTimeSpent] = useState(() => {
     if (!nowTask) return 0;
@@ -77,31 +74,29 @@ const TimerWhiteNoises = ({ nowTask }) => {
   // Add a new state for the shortcut popup visibility
   const [showShortcutPopup, setShowShortcutPopup] = useState(false);
 
-    
-
   // Initialize timer based on nowTask duration and saved state if available
-const getInitialTime = () => {
-  const savedTime = localStorage.getItem("timerState");
-  if (savedTime) {
-    return parseInt(savedTime);
-  }
-  if (nowTask && nowTask.time) {
-    const totalTime = parseDurationToSeconds(nowTask.time);
-          const taskTimeKey = `taskTimeSpent_${nowTask.id}`;
-          const savedTimeSpent = localStorage.getItem(taskTimeKey);
-          return totalTime - (savedTimeSpent? parseInt(savedTimeSpent) : 0);
-  }
-  const defaultLength = localStorage.getItem("defaultTaskLength");
-  return defaultLength ? parseInt(defaultLength) * 60 : 1500;
+  const getInitialTime = () => {
+    const savedTime = localStorage.getItem("timerState");
+    if (savedTime) {
+      return parseInt(savedTime);
+    }
+    if (nowTask && nowTask.time) {
+      const totalTime = parseDurationToSeconds(nowTask.time);
+      const taskTimeKey = `taskTimeSpent_${nowTask.id}`;
+      const savedTimeSpent = localStorage.getItem(taskTimeKey);
+      return totalTime - (savedTimeSpent ? parseInt(savedTimeSpent) : 0);
+    }
+    const defaultLength = localStorage.getItem("defaultTaskLength");
+    return defaultLength ? parseInt(defaultLength) * 60 : 1500;
   };
-  
+
   const [initialTime, setInitialTime] = useState(getInitialTime());
   const [timeRemaining, setTimeRemaining] = useState(getInitialTime());
 
-    const [isActive, setIsActive] = useState(() => {
-      const savedIsActive = localStorage.getItem("timerIsActive");
-      return savedIsActive === "true";
-    });
+  const [isActive, setIsActive] = useState(() => {
+    const savedIsActive = localStorage.getItem("timerIsActive");
+    return savedIsActive === "true";
+  });
 
   useEffect(() => {
     if (isActive && nowTask) {
@@ -169,8 +164,8 @@ const getInitialTime = () => {
       clearInterval(timerIntervalRef.current);
       setIsOvertime(true);
 
-            const autoArchive = localStorage.getItem("autoArchive");
-      
+      const autoArchive = localStorage.getItem("autoArchive");
+
       // If auto-archive is enabled, call endTimer immediately
       if (autoArchive === "on") {
         endTimer();
@@ -210,10 +205,10 @@ const getInitialTime = () => {
             setOvertimeSeconds(0); // Reset overtime counter
             // Optionally, you might want to reset the main timer or show a message here
             // setTimeRemaining(initialTime); // Example: reset to initial time
-                        const autoArchive = localStorage.getItem("autoArchive");
-                        if (autoArchive === "on") {
-                          endTimer();
-                        }
+            const autoArchive = localStorage.getItem("autoArchive");
+            if (autoArchive === "on") {
+              endTimer();
+            }
           }
           return newSeconds;
         });
@@ -1056,7 +1051,13 @@ const getInitialTime = () => {
         </div>
         <audio ref={audioRef} />
       </div>
-      <p className="special-thanks">Thanks r/idesigntech07 for helping improve FoxerLife!</p>
+      <p
+        className="special-thanks"
+        style={{ cursor: "pointer" }}
+        onClick={() => navigate("/thank-you")}
+      >
+        Special thanks page
+      </p>
       <div className="tasks-main-content-left-column">
         {/* Render stacked notifications */}
         <div className="notifications-container">

@@ -496,7 +496,6 @@ const Tasks = () => {
           onMouseEnter={() => !isDragging && setIsMenuOpen(true)}
           onMouseLeave={() => setIsMenuOpen(false)}
         >
-          <div className="later-tasks-card-top-row">
             <div className="later-tasks-card-emoji-text-container">
               <div className="later-tasks-card-emoji-container">
                 <SixDotsIcon
@@ -589,7 +588,7 @@ const Tasks = () => {
               </div>
             </div>
 
-          </div>
+
 
           <AnimatePresence>
             {isMenuOpen && (
@@ -1845,6 +1844,7 @@ const [animateSort, setAnimateSort] = useState(false);
                       className={`modal-input ${
                         formSubmitted && errors.title ? "input-error" : ""
                       }`}
+                      maxLength={23}
                       value={taskTitle}
                       onChange={handleTitleChange}
                       ref={titleInputRef}
