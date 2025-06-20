@@ -175,6 +175,33 @@ function App() {
   // Check if current path is thank-you page
   const isThankYouPage = location.pathname === "/thank-you";
 
+  const [isTimerActive, setIsTimerActive] = useState(() => {
+    return localStorage.getItem("timerIsActive") === "true";
+  });
+
+  React.useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === "timerIsActive") {
+        setIsTimerActive(e.newValue === "true");
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+
+    // Listen for same-tab updates (from TimerWhiteNoises)
+    const handleTimerActiveChange = (e) => {
+      setIsTimerActive(e.detail);
+    };
+    window.addEventListener("timer-active-changed", handleTimerActiveChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener(
+        "timer-active-changed",
+        handleTimerActiveChange
+      );
+    };
+  }, []);
+
   return (
     <div className="App">
       {customCursor === "on" && <CustomCursor />}
@@ -185,7 +212,12 @@ function App() {
 
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<Tasks setNowTask={setNowTask} />} />
+            <Route
+              path="/"
+              element={
+                <Tasks setNowTask={setNowTask} isTimerActive={isTimerActive} />
+              }
+            />
             <Route path="/stats" element={<Stats />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/thank-you" element={<ThankYou />} />

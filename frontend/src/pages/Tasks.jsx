@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./Tasks.css";
-import TimerWhiteNoises from "../components/Timer-WhiteNoise.jsx";
 import { ReactComponent as NowIcon } from "../icones/now.svg";
 import { ReactComponent as ArrowDownIcon } from "../icones/arrow-down.svg";
 import { ReactComponent as LaterIcon } from "../icones/later.svg";
@@ -32,7 +31,7 @@ import { CSS } from "@dnd-kit/utilities";
 
 import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 
-const Tasks = () => {
+const Tasks = ({ isTimerActive }) => {
   
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState(
@@ -1222,13 +1221,12 @@ const Tasks = () => {
       e.stopPropagation();
       setShowDeleteConfirmation(true);
     };
-
     const hideDeleteConfirm = () => {
       setIsConfirmationClosing(true);
-      setTimeout(() => {
+
         setShowDeleteConfirmation(false);
         setIsConfirmationClosing(false);
-      }, 300);
+
     };
 
     const confirmDelete = (taskId) => {
@@ -1376,11 +1374,13 @@ const Tasks = () => {
                 </button>
 
                 {showDeleteConfirmation && (
-                  <div
-                    className={`delete-confirmation-popup ${
-                      isConfirmationClosing ? "fading-out" : ""
-                    }`}
-                  >
+                  <motion.div
+                  className={`delete-confirmation-popup`}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                >
                     <p className="delete-confirmation-text">Are you sure?</p>
                     <div className="delete-confirmation-buttons">
                       <button
@@ -1396,7 +1396,7 @@ const Tasks = () => {
                         Delete
                       </button>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
               </div>
             </motion.div>
@@ -1448,6 +1448,7 @@ const [animateSort, setAnimateSort] = useState(false);
     setTimeout(() => setAiIconActive(false), 2000);
   };
 
+
   return (
     <motion.div
       className="tasks-page-container"
@@ -1480,7 +1481,7 @@ const [animateSort, setAnimateSort] = useState(false);
             <p className="now-tasks">Now</p>
           </div>
           {nowTask ? (
-            <div className="now-tasks-card">
+            <div className={`now-tasks-card${isTimerActive && nowTask ? " timer-active" : ""}`}>
               <div className="now-tasks-card-emoji-text-container">
                 {typeof nowTask.emoji === "string" &&
                 nowTask.emoji.startsWith("http") ? (
@@ -1805,7 +1806,7 @@ const [animateSort, setAnimateSort] = useState(false);
         {showModal && (
           <motion.div
             className={`modal-overlay${isClosing ? " closing" : ""}`}
-            initial={{ y: -50, opacity: 0 }}
+            initial={{ y: 0, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}

@@ -61,7 +61,7 @@ const parseDurationToSeconds = (timeString) => {
 };
 
 // Update the component to accept nowTask prop
-const TimerWhiteNoises = ({ nowTask }) => {
+const TimerWhiteNoises = ({ nowTask, onTimerActiveChange }) => {
   const navigate = useNavigate(); // Add this line
 
   const [timeSpent, setTimeSpent] = useState(() => {
@@ -835,6 +835,16 @@ const TimerWhiteNoises = ({ nowTask }) => {
       localStorage.setItem = originalSetItem;
     };
   }, [isActive, nowTask]);
+
+  useEffect(() => {
+    if (typeof onTimerActiveChange === "function") {
+      onTimerActiveChange(isActive);
+    }
+  }, [isActive, onTimerActiveChange]);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("timer-active-changed", { detail: isActive }));
+  }, [isActive]);
 
   return (
     <div className="tasks-main-content-left-column">
