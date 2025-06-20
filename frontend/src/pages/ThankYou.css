@@ -79,7 +79,7 @@
   margin-top: 32px;
   width: 100%;
   max-width: 1152px;
-  gap: 80px;
+  gap: 32px 80px;
 }
 
 .thank-you-reddit-link {
