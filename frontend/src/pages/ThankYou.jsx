@@ -25,7 +25,7 @@ const ThankYou = () => {
       link: "https://www.reddit.com/user/believer-200/",
     },
     {
-      name: "Little_Marzipan_2087",
+      name: "little_marzipan_2087",
       link: "https://www.reddit.com/user/Little_Marzipan_2087/",
     },
     {
@@ -42,9 +42,9 @@ const ThankYou = () => {
       exit={{ y: 50, opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
+           <div style={{fontSize: '4rem'}}>🙏🏻</div>
       <div className="title-container">
-        <img className="thank-you-logo-icon" src={LogoIcon} alt="foxi" />
-        <p className="title">Thanks To Our Early Explorers!</p>
+        <p className="title">Thanks To Our Early Foxers </p>
       </div>
       <p className="subtitle">This journey wouldn't be the same without you.</p>
       <div className="thank-you-reddit">
@@ -65,7 +65,7 @@ const ThankYou = () => {
               rel="noopener noreferrer"
               className="thank-you-reddit-link"
             >
-              {user.name}
+              u/ {user.name}
             </a>
           ))}
         </div>
