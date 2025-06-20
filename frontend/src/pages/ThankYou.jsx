@@ -20,7 +20,6 @@ const ThankYou = () => {
       link: "https://www.reddit.com/user/Enough-Muffin-5054/",
     },
     { name: "idesigntech07", link: "https://www.reddit.com/user/idesigntech07/" },
-    { name: "idesigntech07", link: "https://www.reddit.com/user/idesigntech07/" },
     {
       name: "believer-200",
       link: "https://www.reddit.com/user/believer-200/",
