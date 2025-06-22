@@ -940,6 +940,27 @@ const Tasks = ({ isTimerActive }) => {
   }, [showModal, isSearchExpanded, showEmojiPicker]);
 
   const handleOverlayClick = (event) => {
+    // If the user is selecting text inside an input or textarea, don't close
+    const active = document.activeElement;
+    if (
+      (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA")) &&
+      (typeof active.selectionStart === "number" && typeof active.selectionEnd === "number") &&
+      active.selectionStart !== active.selectionEnd
+    ) {
+      return;
+    }
+
+    // For contenteditable (e.g., if you use it in your modal)
+    const selection = window.getSelection();
+    if (
+      selection &&
+      selection.toString().length > 0 &&
+      (selection.anchorNode && selection.anchorNode.parentElement &&
+        selection.anchorNode.parentElement.closest('.modal-content'))
+    ) {
+      return;
+    }
+
     if (showEmojiPicker) {
       setShowEmojiPicker(false);
       return;

@@ -65,7 +65,7 @@ const ThankYou = () => {
               rel="noopener noreferrer"
               className="thank-you-reddit-link"
             >
-              u/ {user.name}
+              u/{user.name}
             </a>
           ))}
         </div>

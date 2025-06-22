@@ -886,6 +886,7 @@ background-color: transparent;
   height: 100%;
   margin-right: -7px;
   cursor: default;
+  color: #ededed;
 }
 
 .now-tasks-card-emoji-text {
@@ -894,6 +895,7 @@ background-color: transparent;
   align-items: center;
   justify-content: center;
   cursor: default;
+  color: #ededed;
 }
 @keyframes archiveCardFadeIn {
   from {
