@@ -124,7 +124,7 @@ const Navbar = () => {
     const fetchWeatherByIP = async () => {
       setLocation("Fetching location by IP...");
       try {
-        const ipGeoResponse = await fetch("http://ip-api.com/json");
+        const ipGeoResponse = await fetch("https://ipwho.is/");
         if (!ipGeoResponse.ok) {
           throw new Error("Failed to fetch IP geolocation data");
         }
@@ -135,8 +135,8 @@ const Navbar = () => {
         const countryName = ipGeoData.country || "Unknown Country";
         setLocation(`${cityName}, ${countryName}`);
 
-        if (ipGeoData.status === "success" && ipGeoData.lat && ipGeoData.lon) {
-          fetchWeatherData(ipGeoData.lat, ipGeoData.lon);
+        if (ipGeoData.success && ipGeoData.latitude && ipGeoData.longitude) {
+          fetchWeatherData(ipGeoData.latitude, ipGeoData.longitude);
         } else {
           throw new Error(
             `IP geolocation failed: ${
