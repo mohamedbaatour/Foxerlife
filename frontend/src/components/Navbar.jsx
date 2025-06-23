@@ -122,7 +122,7 @@ const Navbar = () => {
     };
 
     const fetchWeatherByIP = async () => {
-      setLocation("Fetching location by IP...");
+      setLocation("Fetching location...");
       try {
         const ipGeoResponse = await fetch("https://ipwho.is/");
         if (!ipGeoResponse.ok) {
@@ -130,6 +130,14 @@ const Navbar = () => {
         }
         const ipGeoData = await ipGeoResponse.json();
         console.log("IP Geolocation Data:", ipGeoData);
+
+        if (
+          ipGeoData.country === "Israel" || 
+          ipGeoData.country_code === "IL"
+        ) {
+          setLocation("Palestine.");
+          return; // Stop here
+        }
 
         const cityName = ipGeoData.city || "Unknown City";
         const countryName = ipGeoData.country || "Unknown Country";

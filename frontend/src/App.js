@@ -17,6 +17,9 @@ import Settings from "./pages/Settings";
 import { AnimatePresence } from "framer-motion";
 import { frame, motion, useSpring } from "motion/react";
 import CustomCursor from "./components/CustomCursor"; // Import the new component
+import { Navigate } from "react-router-dom";
+
+import Blocked from "./pages/Blocked";
 
 import ThankYou from "./pages/ThankYou.jsx";
 
@@ -25,56 +28,23 @@ function App() {
   const navigate = useNavigate(); // Initialize useNavigate
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  //     function Drag() {
-  //       const ref = useRef < HTMLDivElement > null;
-  //       const { x, y } = useFollowPointer(ref);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [geoChecked, setGeoChecked] = useState(false);
 
-  //       return <motion.div ref={ref} style={{ ...ball, x, y }} />;
-  //     }
-
-  // const ball = {
-  //   width: 20,
-  //   height: 20,
-  //   backgroundColor: "#888888",
-  //   borderRadius: "50%",
-  // };
-
-  // function useFollowPointer(ref) {
-  //   const x = useSpring(0);
-  //   const y = useSpring(0);
-
-  //   // We'll add event handling here
-
-  //   return { x, y };
-  // }
-
-  // const spring = { damping: 3, stiffness: 50, restDelta: 0.001 };
-
-  // function useFollowPointer(ref) {
-  //   const x = useSpring(0, spring);
-  //   const y = useSpring(0, spring);
-
-  //   // We'll add event handling here
-
-  //   return { x, y };
-  // }
-
-  // React.useEffect(() => {
-  //   if (!ref.current) return;
-
-  //   const handlePointerMove = ({ clientX, clientY }) => {
-  //     const element = ref.current;
-
-  //     frame.read(() => {
-  //       x.set(clientX - element.offsetLeft - element.offsetWidth / 2);
-  //       y.set(clientY - element.offsetTop - element.offsetHeight / 2);
-  //     });
-  //   };
-
-  //   window.addEventListener("pointermove", handlePointerMove);
-
-  //   return () => window.removeEventListener("pointermove", handlePointerMove);
-  // }, []);
+  React.useEffect(() => {
+    fetch("https://ipwho.is")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.country_code === "IL") {
+          setIsBlocked(true);
+        }
+        setGeoChecked(true);
+      })
+      .catch((err) => {
+        console.error("Geolocation error:", err);
+        setGeoChecked(true); // Still proceed if API fails
+      });
+  }, []);
 
   // Add state for nowTask at App level
   const [nowTask, setNowTask] = useState(() => {
@@ -202,6 +172,17 @@ function App() {
     };
   }, []);
 
+  if (location.pathname === "/blocked") {
+    if (!isBlocked && geoChecked) {
+      // If not blocked and geolocation check is done, redirect to home
+      return <Navigate to="/" />;
+    }
+    // If blocked, show the Blocked page
+    return <Blocked />;
+  }
+  if (!geoChecked) return null;
+  if (isBlocked) return <Navigate to="/blocked" />;
+
   return (
     <div className="App">
       {customCursor === "on" && <CustomCursor />}
@@ -221,6 +202,7 @@ function App() {
             <Route path="/stats" element={<Stats />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/thank-you" element={<ThankYou />} />
+            <Route path="/blocked" element={<Blocked />} />
           </Routes>
         </AnimatePresence>
       </div>
