@@ -20,6 +20,7 @@ import CustomCursor from "./components/CustomCursor"; // Import the new componen
 import { Navigate } from "react-router-dom";
 
 import Blocked from "./pages/Blocked";
+import NotFound from "./pages/NotFound";
 
 import ThankYou from "./pages/ThankYou.jsx";
 
@@ -144,6 +145,14 @@ function App() {
 
   // Check if current path is thank-you page
   const isThankYouPage = location.pathname === "/thank-you";
+  const isNotFoundPage =
+    location.pathname === "/not-found" ||
+    location.pathname === "/404" ||
+    // If you use a wildcard route, also check for unmatched routes:
+    (!["/", "/stats", "/settings", "/thank-you", "/blocked"].includes(
+      location.pathname
+    ) &&
+      location.pathname !== "/");
 
   const [isTimerActive, setIsTimerActive] = useState(() => {
     return localStorage.getItem("timerIsActive") === "true";
@@ -188,8 +197,10 @@ function App() {
       {customCursor === "on" && <CustomCursor />}
       <Navbar />
       <div className="main-content-container">
-        {/* Only show TimerWhiteNoises if not on thank-you page */}
-        {!isThankYouPage && <TimerWhiteNoises nowTask={nowTask} />}
+        {/* Show TimerWhiteNoises on all pages except thank-you and not-found */}
+        {!isThankYouPage && !isNotFoundPage && (
+          <TimerWhiteNoises nowTask={nowTask} />
+        )}
 
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
@@ -203,6 +214,7 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/blocked" element={<Blocked />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>
       </div>
