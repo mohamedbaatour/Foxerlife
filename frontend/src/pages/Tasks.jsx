@@ -80,6 +80,7 @@ const Tasks = ({ isTimerActive }) => {
   const descriptionInputRef = useRef(null);
   const durationInputRef = useRef(null);
   const emojiButtonRef = useRef(null);
+  const filterButtonRef = useRef(null);
 
   const generateDescription = async (title) => {
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -1033,7 +1034,7 @@ const Tasks = ({ isTimerActive }) => {
   };
 
   const handleFilterClick = () => {
-    setIsFilterMenuOpen(!isFilterMenuOpen);
+    setIsFilterMenuOpen((prev) => !prev);
   };
 
   useEffect(() => {
@@ -1126,7 +1127,7 @@ const Tasks = ({ isTimerActive }) => {
         closeSearch();
       }
     };
-
+  
     document.addEventListener("click", handleClick);
     return () => {
       document.removeEventListener("click", handleClick);
@@ -1436,8 +1437,10 @@ const Tasks = ({ isTimerActive }) => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        filterMenuRef.current && 
+        filterMenuRef.current &&
         !filterMenuRef.current.contains(event.target) &&
+        filterButtonRef.current &&
+        !filterButtonRef.current.contains(event.target) &&
         !activeFilter // Only close if there's no active filter
       ) {
         setIsFilterMenuOpen(false);
@@ -1480,7 +1483,7 @@ const [animateSort, setAnimateSort] = useState(false);
     >
       <div className="notifications-container">
         <AnimatePresence>
-          {notifications.map((notification) => (
+          {notifications.slice(-3).map((notification) => (
             <motion.div
               key={notification.id}
               className="task-notification"
@@ -1586,25 +1589,26 @@ const [animateSort, setAnimateSort] = useState(false);
                 <div className="tooltip-wrap">
                   <div className="tooltip-button">S</div>
                   <div className="search-container" ref={searchContainerRef}>
-                    <button
+                    <div
                       ref={searchButtonRef}
-                      className={`search-button ${
-                        isSearchExpanded ? "expanded" : ""
-                      }`}
-                      onClick={toggleSearch}
+                      className={`search-button ${isSearchExpanded ? "expanded" : ""}`}
+                      onClick={() => {
+                        if (!isSearchExpanded) toggleSearch();
+                        if (searchInputRef.current) searchInputRef.current.focus();
+                      }}
+                      style={{ cursor: "pointer" }}
                     >
                       <SearchIcon className="search-icon" />
                       <input
                         ref={searchInputRef}
                         type="text"
-                        className={`search-input ${
-                          isSearchExpanded ? "visible" : ""
-                        }`}
+                        className={`search-input ${isSearchExpanded ? "visible" : ""}`}
                         placeholder="Search tasks..."
                         value={searchQuery}
                         onChange={handleSearchInput}
+                        onClick={e => e.stopPropagation()} // Prevent parent div click
                       />
-                    </button>
+                    </div>
                   </div>
                 </div>
                 <div className="tooltip-wrap">
@@ -1614,9 +1618,8 @@ const [animateSort, setAnimateSort] = useState(false);
                     style={{ position: "relative" }}
                   >
                     <button
-                      className={`filter-button ${
-                        activeFilter ? "active" : ""
-                      }`}
+                      ref={filterButtonRef}
+                      className={`filter-button ${activeFilter ? "active" : ""}`}
                       onClick={handleFilterClick}
                     >
                       <FilterIcon className="filter-icon" />

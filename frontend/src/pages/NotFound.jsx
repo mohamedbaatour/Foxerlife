@@ -15,7 +15,7 @@ const NotFound = () => {
     transition={{ duration: 0.3 }}>
       <div className="not-found-text">
         <p className="not-found-title">404</p>
-        <p className="not-found-subtitle">
+        <p className="not-found-subtitle"> 
           The page you are looking for doesn't exist or has been moved
         </p>
         <button

@@ -3,8 +3,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 2.5rem;
-  background-color: #181a1c7a;
-  border-bottom: 1px solid #232526;
+  background-color: #2121217a;
+  border-bottom: 1px solid #303030;
   z-index: 100;
   width: 1072px;
   border-radius: 999px;
@@ -78,7 +78,7 @@ p.navbar-brand-version {
   visibility: hidden;
   opacity: 0;
   background-color: #181a1c;
-  border: 1px solid #232526;
+  border: 1px solid #303030;
   color: #ededed;
   text-align: center;
   padding: 6px 10px;
@@ -153,7 +153,7 @@ li {
     max-height: 4.5rem;
   }
   .navbar-center-section {
-    gap: 2rem;
+    gap: 3rem;
   }
 }
 

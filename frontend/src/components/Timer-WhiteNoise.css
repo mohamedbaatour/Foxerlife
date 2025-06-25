@@ -5,8 +5,8 @@
 }
 
 .timer-section {
-  background-color: #131517;
-  border: 1px solid #232526;
+  /* background-color: #131517; */
+  border: 1px solid #303030;
   border-radius: 1.875rem;
   display: flex;
   flex-direction: column;
@@ -28,8 +28,7 @@
 }
 
 .timer-progress-ring__background {
-  stroke: #181a1c;
-  stroke-width: 10px;
+  stroke: #212121;
 }
 
 .timer-progress-ring__progress {
@@ -67,7 +66,6 @@
   font-size: 2.625rem;
   font-weight: 800;
   color: #ededed;
-  letter-spacing: -9%;
   display: flex;
   align-items: baseline;
   justify-content: center;
@@ -76,14 +74,14 @@
 
 .timer-time .minutes,
 .timer-time .seconds {
-  letter-spacing: -9%;
+  letter-spacing: -2px;
 }
 
 .timer-time .separator {
   font-size: 1.5rem;
   font-weight: 800;
   color: #a1a1a1;
-  letter-spacing: -9%;
+  letter-spacing: -0.5px;
   margin: 0 0.125rem;
 }
 
@@ -97,7 +95,7 @@
 }
 
 .timer-button {
-  border: 1px solid #232526;
+  border: 1px solid #303030;
   border-radius: 0.625rem;
   cursor: pointer;
   font-size: 0.875rem;
@@ -105,16 +103,21 @@
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   font-weight: 500;
   color: #999999;
   padding: 0.75rem 1rem;
-  background-color: #181a1c;
+  background-color: #212121;
   font-family: "Manrope", "Roboto", sans-serif;
 }
 
 .timer-button:hover {
+  transform: scale(1.02);
   background-color: #383838;
+}
+
+.timer-button:active {
+  transform: scale(0.98);
 }
 
 .start-pause-button {
@@ -130,8 +133,17 @@
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  transition: width 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
   font-family: "Manrope", "Roboto", sans-serif;
+}
+
+.start-pause-button:hover {
+  box-shadow: inset 0px 0px 1.6rem 0rem #ededed;
+  transform: scale(1.01);
+}
+
+.start-pause-button:active {
+  transform: scale(0.98);
 }
 
 .start-icon {
@@ -152,29 +164,19 @@
 }
 
 .start-pause-button.start {
-  background-color: #119dff;
+  background-color: #1fa2ff;
   color: #ededed;
   transition: all 0.2s ease;
 }
 
-.start-pause-button.start:hover {
-  box-shadow: inset 0px 0px 1.5rem 0rem #ededed;
-  transform: scale(1.01);
-}
-
 .start-pause-button.pause {
-  background-color: #119dff;
+  background-color: #1fa2ff;
   transition: all 0.2s ease;
 }
 
-.start-pause-button.pause:hover {
-  background-color: #0056b3;
-  transform: scale(1.02);
-}
-
 .white-noise-player {
-  background-color: #131517;
-  border: 1px solid #232526;
+  /* background-color: #131517; */
+  border: 1px solid #303030;
   border-radius: 1.875rem;
   padding: 2.2rem 3.5rem;
   display: flex;
@@ -182,7 +184,7 @@
   align-items: center;
   max-width: 25.625rem;
   justify-content: space-between;
-  --white-noise-progress-color: #119dff;
+  --white-noise-progress-color: #1fa2ff;
 }
 
 .white-noise-player-hero {
@@ -196,16 +198,16 @@
 }
 
 .white-noise-player-title {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 600;
   color: #ededed;
 }
 
 .white-noise-player-playing {
   font-size: 1rem;
   font-weight: 400;
-  color: #c4c4c4;
-  margin-top: 0.375rem;
+  color: #a1a1a1;
+  margin-top: 0.3rem;
 }
 
 .white-noise-player-text {
@@ -216,13 +218,13 @@
 .white-noise-player-icon {
   width: 2.5rem;
   height: 2.5rem;
-  color: #808080;
+  color: #666666;
 }
 
-.white-noise-options-button {
+/* .white-noise-options-button {
   background: none;
-  border: 1px solid #4f4f4f;
-  color: #a0a0a0;
+  border: 1px solid #303030;
+  color: #a1a1a1;
   border-radius: 50%;
   width: 2rem;
   height: 2rem;
@@ -237,7 +239,7 @@
 
 .white-noise-options-button:hover {
   border-color: #777;
-}
+} */
 
 .white-noise-progress-bar-container {
   width: 100%;
@@ -257,7 +259,7 @@
   height: 0.53125rem;
   background: transparent;
   border-radius: 0.3125rem;
-  border: 1.5px solid #232526;
+  border: 1.5px solid #303030;
   position: relative;
   z-index: 0;
 }
@@ -273,7 +275,7 @@
   margin-top: -0.1875rem;
   position: relative;
   z-index: 1;
-  border: 1px solid #181a1c;
+  border: 1px solid #303030;
 }
 
 .white-noise-progress-bar::-moz-range-thumb {
@@ -291,7 +293,7 @@
   background: #181a1c;
   border-radius: 0.1875rem;
   cursor: pointer;
-  border: 1px solid #232526;
+  border: 1px solid #303030;
 }
 
 .white-noise-progress-bar::-moz-range-progress {
@@ -312,7 +314,7 @@
 .white-noise-controls .control-button {
   background: none;
   border: none;
-  color: #a0a0a0;
+  color: #a1a1a1;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -324,7 +326,7 @@
 .white-noise-controls .control-button svg {
   background: none;
   border: none;
-  color: #a0a0a0;
+  color: #a1a1a1;
   cursor: pointer;
   width: 1.5rem;
   height: 1.5rem;
@@ -337,7 +339,7 @@
 }
 
 .white-noise-controls .control-button svg:hover {
-  transform: scale(1.02);
+  color: #ededed;
 }
 
 .volume-control-container {
@@ -367,7 +369,7 @@
   height: 0.3125rem;
   -webkit-appearance: none;
   appearance: none;
-  background: #232526;
+  background: #303030;
   border-radius: 0.1875rem;
   cursor: pointer;
   outline: none;
@@ -402,25 +404,23 @@
   appearance: none;
   width: 0.625rem;
   height: 0.625rem;
-  background: var(--white-noise-progress-color, #119dff);
+  background: var(--white-noise-progress-color, #1fa2ff);
   border-radius: 50%;
   cursor: pointer;
-  border: 1px solid #131517;
 }
 
 .volume-slider::-moz-range-thumb {
   width: 0.625rem;
   height: 0.625rem;
-  background: var(--white-noise-progress-color, #119dff);
+  background: var(--white-noise-progress-color, #1fa2ff);
   border-radius: 50%;
   cursor: pointer;
-  border: 1px solid #131517;
 }
 
 .volume-slider::-moz-range-track {
   width: 100%;
   height: 0.3125rem;
-  background: #232526;
+  background: #303030;
   border-radius: 0.1875rem;
   cursor: pointer;
 }
@@ -442,8 +442,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #131517;
+  color: #181818;
   margin-right: 0.9px;
+}
+
+.white-noise-controls .play-pause-main-button svg:hover {
+  color: #181818 !important;
 }
 
 .white-noise-controls .play-pause-main-button:hover {
@@ -452,7 +456,7 @@
 }
 
 .control-button-secondary {
-  color: #c4c4c4;
+  color: #a1a1a1;
   border-radius: 50%;
   width: 1.25rem;
   height: 1.25rem;
@@ -461,8 +465,12 @@
   cursor: pointer;
 }
 
+.control-button-secondary:hover {
+  color: #ededed;
+}
+
 .control-button-secondary.active {
-  color: #119dff;
+  color: #1fa2ff;
 }
 
 .notification-popup {
@@ -475,7 +483,7 @@
   border-radius: 99px;
   font-size: 0.875rem;
   font-weight: 500;
-  border: 1px solid #232526;
+  border: 1px solid #303030;
   z-index: 1000;
   animation: fadeInOut 2s ease-in-out;
   pointer-events: none;
@@ -510,12 +518,11 @@
   position: absolute;
   width: 10px;
   height: 10px;
-  background-color: #119dff;
+  background-color: #1fa2ff;
   border-radius: 50%;
   top: 50%;
   left: 50%;
   transform-origin: 0 0;
-  box-shadow: 0 0 8px rgba(17, 157, 255, 0.8);
   transition: transform 0.35s linear;
 }
 
@@ -527,10 +534,6 @@
 /* You can comment out or remove this if you're not using the progress arc */
 .timer-progress-ring__progress {
   display: none; /* Hide the original progress circle */
-}
-
-.timer-progress-dot {
-  filter: drop-shadow(0 0 8px rgba(17, 157, 255, 0.7));
 }
 
 /* Optional subtle track - adjust opacity or remove if not needed */
@@ -561,7 +564,7 @@
 }
 
 .timer-button.end-button.overtime {
-  background-color: #119dff;
+  background-color: #1fa2ff;
   box-shadow: inset 0px 0px 1.5rem -0.4375rem #ededed;
   color: #ededed;
 }
@@ -577,7 +580,7 @@
   left: 50%;
   transform: translateX(-50%);
   background-color: #131517;
-  border: 1px solid #232526;
+  border: 1px solid #303030;
   border-radius: 0.625rem;
   padding: 1rem;
   width: 200px;
@@ -619,7 +622,7 @@
 
 .confirmation-buttons button:first-child {
   background-color: transparent;
-  border: 1px solid #232526;
+  border: 1px solid #303030;
   color: #999999;
 }
 
@@ -628,7 +631,7 @@
 }
 
 .confirmation-buttons button:last-child {
-  background-color: #119dff;
+  background-color: #1fa2ff;
   border: none;
   color: #ededed;
 }
@@ -666,7 +669,7 @@
   transform: translateX(-50%);
   margin-bottom: 6px;
   background-color: #181a1c;
-  border: 1px solid #232526;
+  border: 1px solid #303030;
   width: 200px;
   border-radius: 8px;
   padding: 16px 24px;
@@ -712,7 +715,7 @@
 .cancel-timer-button {
   background-color: transparent;
   color: #999;
-  border: 1px solid #232526;
+  border: 1px solid #303030;
   border-radius: 4px;
   padding: 4px 8px;
   font-size: 12px;
@@ -730,7 +733,7 @@
   visibility: hidden;
   opacity: 0;
   background-color: #181a1c;
-  border: 1px solid #232526;
+  border: 1px solid #303030;
   color: #ededed;
   text-align: center;
   padding: 6px 10px;

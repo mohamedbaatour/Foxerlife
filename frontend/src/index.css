@@ -7,7 +7,7 @@ body {
   font-family: "Manrope", "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #101213;
+  background-color: #131313;
   overflow-x: hidden;
 }
 
@@ -30,7 +30,7 @@ body::-webkit-scrollbar-track {
 }
 
 body::-webkit-scrollbar-thumb {
-  background: #232526;
+  background: #303030;
   border-radius: 10px;
   border: 2px solid #1a1a1a;
 }

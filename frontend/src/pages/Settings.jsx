@@ -277,7 +277,7 @@ export default Settings;
 // .settings-export-button {
 //   padding: 8px 18px;
 //   border-radius: 8px;
-//   background: #119dff;
+//   background: #1fa2ff;
 //   color: #fff;
 //   border: none;
 //   font-weight: 600;

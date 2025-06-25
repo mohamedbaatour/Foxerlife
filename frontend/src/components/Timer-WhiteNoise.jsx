@@ -1087,4 +1087,3 @@ const TimerWhiteNoises = ({ nowTask, onTimerActiveChange }) => {
 };
 
 export default TimerWhiteNoises;
-
