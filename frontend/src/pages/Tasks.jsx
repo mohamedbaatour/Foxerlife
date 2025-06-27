@@ -1121,18 +1121,19 @@ const Tasks = ({ isTimerActive }) => {
     const handleClick = (event) => {
       if (
         isSearchExpanded &&
-        searchInputRef.current &&
-        searchInputRef.current === event.target
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target) &&
+        searchQuery.trim() === ""
       ) {
         closeSearch();
       }
     };
-  
-    document.addEventListener("click", handleClick);
+
+    document.addEventListener("mousedown", handleClick);
     return () => {
-      document.removeEventListener("click", handleClick);
+      document.removeEventListener("mousedown", handleClick);
     };
-  }, [isSearchExpanded]);
+  }, [isSearchExpanded, searchQuery]);
 
   useEffect(() => {
     localStorage.setItem("archivedTasks", JSON.stringify(archivedTasks));
@@ -1471,6 +1472,8 @@ const [animateSort, setAnimateSort] = useState(false);
     setAiIconActive(true);
     setTimeout(() => setAiIconActive(false), 2000);
   };
+
+  const [shouldAnimateReturn, setShouldAnimateReturn] = useState(false);
 
 
   return (

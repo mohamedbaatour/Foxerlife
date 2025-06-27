@@ -1066,7 +1066,7 @@ const TimerWhiteNoises = ({ nowTask, onTimerActiveChange }) => {
         style={{ cursor: "pointer" }}
         onClick={() => navigate("/thank-you")}
       >
-        Special thanks page
+        Special Thanks Page
       </p>
       <div className="tasks-main-content-left-column">
         {/* Render stacked notifications */}
