@@ -61,7 +61,7 @@
   flex: 1;
   min-height: 128px;
   /* min-width: 185px; */
-  border-radius: 12px;
+  border-radius: 4px;
   background-color: #212121;
   border: 1px solid #303030;
   transition: all 0.2s ease-in-out;
@@ -98,7 +98,7 @@
   align-items: center;
   padding: 12px 24px 12px 32px;
   background-color: transparent;
-  border-radius: 12px;
+  border-radius: 4px;
   border: 1px solid #303030;
   background-color: #262626;
   transition: all 0.2s ease-in-out;

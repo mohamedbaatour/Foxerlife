@@ -266,11 +266,14 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       const suggestedEmoji = await generateEmoji(value);
       setTaskEmoji(suggestedEmoji);
 
-      // const suggestedDuration = await estimateDuration(value);
-      // setTaskDuration(suggestedDuration);
-      // setDurationChroma(true);
-      // setTimeout(() => setDurationChroma(false), 900);
-
+      if (value.length > 3) {
+        const suggestedDuration = await estimateDuration(value);
+        // Parse "1h 30m" to dayjs object
+        const parsed = parseDuration(suggestedDuration);
+        setDuration(dayjs().hour(parsed.hours).minute(parsed.minutes));
+        setDurationChroma(true);
+        setTimeout(() => setDurationChroma(false), 900);
+      }
       const aiPriority = await generatePriority(value);
       setTaskPriority(aiPriority);
       localStorage.setItem("taskPriority", aiPriority);
@@ -1572,6 +1575,25 @@ const [animateSort, setAnimateSort] = useState(false);
     setTimeout(() => setAiIconActive(false), 2000);
   };
 
+  const timePickerInputRef = useRef(null);
+
+  useEffect(() => {
+    const input = timePickerInputRef.current;
+    if (!input) return;
+  
+    const handleAnimationEnd = () => {
+      setDurationChroma(false);
+    };
+  
+    if (durationChroma) {
+      input.addEventListener("animationend", handleAnimationEnd);
+    }
+  
+    return () => {
+      input.removeEventListener("animationend", handleAnimationEnd);
+    };
+  }, [durationChroma]);
+
 
   return (
     <motion.div
@@ -2007,10 +2029,10 @@ const [animateSort, setAnimateSort] = useState(false);
                   <div className="form-row">
                     <div className="form-group half">
                       <label>Duration</label>
-
+                      <div className="text-area-wrapper">
                       <TimePicker
-                      style={{ width: "100%" , height: "45px" }}
-                      className="time-picker"
+  style={{ width: "100%", height: "45px" }}
+  className={`time-picker${durationChroma ? " chroma-animate" : ""}`}
   value={duration}
   onChange={setDuration}
   format="HH:mm"
@@ -2019,7 +2041,15 @@ const [animateSort, setAnimateSort] = useState(false);
   allowClear={false}
   inputReadOnly
   popupClassName="dark-timepicker"
+  ref={durationInputRef}
+  ref={node => {
+    durationInputRef.current = node;
+    // AntD TimePicker input is nested, so get the real input:
+    if (node && node.input) timePickerInputRef.current = node.input;
+  }
+  }
 />
+</div>
 
                       {formSubmitted && errors.duration && (
                         <p className="error-message">{errors.duration}</p>

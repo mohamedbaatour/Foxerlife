@@ -59,7 +59,7 @@ background-color: transparent;
   border: 1px solid #303030;
   background-color: #212121;
   padding: 38px 40px 38px 24px;
-  border-radius: 24px;
+  border-radius: 8px;
   width: 514px;
   height: 48px;
   transition: border 0.2s ease-in-out;
@@ -129,7 +129,7 @@ background-color: transparent;
 }
 
 .later-tasks-container {
-  margin-top: 84px;
+  margin-top: 64px;
 }
 
 .later-tasks-text {
@@ -156,7 +156,7 @@ background-color: transparent;
   flex-direction: row; /* Change from column to row */
   border: 1px solid #303030;
   padding: 24px 0px 24px 8px; /* Adjust padding */
-  border-radius: 24px;
+  border-radius: 8px;
   max-width: 570px;
   gap: 24px; /* Space between emoji and text */
   width: 580px;
@@ -389,7 +389,7 @@ background-color: transparent;
   font-family: "Manrope";
   font-size: 14px;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: 4px;
   border: none;
   background-color: #1fa2ff;
   box-shadow: inset 0px 0px 1.5rem -0.4375rem #ededed;
@@ -519,7 +519,7 @@ background-color: transparent;
   height: 48px;
   background-color: #212121;
   border: 1px solid #303030;
-  border-radius: 10px;
+  border-radius: 4px;
   transition: all 0.2s ease;
   cursor: pointer;
   overflow: hidden;
@@ -1195,7 +1195,7 @@ textarea.modal-input {
   -webkit-text-fill-color: transparent;
   text-fill-color: transparent;
   color: transparent;
-  animation: chroma-sweep 2s ease-in-out 0.2s forwards;
+  animation: chroma-sweep 1.4s ease-in-out 0.1s forwards;
   /* Prevent background color change */
 }
 
@@ -1282,10 +1282,6 @@ select.modal-input {
   border: 1px solid #303030 !important;
 }
 
-/* .ant-picker-input {
-  background-color: red !important;
-} */
-
 .ant-picker-time-panel-cell-inner {
   background-color: #212121 !important;
   color: #ededed !important;
@@ -1310,4 +1306,36 @@ select.modal-input {
   border: none !important;
   border-radius: 4px !important;
   padding: 12px !important;
+}
+
+/* Chroma sweep background for TimePicker */
+.time-picker.chroma-animate input {
+  background-image: linear-gradient(
+    90deg,
+    #181a1c 0,
+    #c679c4 40%,
+    #fa3d1d 45%,
+    #ffb005 50%,
+    #ededed 55%,
+    #0358f7 60%,
+    transparent 66.67%,
+    transparent
+  );
+  background-size: 300% 100%;
+  will-change: background-position;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-fill-color: transparent;
+  color: transparent;
+  animation: chroma-sweep 0.8s ease-in-out 0s forwards;
+  /* Prevent background color change */
+}
+
+@keyframes chroma-sweep-bg {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
 }
