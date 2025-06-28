@@ -802,10 +802,10 @@ background-color: transparent;
 
 .emoji-selector {
   width: 100%;
-  padding: 8px;
+  height: 45px;
   background-color: #212121;
   border: 1px solid #303030;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 24px;
   text-align: center;
   cursor: pointer;
@@ -905,6 +905,7 @@ background-color: transparent;
 
 #priority {
   padding-right: 24px !important;
+  height: 45px !important;
 }
 /* Add this new class for fading out */
 
@@ -1219,7 +1220,7 @@ select.modal-input {
 }
 
 /* Dark mode for react-duration-picker */
-.rdp-picker {
+/* .rdp-picker {
   background: #212121 !important;
   color: #f3f4f6 !important;
   border-radius: 8px;
@@ -1250,4 +1251,63 @@ select.modal-input {
 
 .rdp-reticule {
   border-top: 1px solid transparent !important;
+} */
+
+.time-picker {
+  color: #ededed !important;
+  background-color: #212121 !important;
+  border: 1px solid #303030 !important;
+  border-radius: 12px !important;
+  font-family: "Manrope", sans-serif !important;
+}
+
+.time-picker:hover {
+  background-color: #262626 !important;
+}
+
+.ant-picker-outlined:focus-within {
+  border-color: #1fa2ff !important;
+}
+
+.ant-picker-input-placeholder > input {
+  color: #ededed !important;
+}
+
+.ant-picker-input.ant-picker-input-placeholder {
+  color: white !important;
+}
+
+.ant-picker-panel-layout {
+  background-color: #212121 !important;
+  border: 1px solid #303030 !important;
+}
+
+/* .ant-picker-input {
+  background-color: red !important;
+} */
+
+.ant-picker-time-panel-cell-inner {
+  background-color: #212121 !important;
+  color: #ededed !important;
+}
+
+.ant-picker-time-panel-cell-inner:hover {
+  background-color: #303030 !important;
+  color: #ededed !important;
+}
+
+.ant-picker-time-panel-cell.ant-picker-time-panel-cell-selected {
+  background-color: #212121;
+}
+
+.ant-picker-suffix {
+  color: #ededed !important;
+}
+
+.ant-btn {
+  background-color: #1fa2ff !important;
+  color: #ededed !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 12px !important;
 }

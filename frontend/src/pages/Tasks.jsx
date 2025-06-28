@@ -31,6 +31,8 @@ import { CSS } from "@dnd-kit/utilities";
 
 import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 
+import dayjs from "dayjs";
+import { TimePicker } from "antd";
 
 import DurationPicker from 'react-duration-picker';
 
@@ -57,7 +59,7 @@ const Tasks = ({ isTimerActive }) => {
 
 
 // helper to convert { hours: 1, minutes: 30 } to "1h 30m"
-const formatDuration = ({ hours, minutes }) => `${hours}h ${minutes}m`;
+const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
   
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState(
@@ -82,42 +84,9 @@ const formatDuration = ({ hours, minutes }) => `${hours}h ${minutes}m`;
   //   return "3h 45m";
   // });
 
-  const [durationObj, setDurationObj] = useState(() => {
-    const raw = localStorage.getItem("taskDuration");
-    if (raw && raw !== "undefined" && raw !== "null" && raw !== "") {
-      try {
-        const parsed = JSON.parse(raw);
-        if (
-          typeof parsed === "object" &&
-          parsed !== null &&
-          typeof parsed.hours === "number" &&
-          typeof parsed.minutes === "number"
-        ) {
-          return parsed;
-        } else if (typeof parsed === "string") {
-          const hourMatch = parsed.match(/(\d+)h/);
-          const minuteMatch = parsed.match(/(\d+)m/);
-          return {
-            hours: hourMatch ? parseInt(hourMatch[1]) : 0,
-            minutes: minuteMatch ? parseInt(minuteMatch[1]) : 0,
-          };
-        }
-      } catch (err) {
-        const hourMatch = raw.match(/(\d+)h/);
-        const minuteMatch = raw.match(/(\d+)m/);
-        return {
-          hours: hourMatch ? parseInt(hourMatch[1]) : 0,
-          minutes: minuteMatch ? parseInt(minuteMatch[1]) : 0,
-        };
-      }
-    }
-    return { hours: 3, minutes: 45 };
-  });
+  const [duration, setDuration] = useState(dayjs().hour(0).minute(0));
 
-  const handleDurationChange = (newDuration) => {
-    setDurationObj(newDuration);
-    // setTaskDuration(formatDuration(newDuration));
-  };
+
  
 
   // useEffect(() => {
@@ -783,10 +752,10 @@ const formatDuration = ({ hours, minutes }) => `${hours}h ${minutes}m`;
   useEffect(() => {
     localStorage.setItem("taskDescription", taskDescription);
   }, [taskDescription]);
-
+  
   useEffect(() => {
-    localStorage.setItem("taskDuration", JSON.stringify(durationObj));
-  }, [durationObj]);
+  localStorage.setItem("taskDuration", duration.format("HH:mm"));
+  }, [duration]);
 
   useEffect(() => {
     localStorage.setItem("taskPriority", taskPriority);
@@ -866,7 +835,7 @@ const formatDuration = ({ hours, minutes }) => `${hours}h ${minutes}m`;
     ) {
       durationObjFromStorage = { hours: 3, minutes: 45 };
     }
-    setDurationObj(durationObjFromStorage);
+
 
     setTaskPriority(localStorage.getItem("taskPriority") || "Low");
     setTaskEmoji(localStorage.getItem("taskEmoji") || "😃");
@@ -924,7 +893,7 @@ const formatDuration = ({ hours, minutes }) => `${hours}h ${minutes}m`;
     if (shouldReset) {
       setTaskTitle("");
       setTaskDescription("");
-      setDurationObj({ hours: 3, minutes: 45 });
+      setDuration(dayjs().hour(0).minute(0));
       setTaskPriority("Low");
       setTaskEmoji("😃");
       setTaskTag({
@@ -1001,8 +970,8 @@ const formatDuration = ({ hours, minutes }) => `${hours}h ${minutes}m`;
       isValid = false;
     }
 
-    console.log("[addTask] durationObj at validation:", durationObj);
-    if (durationObj.hours === 0 && durationObj.minutes === 0) {
+
+    if (!duration || (duration.hour() === 0 && duration.minute() === 0)) {
       newErrors.duration = "Please enter a valid duration";
       isValid = false;
     }
@@ -1031,7 +1000,7 @@ const formatDuration = ({ hours, minutes }) => `${hours}h ${minutes}m`;
       id: Date.now(),
       title: taskTitle,
       description: taskDescription.trim() || "There is no description for this task.",
-      time: formatDuration(durationObj),
+      time: formatDuration(duration),
       emoji: taskEmoji,
       priority: taskPriority,
       tag: taskTag,
@@ -1087,6 +1056,13 @@ const formatDuration = ({ hours, minutes }) => `${hours}h ${minutes}m`;
 
     if (showEmojiPicker) {
       setShowEmojiPicker(false);
+      return;
+    }
+
+    // Prevent closing if click is inside the TimePicker popup
+    if (
+      event.target.closest('.ant-picker-dropdown') // AntD TimePicker popup
+    ) {
       return;
     }
 
@@ -1596,18 +1572,6 @@ const [animateSort, setAnimateSort] = useState(false);
     setTimeout(() => setAiIconActive(false), 2000);
   };
 
-  const safeSetDurationObj = (val) => {
-    if (
-      val &&
-      typeof val === "object" &&
-      typeof val.hours === "number" &&
-      typeof val.minutes === "number"
-    ) {
-      setDurationObj(val);
-    } else {
-      setDurationObj({ hours: 3, minutes: 45 });
-    }
-  };
 
   return (
     <motion.div
@@ -2043,20 +2007,25 @@ const [animateSort, setAnimateSort] = useState(false);
                   <div className="form-row">
                     <div className="form-group half">
                       <label>Duration</label>
-                      <div className="text-area-wrapper">
-                      <DurationPicker
-  value={durationObj}
-  onChange={safeSetDurationObj}
-  maxHours={12}
+
+                      <TimePicker
+                      style={{ width: "100%" , height: "45px" }}
+                      className="time-picker"
+  value={duration}
+  onChange={setDuration}
+  format="HH:mm"
   minuteStep={5}
-  initialDuration={{ hours: 0, minutes: 0}}
+  showNow={false}
+  allowClear={false}
+  inputReadOnly
+  popupClassName="dark-timepicker"
 />
 
                       {formSubmitted && errors.duration && (
                         <p className="error-message">{errors.duration}</p>
                       )}
                       
-                      </div>
+
                     </div>
 
                     <div className="form-group half">
