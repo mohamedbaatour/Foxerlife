@@ -566,39 +566,8 @@ const TimerWhiteNoises = ({ nowTask, onTimerActiveChange }) => {
     const newRepeatState = !isRepeatOn;
     setIsRepeatOn(newRepeatState);
 
-    // Create a new notification with unique ID
-    const notificationId = Date.now();
-    const newNotification = {
-      id: notificationId,
-    };
 
-    // Add the new notification to the array (limit to 3)
-    setNotifications((prevNotifications) => {
-      // If we already have 3 notifications, remove the oldest one
-      const updatedNotifications = [...prevNotifications];
-      if (updatedNotifications.length >= 3) {
-        const oldestId = updatedNotifications[0].id;
-        // Clear the timeout for the oldest notification
-        if (notificationTimeoutsRef.current[oldestId]) {
-          clearTimeout(notificationTimeoutsRef.current[oldestId]);
-          delete notificationTimeoutsRef.current[oldestId];
-        }
-        updatedNotifications.shift(); // Remove the oldest notification
-      }
-      return [...updatedNotifications, newNotification];
-    });
 
-    // Set timeout to remove this specific notification
-    notificationTimeoutsRef.current[notificationId] = setTimeout(() => {
-      setNotifications((prevNotifications) =>
-        prevNotifications.filter(
-          (notification) => notification.id !== notificationId
-        )
-      );
-      delete notificationTimeoutsRef.current[notificationId];
-    }, 2000);
-
-    console.log("Repeat clicked, state:", newRepeatState);
   };
 
   // Change to next sound
