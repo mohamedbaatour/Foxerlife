@@ -1217,3 +1217,37 @@ select.modal-input {
   filter: drop-shadow(0 0 8px #1fa2ff88);
   transition: color 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+/* Dark mode for react-duration-picker */
+.rdp-picker {
+  background: #212121 !important;
+  color: #f3f4f6 !important;
+  border-radius: 8px;
+  border: 1px solid #444;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  border: 1px solid #303030 !important;
+  font-family: "Manrope", sans-serif !important;
+}
+.rdp-column-container {
+  margin-left: -16px !important;
+  cursor: pointer !important;
+}
+
+.rdp-masked-div {
+  font-family: "Manrope", sans-serif !important;
+  color: #ededed !important;
+}
+
+.rdp-text-overlay {
+  color: #212121 !important;
+}
+
+.rdp-column-container:nth-child(3) {
+  display: none !important;
+}
+
+.rdp-reticule {
+  border-top: 1px solid transparent !important;
+}

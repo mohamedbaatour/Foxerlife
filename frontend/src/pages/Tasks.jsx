@@ -31,7 +31,33 @@ import { CSS } from "@dnd-kit/utilities";
 
 import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 
+
+import DurationPicker from 'react-duration-picker';
+
+
+
 const Tasks = ({ isTimerActive }) => {
+
+  const parseDuration = (str) => {
+    if (!str || typeof str !== "string") return { hours: 0, minutes: 0 };
+  
+    const hoursMatch = str.match(/(\d+)\s*h/);
+    const minutesMatch = str.match(/(\d+)\s*m/);
+  
+    const hours = hoursMatch ? parseInt(hoursMatch[1], 10) : 0;
+    const minutes = minutesMatch ? parseInt(minutesMatch[1], 10) : 0;
+  
+    return {
+      hours: isNaN(hours) ? 0 : hours,
+      minutes: isNaN(minutes) ? 0 : minutes,
+    };
+  };
+
+
+
+
+// helper to convert { hours: 1, minutes: 30 } to "1h 30m"
+const formatDuration = ({ hours, minutes }) => `${hours}h ${minutes}m`;
   
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [taskTitle, setTaskTitle] = useState(
@@ -46,15 +72,66 @@ const Tasks = ({ isTimerActive }) => {
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const debounceTimeout = useRef(null);
 
-  const [taskDuration, setTaskDuration] = useState(() => {
-    const defaultTaskLength = localStorage.getItem("defaultTaskLength");
-    if (defaultTaskLength === "25") {
-      return "0h 25m";
-    } else if (defaultTaskLength === "50") {
-      return "0h 50m";
+  // const [taskDuration, setTaskDuration] = useState(() => {
+  //   const defaultTaskLength = localStorage.getItem("defaultTaskLength");
+  //   if (defaultTaskLength === "25") {
+  //     return "0h 25m";
+  //   } else if (defaultTaskLength === "50") {
+  //     return "0h 50m";
+  //   }
+  //   return "3h 45m";
+  // });
+
+  const [durationObj, setDurationObj] = useState(() => {
+    const raw = localStorage.getItem("taskDuration");
+    if (raw && raw !== "undefined" && raw !== "null" && raw !== "") {
+      try {
+        const parsed = JSON.parse(raw);
+        if (
+          typeof parsed === "object" &&
+          parsed !== null &&
+          typeof parsed.hours === "number" &&
+          typeof parsed.minutes === "number"
+        ) {
+          return parsed;
+        } else if (typeof parsed === "string") {
+          const hourMatch = parsed.match(/(\d+)h/);
+          const minuteMatch = parsed.match(/(\d+)m/);
+          return {
+            hours: hourMatch ? parseInt(hourMatch[1]) : 0,
+            minutes: minuteMatch ? parseInt(minuteMatch[1]) : 0,
+          };
+        }
+      } catch (err) {
+        const hourMatch = raw.match(/(\d+)h/);
+        const minuteMatch = raw.match(/(\d+)m/);
+        return {
+          hours: hourMatch ? parseInt(hourMatch[1]) : 0,
+          minutes: minuteMatch ? parseInt(minuteMatch[1]) : 0,
+        };
+      }
     }
-    return "3h 45m";
+    return { hours: 3, minutes: 45 };
   });
+
+  const handleDurationChange = (newDuration) => {
+    setDurationObj(newDuration);
+    // setTaskDuration(formatDuration(newDuration));
+  };
+ 
+
+  // useEffect(() => {
+  //   const parsed = parseDuration(taskDuration);
+  //   if (
+  //     parsed &&
+  //     (parsed.hours !== durationObj.hours || parsed.minutes !== durationObj.minutes)
+  //   ) {
+  //     setDurationObj(parsed);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [taskDuration]); 
+  
+
   const [taskPriority, setTaskPriority] = useState(
     localStorage.getItem("taskPriority") || "Low"
   );
@@ -81,6 +158,7 @@ const Tasks = ({ isTimerActive }) => {
   const durationInputRef = useRef(null);
   const emojiButtonRef = useRef(null);
   const filterButtonRef = useRef(null);
+  
 
   const generateDescription = async (title) => {
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -219,10 +297,10 @@ const Tasks = ({ isTimerActive }) => {
       const suggestedEmoji = await generateEmoji(value);
       setTaskEmoji(suggestedEmoji);
 
-      const suggestedDuration = await estimateDuration(value);
-      setTaskDuration(suggestedDuration);
-      setDurationChroma(true);
-      setTimeout(() => setDurationChroma(false), 900);
+      // const suggestedDuration = await estimateDuration(value);
+      // setTaskDuration(suggestedDuration);
+      // setDurationChroma(true);
+      // setTimeout(() => setDurationChroma(false), 900);
 
       const aiPriority = await generatePriority(value);
       setTaskPriority(aiPriority);
@@ -707,8 +785,8 @@ const Tasks = ({ isTimerActive }) => {
   }, [taskDescription]);
 
   useEffect(() => {
-    localStorage.setItem("taskDuration", taskDuration);
-  }, [taskDuration]);
+    localStorage.setItem("taskDuration", JSON.stringify(durationObj));
+  }, [durationObj]);
 
   useEffect(() => {
     localStorage.setItem("taskPriority", taskPriority);
@@ -751,7 +829,45 @@ const Tasks = ({ isTimerActive }) => {
   const openModal = () => {
     setTaskTitle(localStorage.getItem("taskTitle") || "");
     setTaskDescription(localStorage.getItem("taskDescription") || "");
-    setTaskDuration(localStorage.getItem("taskDuration") || "3h 45m");
+
+    let durationObjFromStorage = { hours: 3, minutes: 45 };
+    const raw = localStorage.getItem("taskDuration");
+    if (raw && raw !== "undefined" && raw !== "null" && raw !== "") {
+      try {
+        const parsed = JSON.parse(raw);
+        if (
+          typeof parsed === "object" &&
+          parsed !== null &&
+          typeof parsed.hours === "number" &&
+          typeof parsed.minutes === "number"
+        ) {
+          durationObjFromStorage = parsed;
+        } else if (typeof parsed === "string") {
+          const hourMatch = parsed.match(/(\d+)h/);
+          const minuteMatch = parsed.match(/(\d+)m/);
+          durationObjFromStorage = {
+            hours: hourMatch ? parseInt(hourMatch[1]) : 0,
+            minutes: minuteMatch ? parseInt(minuteMatch[1]) : 0,
+          };
+        }
+      } catch (err) {
+        const hourMatch = raw.match(/(\d+)h/);
+        const minuteMatch = raw.match(/(\d+)m/);
+        durationObjFromStorage = {
+          hours: hourMatch ? parseInt(hourMatch[1]) : 0,
+          minutes: minuteMatch ? parseInt(minuteMatch[1]) : 0,
+        };
+      }
+    }
+    if (
+      !durationObjFromStorage ||
+      typeof durationObjFromStorage.hours !== "number" ||
+      typeof durationObjFromStorage.minutes !== "number"
+    ) {
+      durationObjFromStorage = { hours: 3, minutes: 45 };
+    }
+    setDurationObj(durationObjFromStorage);
+
     setTaskPriority(localStorage.getItem("taskPriority") || "Low");
     setTaskEmoji(localStorage.getItem("taskEmoji") || "😃");
 
@@ -808,7 +924,7 @@ const Tasks = ({ isTimerActive }) => {
     if (shouldReset) {
       setTaskTitle("");
       setTaskDescription("");
-      setTaskDuration("3h 45m");
+      setDurationObj({ hours: 3, minutes: 45 });
       setTaskPriority("Low");
       setTaskEmoji("😃");
       setTaskTag({
@@ -885,10 +1001,17 @@ const Tasks = ({ isTimerActive }) => {
       isValid = false;
     }
 
-    if (!taskDuration.trim()) {
-      newErrors.duration = "Please enter a task duration";
+    console.log("[addTask] durationObj at validation:", durationObj);
+    if (durationObj.hours === 0 && durationObj.minutes === 0) {
+      newErrors.duration = "Please enter a valid duration";
       isValid = false;
     }
+    
+
+    // if (!taskDuration.trim()) {
+    //   newErrors.duration = "Please enter a task duration";
+    //   isValid = false;
+    // }
 
     setErrors(newErrors);
 
@@ -908,7 +1031,7 @@ const Tasks = ({ isTimerActive }) => {
       id: Date.now(),
       title: taskTitle,
       description: taskDescription.trim() || "There is no description for this task.",
-      time: taskDuration,
+      time: formatDuration(durationObj),
       emoji: taskEmoji,
       priority: taskPriority,
       tag: taskTag,
@@ -1473,8 +1596,18 @@ const [animateSort, setAnimateSort] = useState(false);
     setTimeout(() => setAiIconActive(false), 2000);
   };
 
-  const [shouldAnimateReturn, setShouldAnimateReturn] = useState(false);
-
+  const safeSetDurationObj = (val) => {
+    if (
+      val &&
+      typeof val === "object" &&
+      typeof val.hours === "number" &&
+      typeof val.minutes === "number"
+    ) {
+      setDurationObj(val);
+    } else {
+      setDurationObj({ hours: 3, minutes: 45 });
+    }
+  };
 
   return (
     <motion.div
@@ -1868,7 +2001,7 @@ const [animateSort, setAnimateSort] = useState(false);
                     <label>Title</label>
                     <motion.input
                       type="text"
-                      placeholder="My first task..."
+                      placeholder="Enter task title..."
                       className={`modal-input ${
                         formSubmitted && errors.title ? "input-error" : ""
                       }`}
@@ -1890,7 +2023,7 @@ const [animateSort, setAnimateSort] = useState(false);
                       placeholder={
                         isDescriptionSuggested
                           ? suggestionText
-                          : "My first task's description..."
+                          : "Enter task description..."
                       }
                className={`modal-input${descChroma ? " chroma-text" : ""}`}
                       rows="2"
@@ -1911,17 +2044,18 @@ const [animateSort, setAnimateSort] = useState(false);
                     <div className="form-group half">
                       <label>Duration</label>
                       <div className="text-area-wrapper">
-                      <input
-                        type="text"
-                        className={`modal-input${durationChroma ? " chroma-text" : ""}`}
-                        value={taskDuration}
-                        onChange={(e) => setTaskDuration(e.target.value)}
-                        ref={durationInputRef}
-                        onKeyDown={handleKeyDown}
-                      />
+                      <DurationPicker
+  value={durationObj}
+  onChange={safeSetDurationObj}
+  maxHours={12}
+  minuteStep={5}
+  initialDuration={{ hours: 0, minutes: 0}}
+/>
+
                       {formSubmitted && errors.duration && (
                         <p className="error-message">{errors.duration}</p>
                       )}
+                      
                       </div>
                     </div>
 
