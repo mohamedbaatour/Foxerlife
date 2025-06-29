@@ -805,7 +805,7 @@ background-color: transparent;
   height: 45px;
   background-color: #212121;
   border: 1px solid #303030;
-  border-radius: 12px;
+  border-radius: 4px;
   font-size: 24px;
   text-align: center;
   cursor: pointer;
@@ -856,12 +856,6 @@ background-color: transparent;
 .add-task-popup-icon {
   width: 24px;
   height: 24px;
-}
-
-/* Error styles */
-.input-error {
-  border-color: #c50000 !important;
-  box-shadow: 0 0 0 1px #c50000;
 }
 
 .error-message {
@@ -1259,6 +1253,7 @@ select.modal-input {
   border: 1px solid #303030 !important;
   border-radius: 4px !important;
   font-family: "Manrope", sans-serif !important;
+  cursor: pointer !important;
 }
 
 .time-picker:hover {
@@ -1271,6 +1266,10 @@ select.modal-input {
 
 .ant-picker-input-placeholder > input {
   color: #ededed !important;
+}
+
+.ant-picker-input input {
+  cursor: pointer !important;
 }
 
 .ant-picker-input.ant-picker-input-placeholder {

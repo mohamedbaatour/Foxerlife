@@ -712,31 +712,40 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
+    if (!over) return;
 
-    if (active.id !== over?.id) {
-      const laterTaskIndex = laterTasks.findIndex(
-        (task) => task.id === active.id
-      );
-      const overLaterTaskIndex = laterTasks.findIndex(
-        (task) => task.id === over?.id
-      );
-
-      const archivedTaskIndex = archivedTasks.findIndex(
-        (task) => task.id === active.id
-      );
-      const overArchivedTaskIndex = archivedTasks.findIndex(
-        (task) => task.id === over?.id
-      );
-
-      if (laterTaskIndex !== -1 && overLaterTaskIndex !== -1) {
-        setLaterTasks((tasks) =>
-          arrayMove(tasks, laterTaskIndex, overLaterTaskIndex)
-        );
-      } else if (archivedTaskIndex !== -1 && overArchivedTaskIndex !== -1) {
-        setArchivedTasks((tasks) =>
-          arrayMove(tasks, archivedTaskIndex, overArchivedTaskIndex)
-        );
+    // Move from Later to Now (if Now is empty and dropped on the Now card)
+    if (
+      nowTask === null &&
+      laterTasks.some((t) => t.id === active.id) &&
+      over.id === "now-task-dropzone"
+    ) {
+      const movedTask = laterTasks.find((t) => t.id === active.id);
+      if (movedTask) {
+        setNowTask(movedTask);
+        setLaterTasks((tasks) => tasks.filter((t) => t.id !== active.id));
+        showNotification("Nice pick buddy!");
       }
+      return;
+    }
+
+    // Move from Now to Later (if dropped on the Later container)
+    if (
+      nowTask &&
+      active.id === nowTask.id &&
+      over.id === "later-tasks-dropzone"
+    ) {
+      setLaterTasks((tasks) => [nowTask, ...tasks]);
+      setNowTask(null);
+      showNotification("Moved back to Later");
+      return;
+    }
+
+    // Reorder within Later
+    const laterTaskIndex = laterTasks.findIndex((task) => task.id === active.id);
+    const overLaterTaskIndex = laterTasks.findIndex((task) => task.id === over.id);
+    if (laterTaskIndex !== -1 && overLaterTaskIndex !== -1) {
+      setLaterTasks((tasks) => arrayMove(tasks, laterTaskIndex, overLaterTaskIndex));
     }
   };
 
@@ -2041,7 +2050,7 @@ const [animateSort, setAnimateSort] = useState(false);
   allowClear={false}
   inputReadOnly
   popupClassName="dark-timepicker"
-  ref={durationInputRef}
+
   ref={node => {
     durationInputRef.current = node;
     // AntD TimePicker input is nested, so get the real input:
