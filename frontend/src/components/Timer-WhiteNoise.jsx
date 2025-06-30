@@ -976,7 +976,7 @@ const TimerWhiteNoises = ({ nowTask, onTimerActiveChange }) => {
                         resetTimer();
                       }}
                     >
-                      Delete
+                      Reset
                     </button>
                   </div>
                 </motion.div>
@@ -1008,30 +1008,36 @@ const TimerWhiteNoises = ({ nowTask, onTimerActiveChange }) => {
             >
               <EndIcon className="end-icon" /> End
             </button>
-            {showEndConfirm && !isOvertime && (
-              <div className="confirmation-popup">
-                <div className="confirmation-content">
-                  <p>End timer?</p>
-                  <div className="confirmation-buttons">
+            <AnimatePresence>
+              {showEndConfirm && !isOvertime && (
+                <motion.div
+                  className={`confirmation-reset-end-popup`}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                >
+                  <p className="confirmation-reset-end-text">Are you sure?</p>
+                  <div className="confirmation-reset-end-buttons">
                     <button
+                      className="cancel-reset-end-button"
                       onClick={() => setShowEndConfirm(false)}
-                      type="button"
                     >
                       Cancel
                     </button>
                     <button
+                      className="confirm-reset-end-button"
                       onClick={() => {
                         setShowEndConfirm(false);
                         endTimer();
                       }}
-                      type="button"
                     >
-                      Yes
+                      End
                     </button>
                   </div>
-                </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>

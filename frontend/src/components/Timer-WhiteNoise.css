@@ -580,7 +580,7 @@
 }
 
 .confirm-reset-end-button {
-  background-color: #e53e3e;
+  background-color: var(--color-primary);
   color: #ededed;
   border: none;
   border-radius: 2px;
@@ -642,7 +642,7 @@
 }
 
 .confirm-timer-button {
-  background-color: #e53e3e;
+  background-color: var(--color-primary);
   color: var(--text-primary);
   border: none;
   border-radius: 4px;
