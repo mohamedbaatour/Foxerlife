@@ -1414,7 +1414,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: "12px",
+                      gap: "8px",
                     }}
                   >
                     <div
@@ -1656,7 +1656,7 @@ const [animateSort, setAnimateSort] = useState(false);
                       style={{
                         display: "flex",
                         alignItems: "center",
-                        gap: "12px",
+                        gap: "8px",
                       }}
                     >
                       <div
@@ -2000,7 +2000,7 @@ const [animateSort, setAnimateSort] = useState(false);
                       className={`modal-input ${
                         formSubmitted && errors.title ? "input-error" : ""
                       }`}
-                      maxLength={23}
+                      maxLength={50}
                       value={taskTitle}
                       onChange={handleTitleChange}
                       ref={titleInputRef}

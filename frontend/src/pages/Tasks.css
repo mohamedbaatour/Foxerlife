@@ -6,7 +6,7 @@
   gap: 80px;
   width: 100vw;
   margin-top: 32px;
-color: #EDEDED;
+color: var(--text-primary);
 background-color: transparent;
 } */
 
@@ -33,20 +33,20 @@ background-color: transparent;
   display: flex;
   flex-direction: row;
   gap: 12px;
-  margin-left: 8px;
+  /* margin-left: 8px; */
   justify-content: left;
   align-items: left;
 }
 
 .now-icon {
-  color: #ededed;
+  color: var(--text-primary);
   width: 28px;
 }
 
 .now-tasks {
   font-size: 24px;
   font-weight: 800;
-  color: #ededed;
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
   letter-spacing: -0.4px;
 }
@@ -56,8 +56,8 @@ background-color: transparent;
   flex-direction: row;
   align-items: center;
   justify-content: left;
-  border: 1px solid #303030;
-  background-color: #212121;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-2);
   padding: 38px 40px 38px 24px;
   border-radius: 8px;
   width: 514px;
@@ -66,7 +66,7 @@ background-color: transparent;
 }
 
 .now-tasks-card.timer-active {
-  border: 1px solid #1fa2ff !important;
+  border: 1px solid var(--color-primary) !important;
 }
 
 .now-tasks-card-emoji-text-container {
@@ -89,19 +89,19 @@ background-color: transparent;
 }
 
 .now-tasks-card-title {
-  color: #ededed;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 700;
 }
 
 .now-tasks-card-time {
-  color: #888888;
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 500;
 }
 
 .now-tasks-card-description {
-  color: #999999;
+  color: var(--text-tertiary);
   font-size: 14px;
   font-weight: 500;
   margin-top: 12px;
@@ -120,12 +120,12 @@ background-color: transparent;
 }
 
 .now-tasks-no-task-title {
-  color: #888888;
+  color: var(--text-muted);
 }
 
 .tasks-arrow-down-icon {
   cursor: pointer;
-  color: #ededed;
+  color: var(--text-primary);
 }
 
 .later-tasks-container {
@@ -136,48 +136,44 @@ background-color: transparent;
   display: flex;
   flex-direction: row;
   gap: 12px;
-  margin-left: 8px;
 }
 
 .later-icon {
-  color: #a1a1a1;
+  color: var(--text-secondary);
   width: 28px;
 }
 
 .later-tasks {
   font-size: 24px;
   font-weight: 800;
-  color: #a1a1a1;
+  color: var(--text-secondary);
   letter-spacing: -0.4px;
 }
 
 .later-tasks-card {
   display: flex;
-  flex-direction: row; /* Change from column to row */
-  border: 1px solid #303030;
-  padding: 24px 0px 24px 8px; /* Adjust padding */
+  flex-direction: row;
+  border: 1px solid var(--color-border);
+  padding: 24px 0px 24px 8px;
   border-radius: 8px;
   max-width: 570px;
-  gap: 24px; /* Space between emoji and text */
+  gap: 24px;
   width: 580px;
   height: 90px;
   margin-bottom: 16px;
-  position: relative; /* Keep for menu positioning */
+  position: relative;
   backdrop-filter: blur(8px);
   overflow: hidden;
-  /* transition: max-height 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s,
-    padding 0.3s ease; */
 }
 
 .task-card-menu {
   border-radius: 12px;
   display: flex;
-  flex-direction: column; /* Arrange buttons horizontally */
-  gap: 10px; /* Space between buttons */
-  padding: 8px 8px 8px 0px; /* Padding inside the menu */
-  z-index: 10; /* Ensure menu is above other elements */
-  justify-content: center; /* Center the buttons within the menu */
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 8px 8px 0px;
+  z-index: 10;
+  justify-content: center;
 }
 
 .menu-item {
@@ -185,25 +181,24 @@ background-color: transparent;
   align-items: center;
   justify-content: center;
   gap: 8px;
-
   border: none;
-  color: #ededed; /* Text color */
-  background-color: #212121; /* Text color */
-  border: 1px solid #303030; /* Border color */
+  color: var(--text-primary);
+  background-color: var(--color-surface-1);
+  border: 1px solid var(--color-border);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   border-radius: 24px;
   font-family: "Manrope", sans-serif;
   transition: all 0.2s ease;
-  min-width: 100px; /* Minimum width for each menu item */
+  min-width: 100px;
   max-width: 130px;
   padding: 5px 0px;
 }
 
 .menu-item:hover {
   transform: scale(1.04);
-  background-color: #303030; /* Highlight on hover */
+  background-color: var(--color-surface-2);
 }
 
 .menu-item:active {
@@ -213,21 +208,21 @@ background-color: transparent;
 .menu-item .menu-icon {
   width: 16px;
   height: 16px;
-  color: #ededed; /* Icon color */
+  color: var(--text-primary);
 }
 
 .menu-item.delete {
-  color: #e53e3e; /* Red color for delete */
+  color: #e53e3e;
 }
 
 .menu-item.delete .menu-icon {
-  color: #e53e3e; /* Red color for delete icon */
+  color: #e53e3e;
 }
 
 .later-tasks-card-emoji-dots {
   width: 48px;
   height: 48px;
-  color: #303030;
+  color: var(--color-border);
   cursor: grab;
 }
 
@@ -239,23 +234,15 @@ background-color: transparent;
   z-index: 2000 !important;
 }
 
-/* .later-tasks-card.expanded {
-  flex-direction: column;
-  align-items: flex-start; 
-  overflow: hidden;
-} */
-
-/* Adjust the container for emoji and text */
 .later-tasks-card-emoji-text-container {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 16px;
-  width: 100%; /* Take full width in expanded mode */
+  width: 100%;
   margin-bottom: 4px;
 }
 
-/* Add styles for the top row that contains content and arrow */
 .later-tasks-card-top-row {
   display: flex;
   flex-direction: row;
@@ -264,17 +251,13 @@ background-color: transparent;
   width: 100%;
 }
 
-/* Styles for the task card menu */
-
-/* Adjust layout when menu is open */
-
 .tasks-arrow-down-icon {
   cursor: pointer;
-  transition: transform 0.3s ease; /* Smooth rotation */
+  transition: transform 0.3s ease;
 }
 
 .tasks-arrow-down-icon.rotated {
-  transform: rotate(180deg); /* Rotate 180 degrees */
+  transform: rotate(180deg);
 }
 
 .later-tasks-card-title-div {
@@ -313,11 +296,12 @@ background-color: transparent;
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 50px;
-  border: 1px solid #303030;
+  border: 1px solid var(--color-border);
+  background: transparent;
 }
 
 .later-tasks-card-title {
-  color: #ededed;
+  color: var(--text-primary);
   font-size: 18px;
   font-weight: 700;
   transition: all 0.3s ease-in-out;
@@ -325,23 +309,24 @@ background-color: transparent;
 
 .later-tasks-card-title:hover {
   border-radius: 3px;
-  border: 1px solid #ededed;
+  border: 1px solid var(--text-primary);
 }
 
 .later-tasks-card-time {
-  color: #888888;
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 500;
   transition: all 0.3s ease-in-out;
+  min-width: 40px;
 }
 
 .later-tasks-card-time:hover {
   border-radius: 3px;
-  border: 1px solid #ededed;
+  border: 1px solid var(--text-primary);
 }
 
 .later-tasks-card-description {
-  color: #999999;
+  color: var(--text-tertiary);
   font-size: 14px;
   font-weight: 500;
   margin-top: 12px;
@@ -352,7 +337,7 @@ background-color: transparent;
 
 .later-tasks-card-description:hover {
   border-radius: 3px;
-  border: 1px solid #ededed;
+  border: 1px solid var(--text-primary);
 }
 
 .later-tasks-text-CTA {
@@ -409,9 +394,9 @@ background-color: transparent;
 }
 
 /* .filter-button {
-  color: #ededed;
+  color: var(--text-primary);
   background-color: #181a1c;
-  border: 1px solid #303030;
+  border: 1px solid var(--color-border);
   border-radius: 10px;
   padding: 12px;
   display: flex;
@@ -430,12 +415,12 @@ background-color: transparent;
   top: 55px;
   right: 0;
   width: 150px;
-  background-color: #212121;
-  border: 1px solid #303030;
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   padding: 8px;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   gap: 4px;
 }
 
@@ -457,7 +442,7 @@ background-color: transparent;
 }
 
 .filter-menu-header {
-  color: #888888;
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 600;
   padding: 4px 8px;
@@ -470,7 +455,7 @@ background-color: transparent;
   padding: 8px;
   background: none;
   border: none;
-  color: #ededed;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -480,18 +465,18 @@ background-color: transparent;
 }
 
 .filter-option:hover {
-  background-color: #303030;
+  background-color: var(--color-surface-2);
 }
 
 .filter-option.active {
   background-color: rgba(17, 157, 255, 0.1);
-  color: #1fa2ff;
+  color: var(--color-primary);
 }
 
 .filter-option.clear {
   margin-top: 4px;
-  border-top: 1px solid #303030;
-  color: #888888;
+  border-top: 1px solid var(--color-border);
+  color: var(--text-muted);
 }
 
 .filtered-results-container {
@@ -517,8 +502,8 @@ background-color: transparent;
   justify-content: center;
   width: 48px;
   height: 48px;
-  background-color: #212121;
-  border: 1px solid #303030;
+  background-color: var(--color-surface-2);
+  border: var(--color-border) 1px solid;
   border-radius: 4px;
   transition: all 0.2s ease;
   cursor: pointer;
@@ -529,7 +514,7 @@ background-color: transparent;
 .ai-icon {
   width: 24px;
   height: 24px;
-  color: #ededed; /* Make icon more visible */
+  color: var(--text-primary); /* Make icon more visible */
   z-index: 0;
 }
 
@@ -537,7 +522,7 @@ background-color: transparent;
 .ai-button:hover,
 .filter-button:hover {
   transform: scale(1.05);
-  background-color: #303030;
+  background-color: var(--color-border);
 }
 
 .search-button:active,
@@ -552,7 +537,7 @@ background-color: transparent;
   width: 24px;
   height: 24px;
   translate: -5px;
-  color: #ededed;
+  color: var(--text-primary);
   pointer-events: none;
 }
 
@@ -568,14 +553,14 @@ background-color: transparent;
 }
 
 .search-button.expanded:hover {
-  background-color: #212121;
+  background-color: var(--color-surface-2);
   transform: scale(1);
 }
 
 .search-input {
   background: none;
   border: none;
-  color: #ededed;
+  color: var(--text-primary);
   font-family: "Manrope", sans-serif;
   font-size: 14px;
   width: 100%;
@@ -679,11 +664,11 @@ background-color: transparent;
 } */
 
 .modal-content {
-  background-color: #181818;
+  background-color: var(--color-surface-1);
   border-radius: 24px;
   width: 550px;
   max-width: 90%;
-  border: 1px solid #303030;
+  border: 1px solid var(--color-border);
   /* animation: slideIn 0.3s ease-out forwards; */
   overflow: hidden;
 }
@@ -719,14 +704,14 @@ background-color: transparent;
   justify-content: space-between;
   align-items: center;
   padding: 24px 32px;
-  border-bottom: 1px solid #303030;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .modal-header h2 {
   margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #ededed;
+  color: var(--text-primary);
 }
 
 .close-button {
@@ -761,7 +746,7 @@ background-color: transparent;
   display: block;
   margin-bottom: 8px;
   font-size: 14px;
-  color: #c4c4c4;
+  color: var(--color-secondary);
   font-weight: 500;
 }
 
@@ -772,7 +757,7 @@ background-color: transparent;
   justify-content: space-between;
   padding: 8px 12px;
   background-color: #181a1c;
-  border: 1px solid #303030;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
 }
 
@@ -780,7 +765,7 @@ background-color: transparent;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #ededed;
+  color: var(--text-primary);
 }
 
 .tag-dot {
@@ -803,8 +788,8 @@ background-color: transparent;
 .emoji-selector {
   width: 100%;
   height: 45px;
-  background-color: #212121;
-  border: 1px solid #303030;
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 24px;
   text-align: center;
@@ -816,15 +801,15 @@ background-color: transparent;
   justify-content: flex-end;
   gap: 16px;
   padding: 16px 32px;
-  border-top: 1px solid #303030;
+  border-top: 1px solid var(--color-border);
 }
 
 .cancel-button {
   padding: 10px 16px;
   background: none;
-  border: 1px solid #303030;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
-  color: #888888;
+  color: var(--text-muted);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -918,7 +903,7 @@ background-color: transparent;
   height: 100%;
   margin-right: -7px;
   cursor: default;
-  color: #ededed;
+  color: var(--text-primary);
 }
 
 .now-tasks-card-emoji-text {
@@ -927,7 +912,7 @@ background-color: transparent;
   align-items: center;
   justify-content: center;
   cursor: default;
-  color: #ededed;
+  color: var(--text-primary);
 }
 @keyframes archiveCardFadeIn {
   from {
@@ -989,8 +974,8 @@ background-color: transparent;
   left: -118%;
   transform: translateX(-50%);
   margin-bottom: 6px;
-  background-color: #212121;
-  border: 1px solid #303030;
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
   width: 200px;
   border-radius: 4px;
   padding: 8px 8px;
@@ -1006,7 +991,7 @@ background-color: transparent;
 } */
 
 .delete-confirmation-text {
-  color: #ededed;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 8px;
@@ -1035,7 +1020,7 @@ background-color: transparent;
 .cancel-delete-button {
   background-color: transparent;
   color: #888888;
-  border: 1px solid #303030;
+  border: 1px solid var(--color-border);
   border-radius: 2px;
   padding: 4px 8px;
   font-size: 12px;
@@ -1070,13 +1055,13 @@ background-color: transparent;
 }
 
 .task-notification {
-  background-color: #212121;
-  color: #ededed;
+  background-color: var(--color-surface-2);
+  color: var(--text-primary);
   padding: 0.4rem 1.4rem;
   border-radius: 99px;
   font-size: 0.875rem;
   font-weight: 500;
-  border-bottom: 1px solid #303030;
+  border-bottom: 1px solid var(--color-border);
   pointer-events: none;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -1108,9 +1093,9 @@ background-color: transparent;
 .tooltip-button {
   visibility: hidden;
   opacity: 0;
-  background-color: #181a1c;
-  border: 1px solid #303030;
-  color: #ededed;
+  background-color: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+  color: var(--text-primary);
   text-align: center;
   padding: 6px 10px;
   border-radius: 8px;
@@ -1133,21 +1118,21 @@ background-color: transparent;
 .modal-input {
   width: 100%;
   padding: 12px;
-  background-color: #212121 !important;
+  background-color: var(--color-surface-2) !important;
 
   border-radius: 4px;
 
   font-size: 14px;
-  color: #ededed;
+  color: var(--text-primary);
   font-family: "Manrope", sans-serif;
   box-sizing: border-box;
-  border: 1px solid #303030;
+  border: 1px solid var(--color-border);
 }
 
 .text-area-wrapper {
   border-radius: 4px;
   overflow: hidden;
-  background-color: #212121 !important;
+  background-color: var(--color-surface-2) !important;
   display: flex;
 }
 
@@ -1176,7 +1161,7 @@ textarea.modal-input {
     #c679c4 40%,
     #fa3d1d 45%,
     #ffb005 50%,
-    #ededed 55%,
+    var(--text-primary) 55%,
     #0358f7 60%,
     transparent 66.67%,
     transparent
@@ -1199,13 +1184,13 @@ textarea.modal-input {
 .modal-input:active,
 textarea.modal-input,
 select.modal-input {
-  background-color: #212121 !important;
+  background-color: var(--color-surface-2) !important;
   /* ...other styles... */
 }
 
 .ai-icon {
   transition: color 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  color: #ededed;
+  color: var(--text-primary);
 }
 .ai-icon.ai-icon-active {
   color: #1fa2ff !important;
@@ -1215,14 +1200,14 @@ select.modal-input {
 
 /* Dark mode for react-duration-picker */
 /* .rdp-picker {
-  background: #212121 !important;
+  background: var(--color-surface-2) !important;
   color: #f3f4f6 !important;
   border-radius: 8px;
   border: 1px solid #444;
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
-  border: 1px solid #303030 !important;
+  border: 1px solid var(--color-border) !important;
   font-family: "Manrope", sans-serif !important;
 }
 .rdp-column-container {
@@ -1232,11 +1217,11 @@ select.modal-input {
 
 .rdp-masked-div {
   font-family: "Manrope", sans-serif !important;
-  color: #ededed !important;
+  color: var(--text-primary) !important;
 }
 
 .rdp-text-overlay {
-  color: #212121 !important;
+  color: var(--color-surface-2) !important;
 }
 
 .rdp-column-container:nth-child(3) {
@@ -1248,16 +1233,16 @@ select.modal-input {
 } */
 
 .time-picker {
-  color: #ededed !important;
-  background-color: #212121 !important;
-  border: 1px solid #303030 !important;
+  color: var(--text-primary) !important;
+  background-color: var(--color-surface-2) !important;
+  border: 1px solid var(--color-border) !important;
   border-radius: 4px !important;
   font-family: "Manrope", sans-serif !important;
   cursor: pointer !important;
 }
 
 .time-picker:hover {
-  background-color: #262626 !important;
+  background-color: var(--color--surface-3) !important;
 }
 
 .ant-picker-outlined:focus-within {
@@ -1265,7 +1250,7 @@ select.modal-input {
 }
 
 .ant-picker-input-placeholder > input {
-  color: #ededed !important;
+  color: var(--text-primary) !important;
 }
 
 .ant-picker-input input {
@@ -1277,31 +1262,31 @@ select.modal-input {
 }
 
 .ant-picker-panel-layout {
-  background-color: #212121 !important;
-  border: 1px solid #303030 !important;
+  background-color: var(--color-surface-2) !important;
+  border: 1px solid var(--color-border) !important;
 }
 
 .ant-picker-time-panel-cell-inner {
-  background-color: #212121 !important;
-  color: #ededed !important;
+  background-color: var(--color-surface-2) !important;
+  color: var(--text-primary) !important;
 }
 
 .ant-picker-time-panel-cell-inner:hover {
-  background-color: #303030 !important;
-  color: #ededed !important;
+  background-color: var(--color-border) !important;
+  color: var(--text-primary) !important;
 }
 
 .ant-picker-time-panel-cell.ant-picker-time-panel-cell-selected {
-  background-color: #212121;
+  background-color: var(--color-surface-2);
 }
 
 .ant-picker-suffix {
-  color: #ededed !important;
+  color: var(--text-primary) !important;
 }
 
 .ant-btn {
   background-color: #1fa2ff !important;
-  color: #ededed !important;
+  color: var(--text-primary) !important;
   border: none !important;
   border-radius: 4px !important;
   padding: 12px !important;
@@ -1315,7 +1300,7 @@ select.modal-input {
     #c679c4 40%,
     #fa3d1d 45%,
     #ffb005 50%,
-    #ededed 55%,
+    var(--text-primary) 55%,
     #0358f7 60%,
     transparent 66.67%,
     transparent

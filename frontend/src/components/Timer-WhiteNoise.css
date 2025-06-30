@@ -5,8 +5,7 @@
 }
 
 .timer-section {
-  /* background-color: #131517; */
-  border: 1px solid #303030;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -14,6 +13,7 @@
   width: 25.625rem;
   height: 28rem;
   justify-content: center;
+  background-color: var(--color-surface-1);
 }
 
 .timer-display-container {
@@ -22,21 +22,16 @@
   height: 16.875rem;
 }
 
-.timer-progress-ring__background,
-.timer-progress-ring__progress {
-  fill: none;
-}
-
 .timer-progress-ring__background {
-  stroke: #212121;
+  stroke: var(--color-surface-2);
 }
 
 .timer-progress-ring__progress {
-  display: block; /* Make the progress circle visible */
+  display: block;
 }
 
 .timer-progress-ring__colored-segment {
-  display: none; /* Hide the segment that moves around */
+  display: none;
 }
 
 .timer-progress-dot {
@@ -56,16 +51,17 @@
 }
 
 .timer-remaining-label {
-  font-size: 0.875rem;
-  color: #888888;
-  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .timer-time {
   font-size: 2.625rem;
   font-weight: 800;
-  color: #ededed;
+  color: var(--text-primary);
   display: flex;
   align-items: baseline;
   justify-content: center;
@@ -80,7 +76,7 @@
 .timer-time .separator {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #a1a1a1;
+  color: var(--text-secondary);
   letter-spacing: -0.5px;
   margin: 0 0.125rem;
 }
@@ -95,7 +91,7 @@
 }
 
 .timer-button {
-  border: 1px solid #303030;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.875rem;
@@ -105,15 +101,15 @@
   gap: 0.25rem;
   transition: all 0.2s ease;
   font-weight: 500;
-  color: #999999;
+  color: var(--text-tertiary);
   padding: 0.75rem 1rem;
-  background-color: #212121;
+  background-color: var(--color-surface-2);
   font-family: "Manrope", "Roboto", sans-serif;
 }
 
 .timer-button:hover {
   transform: scale(1.02);
-  background-color: #383838;
+  background-color: var(--color-surface-3);
 }
 
 .timer-button:active {
@@ -135,7 +131,7 @@
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   font-family: "Manrope", "Roboto", sans-serif;
-  background-color: #1fa2ff;
+  background-color: var(--color-primary);
 }
 
 .start-pause-button:hover {
@@ -150,7 +146,7 @@
 .start-icon {
   width: 2rem;
   height: 2rem;
-  fill: #ededed;
+  fill: var(--text-primary);
 }
 
 .end-icon,
@@ -160,12 +156,11 @@
 }
 
 .end-icon.overtime {
-  stroke: #ededed;
+  stroke: var(--text-primary);
   stroke-width: 1px;
 }
 
 .start-pause-button.start {
-  color: #ededed;
   transition: all 0.2s ease;
 }
 
@@ -174,8 +169,7 @@
 }
 
 .white-noise-player {
-  /* background-color: #131517; */
-  border: 1px solid #303030;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 2rem 3rem;
   display: flex;
@@ -183,7 +177,8 @@
   align-items: center;
   max-width: 25.625rem;
   justify-content: space-between;
-  --white-noise-progress-color: #1fa2ff;
+  --white-noise-progress-color: var(--color-primary);
+  background-color: var(--color-surface-1);
 }
 
 .white-noise-player-hero {
@@ -199,13 +194,13 @@
 .white-noise-player-title {
   font-size: 1.15rem;
   font-weight: 600;
-  color: #ededed;
+  color: var(--text-primary);
 }
 
 .white-noise-player-playing {
   font-size: 1rem;
   font-weight: 400;
-  color: #a1a1a1;
+  color: var(--text-secondary);
   margin-top: 0.2rem;
 }
 
@@ -217,28 +212,8 @@
 .white-noise-player-icon {
   width: 2.5rem;
   height: 2.5rem;
-  color: #666666;
+  color: var(--text-disabled);
 }
-
-/* .white-noise-options-button {
-  background: none;
-  border: 1px solid #303030;
-  color: #a1a1a1;
-  border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.white-noise-options-button:hover {
-  border-color: #777;
-} */
 
 .white-noise-progress-bar-container {
   width: 100%;
@@ -258,7 +233,7 @@
   height: 0.53125rem;
   background: transparent;
   border-radius: 0.3125rem;
-  border: 1.5px solid #303030;
+  border: 1.5px solid var(--color-border);
   position: relative;
   z-index: 0;
 }
@@ -268,19 +243,19 @@
   appearance: none;
   width: 0.75rem;
   height: 0.75rem;
-  background: var(--white-noise-progress-color);
+  background: var(--white-noise-progress-color, var(--color-primary));
   border-radius: 50%;
   cursor: pointer;
   margin-top: -0.1875rem;
   position: relative;
   z-index: 1;
-  border: 1px solid #303030;
+  border: 1px solid var(--color-border);
 }
 
 .white-noise-progress-bar::-moz-range-thumb {
   width: 0.75rem;
   height: 0.75rem;
-  background: var(--white-noise-progress-color);
+  background: var(--white-noise-progress-color, var(--color-primary));
   border-radius: 50%;
   border: none;
   cursor: pointer;
@@ -289,14 +264,14 @@
 .white-noise-progress-bar::-moz-range-track {
   width: 100%;
   height: 0.5rem;
-  background: #181a1c;
+  background: var(--color-surface-2);
   border-radius: 0.1875rem;
   cursor: pointer;
-  border: 1px solid #303030;
+  border: 1px solid var(--color-border);
 }
 
 .white-noise-progress-bar::-moz-range-progress {
-  background-color: var(--white-noise-progress-color);
+  background-color: var(--white-noise-progress-color, var(--color-primary));
   height: 0.5rem;
   border-radius: 0.1875rem;
 }
@@ -313,7 +288,7 @@
 .white-noise-controls .control-button {
   background: none;
   border: none;
-  color: #a1a1a1;
+  color: var(--text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -325,7 +300,7 @@
 .white-noise-controls .control-button svg {
   background: none;
   border: none;
-  color: #a1a1a1;
+  color: var(--text-secondary);
   cursor: pointer;
   width: 1.5rem;
   height: 1.5rem;
@@ -338,7 +313,7 @@
 }
 
 .white-noise-controls .control-button svg:hover {
-  color: #ededed;
+  color: var(--text-primary);
 }
 
 .volume-control-container {
@@ -368,7 +343,7 @@
   height: 0.3125rem;
   -webkit-appearance: none;
   appearance: none;
-  background: #303030;
+  background: var(--color-border);
   border-radius: 0.1875rem;
   cursor: pointer;
   outline: none;
@@ -403,7 +378,7 @@
   appearance: none;
   width: 0.625rem;
   height: 0.625rem;
-  background: var(--white-noise-progress-color, #1fa2ff);
+  background: var(--white-noise-progress-color, var(--color-primary));
   border-radius: 50%;
   cursor: pointer;
 }
@@ -411,7 +386,7 @@
 .volume-slider::-moz-range-thumb {
   width: 0.625rem;
   height: 0.625rem;
-  background: var(--white-noise-progress-color, #1fa2ff);
+  background: var(--white-noise-progress-color, var(--color-primary));
   border-radius: 50%;
   cursor: pointer;
 }
@@ -419,13 +394,13 @@
 .volume-slider::-moz-range-track {
   width: 100%;
   height: 0.3125rem;
-  background: #303030;
+  background: var(--color-border);
   border-radius: 0.1875rem;
   cursor: pointer;
 }
 
 .white-noise-controls .play-pause-main-button {
-  background-color: #ededed;
+  background-color: var(--text-primary);
   border-radius: 50%;
   width: 2rem;
   height: 2rem;
@@ -433,7 +408,7 @@
 }
 
 .white-noise-controls .play-pause-main-button svg {
-  background-color: #ededed;
+  background-color: var(--text-primary);
   border-radius: 50%;
   width: 1.5rem;
   height: 1.5rem;
@@ -441,21 +416,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #181818;
+  color: var(--color-bg);
   margin-right: 0.9px;
 }
 
 .white-noise-controls .play-pause-main-button svg:hover {
-  color: #181818 !important;
+  color: var(--text-bg) !important;
 }
 
 .white-noise-controls .play-pause-main-button:hover {
-  background-color: #f0f0f0;
-  color: #131517;
+  background-color: var(--text-primary);
+  color: var(--color-bg);
 }
 
 .control-button-secondary {
-  color: #a1a1a1;
+  color: var(--text-secondary);
   border-radius: 50%;
   width: 1.25rem;
   height: 1.25rem;
@@ -465,24 +440,24 @@
 }
 
 .control-button-secondary:hover {
-  color: #ededed;
+  color: var(--text-primary);
 }
 
 .control-button-secondary.active {
-  color: #1fa2ff;
+  color: var(--color-primary);
 }
 
 .notification-popup {
   position: fixed;
   bottom: 1.875rem;
   left: 1.875rem;
-  background-color: #131517;
-  color: #ededed;
+  background-color: var(--color-surface-1);
+  color: var(--text-primary);
   padding: 0.75rem 1.25rem;
   border-radius: 99px;
   font-size: 0.875rem;
   font-weight: 500;
-  border: 1px solid #303030;
+  border: 1px solid var(--color-border);
   z-index: 1000;
   animation: fadeInOut 2s ease-in-out;
   pointer-events: none;
@@ -517,7 +492,7 @@
   position: absolute;
   width: 10px;
   height: 10px;
-  background-color: #1fa2ff;
+  background-color: var(--color-primary);
   border-radius: 50%;
   top: 50%;
   left: 50%;
@@ -525,17 +500,14 @@
   transition: transform 0.35s linear;
 }
 
-/* Override library styles */
 .CircularProgressbar .CircularProgressbar-path {
   filter: drop-shadow(0 0 3px rgba(17, 157, 255, 0.5));
 }
 
-/* You can comment out or remove this if you're not using the progress arc */
 .timer-progress-ring__progress {
-  display: none; /* Hide the original progress circle */
+  display: none;
 }
 
-/* Optional subtle track - adjust opacity or remove if not needed */
 .timer-progress-track {
   opacity: 0;
 }
@@ -563,102 +535,72 @@
 }
 
 .timer-button.end-button.overtime {
-  background-color: #1fa2ff;
-  box-shadow: inset 0px 0px 1.5rem -0.4375rem #ededed;
-  color: #ededed;
+  background-color: var(--color-primary);
+  box-shadow: inset 0px 0px 1.5rem -0.4375rem var(--color-surface-1);
+  color: var(--text-primary);
 }
 
 .timer-button.end-button.overtime:hover {
   background-color: #0056b3;
 }
 
-/* Updated Confirmation Popup Styles */
-.confirmation-popup {
+/* Confirmation Popup Styles */
+.confirmation-reset-end-popup {
   position: absolute;
-  top: -120px;
-  left: 50%;
+  bottom: 100%;
+
   transform: translateX(-50%);
-  background-color: #131517;
-  border: 1px solid #303030;
-  border-radius: 0.625rem;
-  padding: 1rem;
+  right: -75%;
+  margin-bottom: 6px;
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
   width: 200px;
-  z-index: 100;
-  animation: fadeIn 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.confirmation-popup.fading-out {
-  animation: fadeOut 0.3s ease;
-}
-
-.confirmation-content {
+  border-radius: 4px;
+  padding: 8px 8px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  z-index: 99990000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.confirmation-content p {
-  color: #ededed;
-  margin: 0;
-  font-size: 0.875rem;
+.confirmation-reset-end-text {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
   text-align: center;
 }
 
-.confirmation-buttons {
+.confirmation-reset-end-buttons {
   display: flex;
+  gap: 8px;
+  width: 100%;
   justify-content: center;
-  gap: 0.75rem;
 }
 
-.confirmation-buttons button {
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.3125rem;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.confirmation-buttons button:first-child {
-  background-color: transparent;
-  border: 1px solid #303030;
-  color: #999999;
-}
-
-.confirmation-buttons button:first-child:hover {
-  background-color: #383838;
-}
-
-.confirmation-buttons button:last-child {
-  background-color: #1fa2ff;
-  border: none;
+.confirm-reset-end-button {
+  background-color: #e53e3e;
   color: #ededed;
+  border: none;
+  border-radius: 2px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Manrope", sans-serif;
 }
 
-.confirmation-buttons button:last-child:hover {
-  background-color: #0056b3;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(-50%) translateY(10px);
-  }
+.cancel-reset-end-button {
+  background-color: transparent;
+  color: #888888;
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "Manrope", sans-serif;
 }
 
 .timer-confirmation-popup {
@@ -667,8 +609,8 @@
   left: 50%;
   transform: translateX(-50%);
   margin-bottom: 6px;
-  background-color: #181a1c;
-  border: 1px solid #303030;
+  background-color: var(--color-surface-1);
+  border: 1px solid var(--color-border);
   width: 200px;
   border-radius: 8px;
   padding: 16px 24px;
@@ -685,7 +627,7 @@
 }
 
 .timer-confirmation-text {
-  color: #ededed;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 12px;
@@ -701,7 +643,7 @@
 
 .confirm-timer-button {
   background-color: #e53e3e;
-  color: #ededed;
+  color: var(--text-primary);
   border: none;
   border-radius: 4px;
   padding: 4px 8px;
@@ -713,8 +655,8 @@
 
 .cancel-timer-button {
   background-color: transparent;
-  color: #999;
-  border: 1px solid #303030;
+  color: var(--text-secondary);
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   padding: 4px 8px;
   font-size: 12px;
@@ -731,14 +673,14 @@
 .tooltip-button {
   visibility: hidden;
   opacity: 0;
-  background-color: #181a1c;
-  border: 1px solid #303030;
-  color: #ededed;
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--text-primary);
   text-align: center;
   padding: 6px 10px;
   border-radius: 8px;
   position: absolute;
-  bottom: 120%; /* Above the icon */
+  bottom: 120%;
   left: 50%;
   transform: translateX(-50%);
   transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
@@ -754,7 +696,7 @@
 }
 
 .special-thanks {
-  color: #a1a1a1;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   font-weight: 600;
   text-align: center;

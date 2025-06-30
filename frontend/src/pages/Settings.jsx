@@ -152,6 +152,29 @@ const Settings = () => {
       reader.readAsText(file);
     };
 
+    const [appearance, setAppearance] = useState(() => {
+      return localStorage.getItem("appearance") || "default";
+    });
+    
+    useEffect(() => {
+      function applyAppearance(mode) {
+        document.body.setAttribute("data-appearance", mode);
+      }
+    
+      if (appearance === "default") {
+        const mq = window.matchMedia("(prefers-color-scheme: dark)");
+        applyAppearance(mq.matches ? "dark" : "light");
+        const listener = (e) => applyAppearance(e.matches ? "dark" : "light");
+        mq.addEventListener("change", listener);
+        // Save "default" to localStorage too!
+        localStorage.setItem("appearance", "default");
+        return () => mq.removeEventListener("change", listener);
+      } else {
+        applyAppearance(appearance);
+        localStorage.setItem("appearance", appearance);
+      }
+    }, [appearance]);
+
     return (
       <motion.div
         className="settings-page-container"
@@ -212,6 +235,14 @@ const Settings = () => {
           <div className='settings-seperator'>
           <ColorLensIcon className='settings-seperator-icon' />
           <p className='settings-seperator-text'>Personalization</p>
+          </div>
+          <div className="settings-option">
+            <p className="settings-option-text">Apperance</p>
+            <select className="settings-dropdown" value={appearance} onChange={e => setAppearance(e.target.value)}>
+              <option value="default">System</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
           </div>
           <div className="settings-option">
             <p className="settings-option-text">Custom Cursor</p>

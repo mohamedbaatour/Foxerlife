@@ -33,6 +33,28 @@ function App() {
   const [geoChecked, setGeoChecked] = useState(false);
 
   React.useEffect(() => {
+    const savedAppearance = localStorage.getItem("appearance") || "default";
+    function applyAppearance(mode) {
+      if (mode === "default") {
+        const mq = window.matchMedia("(prefers-color-scheme: dark)");
+        document.body.setAttribute(
+          "data-appearance",
+          mq.matches ? "dark" : "light"
+        );
+        mq.addEventListener("change", (e) => {
+          document.body.setAttribute(
+            "data-appearance",
+            e.matches ? "dark" : "light"
+          );
+        });
+      } else {
+        document.body.setAttribute("data-appearance", mode);
+      }
+    }
+    applyAppearance(savedAppearance);
+  }, []);
+
+  React.useEffect(() => {
     fetch("https://ipwho.is")
       .then((res) => res.json())
       .then((data) => {

@@ -30,6 +30,8 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useNavigate } from "react-router-dom"; // Add this import
 
+import {motion, AnimatePresence} from "framer-motion";
+
 // Define sounds array with their properties
 const sounds = [
   { name: "Light rain", src: lightRainSound, Icon: RainIcon },
@@ -815,6 +817,9 @@ const TimerWhiteNoises = ({ nowTask, onTimerActiveChange }) => {
     window.dispatchEvent(new CustomEvent("timer-active-changed", { detail: isActive }));
   }, [isActive]);
 
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
+
   return (
     <div className="tasks-main-content-left-column">
       {/* Show notification popup when showNotification is true */}
@@ -920,12 +925,15 @@ const TimerWhiteNoises = ({ nowTask, onTimerActiveChange }) => {
             />
           </svg>
           <div className="timer-text-content">
-            <div
-              className={`timer-remaining-label ${
-                isOvertime ? "overtime" : ""
-              }`}
-            >
-              {isOvertime ? "Overtime" : "Remaining"}
+            <div className={`timer-remaining-label ${isOvertime ? "overtime" : ""}`}>
+              {/* Show nowTask title if present, else fallback */}
+              {nowTask && nowTask.title
+                ? nowTask.title.length > 20
+                  ? nowTask.title.slice(0, 20) + "..."
+                  : nowTask.title
+                : isOvertime
+                  ? "Overtime"
+                  : "Default"}
             </div>
             <div className="timer-time">
               {isOvertime
@@ -935,31 +943,96 @@ const TimerWhiteNoises = ({ nowTask, onTimerActiveChange }) => {
           </div>
         </div>
         <div className="timer-controls">
-          <button onClick={resetTimer} className="timer-button reset-button">
-            <ResetIcon className="reset-icon" /> Reset
-          </button>
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setShowResetConfirm(true)}
+              className="timer-button reset-button"
+              disabled={isOvertime}
+              style={isOvertime ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+            >
+              <ResetIcon className="reset-icon" /> Reset
+            </button>
+            <AnimatePresence>
+              {showResetConfirm && !isOvertime && (
+                <motion.div
+                  className={`confirmation-reset-end-popup`}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                >
+                  <p className="confirmation-reset-end-text">Are you sure?</p>
+                  <div className="confirmation-reset-end-buttons">
+                    <button
+                      className="cancel-reset-end-button"
+                      onClick={() => setShowResetConfirm(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="confirm-reset-end-button"
+                      onClick={() => {
+                        setShowResetConfirm(false);
+                        resetTimer();
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           <div className="tooltip-wrap">
             <div className="tooltip-button">Shift + S</div>
             <button
-              onClick={toggleTimer}
-              className={`start-pause-button ${isActive ? "pause" : "start"} ${
-                isOvertime ? "disabled" : ""
-              }`}
-              disabled={isOvertime}
+              onClick={isOvertime ? endTimer : toggleTimer}
+              className={`start-pause-button ${isActive ? "pause" : "start"}`}
+              // Only disable if not overtime and timer is not allowed to run
+              disabled={false}
             >
-              {isActive ? <PauseIcon /> : <StartIcon className="start-icon" />}{" "}
-              {isActive ? "PAUSE" : "START"}{" "}
+              {isOvertime
+                ? <><StartIcon className="start-icon" /> FINISH</>
+                : isActive
+                ? <><PauseIcon /> PAUSE</>
+                : <><StartIcon className="start-icon" /> START</>
+              }
             </button>
           </div>
-          <button
-            onClick={endTimer}
-            className={`timer-button end-button ${
-              isOvertime ? "overtime" : ""
-            }`}
-          >
-            <EndIcon className={`end-icon ${isOvertime ? "overtime" : ""}`} />{" "}
-            End
-          </button>
+          <div style={{ position: "relative" }}>
+            <button
+              onClick={() => setShowEndConfirm(true)}
+              className={`timer-button end-button`}
+              disabled={isOvertime}
+              style={isOvertime ? { opacity: 0.5, cursor: "not-allowed" } : {}}
+            >
+              <EndIcon className="end-icon" /> End
+            </button>
+            {showEndConfirm && !isOvertime && (
+              <div className="confirmation-popup">
+                <div className="confirmation-content">
+                  <p>End timer?</p>
+                  <div className="confirmation-buttons">
+                    <button
+                      onClick={() => setShowEndConfirm(false)}
+                      type="button"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowEndConfirm(false);
+                        endTimer();
+                      }}
+                      type="button"
+                    >
+                      Yes
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

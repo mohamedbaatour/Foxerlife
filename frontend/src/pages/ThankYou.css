@@ -5,7 +5,8 @@
   justify-content: start;
   height: 100vh;
   width: 100vw;
-  color: #ededed;
+  color: var(--text-primary);
+  background: var(--color-bg);
   font-family: "Manrope", sans-serif;
 }
 
@@ -40,7 +41,7 @@
 .title {
   font-size: 48px;
   font-weight: 800;
-  color: #ededed;
+  color: var(--text-primary);
   margin-bottom: 18px;
   letter-spacing: -1px;
   text-align: center;
@@ -50,7 +51,7 @@
 .subtitle {
   font-size: 14px;
   font-weight: 500;
-  color: #999999;
+  color: var(--text-tertiary);
 }
 
 .thank-you-logo-icon {
@@ -62,11 +63,9 @@
 .thank-you-reddit {
   display: flex;
   flex-direction: column;
-  /* align-items: left;
-  justify-content: start; */
   max-width: 1152px;
   margin-top: 80px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--color-surface-1, rgba(255, 255, 255, 0.05));
   border-radius: 8px;
   padding: 2px 32px 32px 32px;
 }
@@ -83,6 +82,7 @@
 .thank-you-reddit-title-text {
   font-size: 24px;
   font-weight: 700;
+  color: var(--text-primary);
 }
 
 .thank-you-reddit-title-icon {
@@ -102,20 +102,17 @@
 }
 
 .thank-you-reddit-link {
-  color: #999999;
-  font-weight: 500;
+  color: var(--text-tertiary);
+  font-weight: 600;
   text-decoration: none;
   font-size: 14px;
-
-  font-weight: 600;
-  display: inline-block;
+  display: flex;
+  min-width: 7rem;
   margin-right: 0;
   margin-bottom: 8px;
   transition: color 0.3s;
   word-break: break-all;
   text-align: left;
-  display: flex;
-  min-width: 7rem;
 }
 
 .thank-you-reddit-link:hover {

@@ -169,7 +169,9 @@ const Stats = () => {
                     <span className="task-completed-card-emoji">
                       {task.emoji}
                     </span>
-                    <p className="task-completed-card-title">{task.title}</p>
+                    <p className="task-completed-card-title">
+                      {task.title.length > 25 ? task.title.slice(0, 25) + "..." : task.title}
+                    </p>
                   </div>
                   <div className="task-completed-times">
                     <p className="task-completed-time">{task.completedAt}</p>
@@ -214,7 +216,7 @@ const Stats = () => {
                       {nowTask.emoji}
                     </span>
                     <p className="task-remaining-card-title">
-                      {nowTask.title} (Now)
+                      {(nowTask.title.length > 25 ? nowTask.title.slice(0, 25) + "..." : nowTask.title) + " (Now)"}
                     </p>
                   </div>
                   <div className="task-remaining-times">
@@ -238,7 +240,7 @@ const Stats = () => {
                     <span className="task-remaining-card-emoji">
                       {task.emoji}
                     </span>
-                    <p className="task-remaining-card-title">{task.title}</p>
+                    <p className="task-remaining-card-title">{task.title.length > 25 ? task.title.slice(0, 25) + "..." : task.title}</p>
                   </div>
                   <div className="task-remaining-times">
                     <p className="task-remaining-time">{task.time}</p>
@@ -280,7 +282,7 @@ const Stats = () => {
                     <span className="task-remaining-card-emoji">
                       {task.emoji}
                     </span>
-                    <p className="task-remaining-card-title">{task.title}</p>
+                    <p className="task-remaining-card-title">{task.title.length > 25 ? task.title.slice(0, 25) + "..." : task.title}</p>
                   </div>
                   <div className="task-remaining-times">
                     <p className="task-remaining-time">{task.time}</p>

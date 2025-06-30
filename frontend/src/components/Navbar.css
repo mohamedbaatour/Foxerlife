@@ -3,8 +3,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 2.5rem;
-  background-color: #2121217a;
-  border-bottom: 1px solid #303030;
+  background-color: var(--color-surface-1);
+  border-bottom: 1px solid var(--color-border);
   z-index: 100;
   width: 1072px;
   border-radius: 999px;
@@ -20,7 +20,7 @@
 
 p.navbar-brand-version {
   font-size: 0.75rem;
-  color: #a1a1a1;
+  color: var(--text-secondary);
   font-weight: 800;
   margin-top: -1rem;
   margin-left: -1.4rem;
@@ -34,11 +34,7 @@ p.navbar-brand-version {
   margin-top: 0.25rem;
 }
 
-.logo {
-  width: 34px;
-  height: 28px;
-}
-
+.logo,
 .animated-logo {
   width: 34px;
   height: 28px;
@@ -46,7 +42,7 @@ p.navbar-brand-version {
 
 .navbar-brand-name {
   text-decoration: none;
-  color: #ededed;
+  color: var(--text-primary);
   font-size: 1.25rem;
   font-weight: 700;
   cursor: default;
@@ -58,7 +54,7 @@ p.navbar-brand-version {
   align-items: center;
   gap: 4rem;
   text-decoration: none;
-  color: #ededed;
+  color: var(--text-primary);
   margin-left: -2.5rem;
 }
 
@@ -77,14 +73,14 @@ p.navbar-brand-version {
 .tooltip {
   visibility: hidden;
   opacity: 0;
-  background-color: #181a1c;
-  border: 1px solid #303030;
-  color: #ededed;
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--text-primary);
   text-align: center;
   padding: 6px 10px;
   border-radius: 4px;
   position: absolute;
-  bottom: -180%; /* Above the icon */
+  bottom: -180%;
   left: 50%;
   transform: translateX(-50%);
   transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
@@ -101,7 +97,7 @@ p.navbar-brand-version {
 
 .navbar-menu-link {
   text-decoration: none;
-  color: #888;
+  color: var(--text-muted);
   font-weight: 600;
   font-size: 0.875rem;
   transition: color 0.2s ease-in-out, font-weight 0.2s ease-in-out;
@@ -110,11 +106,11 @@ p.navbar-brand-version {
 }
 
 .navbar-menu-link:hover {
-  color: #c4c4c4;
+  color: var(--text-secondary);
 }
 
 .navbar-menu-link.active {
-  color: #ededed;
+  color: var(--text-primary);
   font-weight: 800;
 }
 
@@ -124,13 +120,13 @@ li {
 }
 
 .navbar-current-time {
-  color: #c4c4c4;
+  color: var(--text-secondary);
   font-weight: 800;
   font-size: 1rem;
 }
 
 .navbar-current-location {
-  color: #666666;
+  color: var(--text-disabled);
   font-weight: 400;
   font-size: 0.75rem;
 }
@@ -194,7 +190,6 @@ li {
     flex-direction: column;
     align-items: stretch;
     width: 100%;
-
     min-height: 3.5rem;
     border-radius: 0;
   }
@@ -209,13 +204,11 @@ li {
     gap: 1rem;
     flex-direction: row;
     align-items: flex-start;
-
     margin-bottom: 25px !important;
   }
   .navbar-brand-name {
     font-size: 1rem;
   }
-
   .navbar-menu-link {
     font-size: 0.75rem;
   }
@@ -242,7 +235,6 @@ li {
     flex-direction: column;
     align-items: stretch;
     width: 100%;
-
     min-height: 7rem;
     border-radius: 0;
   }
@@ -265,7 +257,6 @@ li {
   .navbar-menu-link {
     font-size: 0.75rem;
   }
-
   .logo,
   .animated-logo {
     width: 28px;
