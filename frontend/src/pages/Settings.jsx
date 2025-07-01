@@ -36,7 +36,7 @@ const Settings = () => {
     
     const [customCursor, setCustomCursor] = useState(() => {
       const savedCustomCursor = localStorage.getItem("customCursor");
-      return savedCustomCursor ? savedCustomCursor : "on"; // Default to on if not found
+      return savedCustomCursor ? savedCustomCursor : "off"; // Default to on if not found
     });
     
     const [notifications, setNotifications] = useState([]);

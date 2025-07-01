@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import "./Navbar.css";
-import { ReactComponent as LogoIcon } from "../icones/icon.svg";
+import LogoIcon from "../icones/foxidle3.png";
 import { ReactComponent as SettingsIcon } from "../icones/settings.svg";
 import { ReactComponent as StatsIcon } from "../icones/stats.svg";
 import { ReactComponent as TaskIcon } from "../icones/task.svg";
@@ -208,7 +208,11 @@ const Navbar = () => {
             className="animated-logo"
           />
         ) : (
-          <LogoIcon className="logo" />
+          <img
+            src={LogoIcon}
+            alt="Foxerlife Logo"
+            className="logo"
+          />
         )}
         <p className="navbar-brand-name">Foxerlife</p>
         <p className="navbar-brand-version">Alpha</p>

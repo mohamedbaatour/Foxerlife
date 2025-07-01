@@ -148,7 +148,7 @@ function App() {
   // Ensure the state is initialized from localStorage
   const [customCursor, setCustomCursor] = useState(() => {
     const savedCustomCursor = localStorage.getItem("customCursor");
-    return savedCustomCursor ? savedCustomCursor : "on";
+    return savedCustomCursor ? savedCustomCursor : "off";
   });
 
   // Ensure the CustomCursor component is conditionally rendered

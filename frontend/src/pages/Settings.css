@@ -5,7 +5,7 @@
   justify-content: start;
   color: var(--text-primary);
   width: 580px;
-  transition: all 0.4s ease;
+  transition: background 0.4s ease;
   background: var(--color-bg);
 }
 
