@@ -430,7 +430,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     };
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isClosing, setIsClosing] = useState(false);
+    const [isEditingDescription, setIsEditingDescription] = useState(false);
 
     const handleContentChange = (e, field) => {
       const updatedValue = e.target.innerText;
@@ -544,7 +544,10 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
           key={task.id}
           id={`task-${task.id}`}
           onMouseEnter={() => !isDragging && setIsMenuOpen(true)}
-          onMouseLeave={() => setIsMenuOpen(false)}
+          onMouseLeave={() => {
+            // Only close menu if not editing description
+            if (!isEditingDescription) setIsMenuOpen(false);
+          }}
         >
             <div className="later-tasks-card-emoji-text-container">
               <div className="later-tasks-card-emoji-container">
@@ -623,18 +626,19 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                   </p>
                 </div>
                 <p
-                  className="later-tasks-card-description"
-                  contentEditable
-                  suppressContentEditableWarning
-                  onBlur={(e) => handleContentChange(e, "description")}
-                >
-                  {isMenuOpen || task.description.length <= maxDescriptionLength
-                    ? task.description
-                    : `${task.description.substring(
-                        0,
-                        maxDescriptionLength
-                      )}...`}
-                </p>
+  className="later-tasks-card-description"
+  contentEditable
+  suppressContentEditableWarning
+  onFocus={() => setIsEditingDescription(true)}
+  onBlur={e => {
+    setIsEditingDescription(false);
+    handleContentChange(e, "description");
+  }}
+>
+  {(isMenuOpen || isEditingDescription || task.description.length <= maxDescriptionLength)
+    ? task.description
+    : `${task.description.substring(0, maxDescriptionLength)}...`}
+</p>
               </div>
             </div>
 
@@ -1373,6 +1377,8 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
 
     const maxDescriptionLength = " task's description is long, so long...".length;
 
+    const [isEditingDescription, setIsEditingDescription] = useState(false);
+
     return (
       <div
         ref={setNodeRef}
@@ -1385,7 +1391,9 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
           key={task.id}
           id={`archive-task-${task.id}`}
           onMouseEnter={() => !isDragging && setIsMenuOpen(true)}
-          onMouseLeave={() => setIsMenuOpen(false)}
+          onMouseLeave={() => {
+            if (!isEditingDescription) setIsMenuOpen(false);
+          }}
         >
           <div className="later-tasks-card-top-row">
             <div className="later-tasks-card-emoji-text-container">
@@ -1459,18 +1467,19 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                   <p className="later-tasks-card-time">{task.time}</p>
                 </div>
                 <p
-                  contentEditable
-                  suppressContentEditableWarning
-                  onBlur={(e) => handleContentChange(e, "description")}
-                  className="later-tasks-card-description"
-                >
-                  {isMenuOpen || task.description.length <= maxDescriptionLength
-                    ? task.description
-                    : `${task.description.substring(
-                        0,
-                        maxDescriptionLength
-                      )}...`}
-                </p>
+  className="later-tasks-card-description"
+  contentEditable
+  suppressContentEditableWarning
+  onFocus={() => setIsEditingDescription(true)}
+  onBlur={e => {
+    setIsEditingDescription(false);
+    handleContentChange(e, "description");
+  }}
+>
+  {(isMenuOpen || isEditingDescription || task.description.length <= maxDescriptionLength)
+    ? task.description
+    : `${task.description.substring(0, maxDescriptionLength)}...`}
+</p>
               </div>
             </div>
 
@@ -2022,7 +2031,7 @@ const [animateSort, setAnimateSort] = useState(false);
                       }
                className={`modal-input${descChroma ? " chroma-text" : ""}`}
                       rows="2"
-                      maxLength={60}
+                      maxLength={100}
                       value={taskDescription}
                       onChange={handleDescriptionChange}
                       onKeyDown={handleDescriptionKeyDown}

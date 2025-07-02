@@ -305,6 +305,8 @@ background-color: transparent;
   font-size: 18px;
   font-weight: 700;
   transition: all 0.3s ease-in-out;
+  border: 1px solid transparent;
+  margin-top: 0px;
 }
 
 .later-tasks-card-title:hover {
@@ -318,6 +320,8 @@ background-color: transparent;
   font-weight: 500;
   transition: all 0.3s ease-in-out;
   min-width: 40px;
+  border: 1px solid transparent;
+  margin-bottom: 1px;
 }
 
 .later-tasks-card-time:hover {
@@ -329,9 +333,10 @@ background-color: transparent;
   color: var(--text-tertiary);
   font-size: 14px;
   font-weight: 500;
-  margin-top: 12px;
+  margin-top: 10px;
   display: flex;
   width: auto;
+  border: 1px solid transparent;
   transition: all 0.3s ease-in-out;
 }
 
