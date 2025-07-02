@@ -56,24 +56,21 @@ background-color: transparent;
   flex-direction: row;
   align-items: center;
   justify-content: left;
-  border: 1px solid var(--color-border);
   background-color: var(--color-surface-2);
-  padding: 38px 40px 38px 24px;
   border-radius: 8px;
-  width: 514px;
-  height: 48px;
-  transition: border 0.2s ease-in-out;
-}
+  width: 580px;
+  height: 130px;
+  margin-bottom: 16px;
 
-.now-tasks-card.timer-active {
-  border: 1px solid var(--color-primary) !important;
+  transition: border 0.2s ease-in-out;
 }
 
 .now-tasks-card-emoji-text-container {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
+  margin-left: 32px;
 }
 
 .now-tasks-card-title-div {
@@ -129,7 +126,7 @@ background-color: transparent;
 }
 
 .later-tasks-container {
-  margin-top: 64px;
+  margin-top: 48px;
 }
 
 .later-tasks-text {
@@ -153,16 +150,12 @@ background-color: transparent;
 .later-tasks-card {
   display: flex;
   flex-direction: row;
-  border: 1px solid var(--color-border);
-  padding: 24px 0px 24px 8px;
   border-radius: 8px;
-  max-width: 570px;
-  gap: 24px;
   width: 580px;
-  height: 90px;
+  height: 130px;
   margin-bottom: 16px;
   position: relative;
-  backdrop-filter: blur(8px);
+  background-color: var(--color-surface-1);
   overflow: hidden;
 }
 
@@ -220,10 +213,11 @@ background-color: transparent;
 }
 
 .later-tasks-card-emoji-dots {
-  width: 48px;
-  height: 48px;
+  width: 34px;
+  height: 34px;
   color: var(--color-border);
   cursor: grab;
+  margin-left: 8px;
 }
 
 .later-tasks-card-emoji-dots:hover ~ .later-tasks-card {
@@ -421,11 +415,9 @@ background-color: transparent;
   right: 0;
   width: 150px;
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
   border-radius: 4px;
   padding: 8px;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   gap: 4px;
 }
 
@@ -470,7 +462,7 @@ background-color: transparent;
 }
 
 .filter-option:hover {
-  background-color: var(--color-surface-2);
+  background-color: var(--color-surface-3);
 }
 
 .filter-option.active {
@@ -508,7 +500,7 @@ background-color: transparent;
   width: 48px;
   height: 48px;
   background-color: var(--color-surface-2);
-  border: var(--color-border) 1px solid;
+  border: none;
   border-radius: 4px;
   transition: all 0.2s ease;
   cursor: pointer;
@@ -544,11 +536,6 @@ background-color: transparent;
   translate: -5px;
   color: var(--text-primary);
   pointer-events: none;
-}
-
-.search-button {
-  width: 46px;
-  height: 46px;
 }
 
 .search-button.expanded {
@@ -794,7 +781,7 @@ background-color: transparent;
   width: 100%;
   height: 45px;
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: none;
   border-radius: 4px;
   font-size: 24px;
   text-align: center;
@@ -904,9 +891,6 @@ background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
-  margin-right: -7px;
   cursor: default;
   color: var(--text-primary);
 }
@@ -1068,7 +1052,7 @@ background-color: transparent;
   font-weight: 500;
   border-bottom: 1px solid var(--color-border);
   pointer-events: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1099,7 +1083,7 @@ background-color: transparent;
   visibility: hidden;
   opacity: 0;
   background-color: var(--color-surface-1);
-  border: 1px solid var(--color-border);
+
   color: var(--text-primary);
   text-align: center;
   padding: 6px 10px;
@@ -1131,7 +1115,7 @@ background-color: transparent;
   color: var(--text-primary);
   font-family: "Manrope", sans-serif;
   box-sizing: border-box;
-  border: 1px solid var(--color-border);
+  border: none;
 }
 
 .text-area-wrapper {
@@ -1240,7 +1224,7 @@ select.modal-input {
 .time-picker {
   color: var(--text-primary) !important;
   background-color: var(--color-surface-2) !important;
-  border: 1px solid var(--color-border) !important;
+  border: none;
   border-radius: 4px !important;
   font-family: "Manrope", sans-serif !important;
   cursor: pointer !important;

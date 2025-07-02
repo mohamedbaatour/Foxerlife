@@ -69,17 +69,20 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 [data-appearance="dark"] {
-  --color-bg: #131313;
-  --color-surface-1: #181818;
-  --color-surface-2: #212121;
+  --color-bg: #111111; /* Deep black for modern feel */
+  --color-surface-1: #181818; /* Main surface */
+  --color-surface-2: #202020;
   --color-surface-3: #262626;
-  --color-border: #303030;
-  --color-primary: #1fa2ff;
-  --text-primary: #ededed;
-  --text-secondary: #a1a1a1;
+  --color-border: #333333; /* Softer border contrast */
+
+  --color-primary: #1fa2ff; /* Consistent accent */
+
+  --text-primary: #f1f1f1;
+  --text-secondary: #c0c0c0;
   --text-tertiary: #999999;
   --text-muted: #888888;
   --text-disabled: #666666;
-  background: #131313;
-  color: #ededed;
+
+  background: var(--color-bg);
+  color: var(--text-primary);
 }

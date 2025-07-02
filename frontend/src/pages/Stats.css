@@ -5,7 +5,6 @@
   justify-content: start;
   color: var(--text-primary);
   width: 580px;
-  background: var(--color-bg);
 }
 
 .stats-text {
@@ -54,7 +53,6 @@
   min-height: 128px;
   border-radius: 4px;
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
   transition: all 0.2s ease-in-out;
 }
 
@@ -91,7 +89,7 @@
   padding: 12px 24px 12px 32px;
   background-color: var(--color-surface-2);
   border-radius: 4px;
-  border: 1px solid var(--color-border);
+
   transition: all 0.2s ease-in-out;
 }
 

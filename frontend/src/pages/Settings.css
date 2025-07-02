@@ -5,8 +5,6 @@
   justify-content: start;
   color: var(--text-primary);
   width: 580px;
-  transition: background 0.4s ease;
-  background: var(--color-bg);
 }
 
 .settings-text {
@@ -73,7 +71,6 @@
   background-color: var(--color-surface-1);
   border-radius: 4px;
   box-sizing: border-box;
-  border: 1px solid var(--color-border);
 }
 
 .settings-option-text {
@@ -83,7 +80,7 @@
 }
 
 .settings-dropdown {
-  background-color: var(--color-border);
+  background-color: var(--color-surface-3);
   border: none;
   border-radius: 2px;
   color: var(--text-primary);
@@ -106,7 +103,7 @@
 }
 
 .settings-dropdown:hover {
-  background-color: var(--text-disabled);
+  background-color: var(--color-border);
 }
 
 .export-import-button {
@@ -114,7 +111,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-border);
+  background-color: var(--color-surface-3);
   border: none;
   border-radius: 2px;
   color: var(--text-primary);
@@ -130,7 +127,7 @@
 }
 
 .export-import-button:hover {
-  background-color: var(--text-disabled);
+  background-color: var(--color-border);
 }
 
 .export-import-icon {
