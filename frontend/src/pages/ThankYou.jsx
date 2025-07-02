@@ -32,6 +32,10 @@ const ThankYou = () => {
       name: "gunasekaran R",
       link: "https://www.reddit.com/user/Own_Driver329/",
     },
+    {
+      name: "Tauser",
+      link: "https://www.reddit.com/user/Appropriate-Farmer56/",
+    }
   ];
 
   return (
