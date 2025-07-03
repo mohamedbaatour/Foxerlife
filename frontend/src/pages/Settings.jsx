@@ -244,13 +244,15 @@ const Settings = () => {
               <option value="dark">Dark</option>
             </select>
           </div>
-          <div className="settings-option">
-            <p className="settings-option-text">Custom Cursor</p>
-            <select className="settings-dropdown" value={customCursor} onChange={handleCustomCursorChange}>
-              <option value="on">ON</option>
-              <option value="off">OFF</option>
-            </select>
-          </div>
+          {!/Mobi|Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent) && (
+  <div className="settings-option">
+    <p className="settings-option-text">Custom Cursor</p>
+    <select className="settings-dropdown" value={customCursor} onChange={handleCustomCursorChange}>
+      <option value="on">ON</option>
+      <option value="off">OFF</option>
+    </select>
+  </div>
+)}
           <div className='settings-seperator'>
           <BoxIcon className='settings-seperator-icon' />
           <p className='settings-seperator-text'>Task Management</p>
