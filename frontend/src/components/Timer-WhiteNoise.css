@@ -33,10 +33,6 @@
   display: none;
 }
 
-.timer-progress-dot {
-  filter: drop-shadow(0 0 8px rgba(17, 157, 255, 0.5));
-}
-
 .timer-progress-track {
   opacity: 0;
 }
@@ -704,4 +700,11 @@
   text-align: center;
   margin-top: -8px;
   text-align: center;
+  transition: all 0.3s ease;
+}
+
+.special-thanks:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+  cursor: pointer;
 }
