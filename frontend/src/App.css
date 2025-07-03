@@ -102,16 +102,17 @@ p {
   bottom: 24px;
   right: 24px;
   background: var(--color-surface-1);
-  color: var(--text-primary);
-  padding: 18px 24px;
+  border: 1px solid var(--color-border);
+  color: var(--text-secondary);
+  padding: 1rem 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 0 1.5rem #00000050;
   font-weight: 600;
   z-index: 9999;
   display: flex;
   align-items: center;
   max-width: 340px;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 20px;
 }
 
