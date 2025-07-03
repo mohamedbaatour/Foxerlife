@@ -96,3 +96,38 @@ p {
     margin-top: -7rem;
   }
 }
+
+.cookie-consent-popup {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--color-surface-1);
+  color: var(--text-primary);
+  padding: 18px 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+  font-weight: 600;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  max-width: 340px;
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.cookie-consent-popup a {
+  color: #1fa2ff;
+  text-decoration: underline;
+}
+
+.cookie-consent-popup button {
+  background: var(--text-primary);
+  color: var(--color-surface-1);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: "Manrope", sans-serif;
+}

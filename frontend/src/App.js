@@ -1,5 +1,5 @@
 import logo from "./logo.svg";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import TimerWhiteNoises from "./components/Timer-WhiteNoise.jsx";
@@ -14,8 +14,8 @@ import {
 import Tasks from "./pages/Tasks";
 import Stats from "./pages/Stats";
 import Settings from "./pages/Settings";
-import { AnimatePresence } from "framer-motion";
-import { frame, motion, useSpring } from "motion/react";
+import { AnimatePresence, motion } from "framer-motion";
+import { frame, useSpring } from "motion/react";
 import CustomCursor from "./components/CustomCursor"; // Import the new component
 import { Navigate } from "react-router-dom";
 
@@ -203,6 +203,38 @@ function App() {
     };
   }, []);
 
+  // Cookie consent popup state
+  const [showCookiePopup, setShowCookiePopup] = useState(false);
+  const [cookieConsentGiven, setCookieConsentGiven] = useState(
+    () => !!localStorage.getItem("cookieConsent")
+  );
+
+  useEffect(() => {
+    if (cookieConsentGiven) return;
+    const handleUserInteraction = () => {
+      if (!localStorage.getItem("cookieConsent")) {
+        setShowCookiePopup(true);
+      }
+      window.removeEventListener("click", handleUserInteraction);
+      window.removeEventListener("keydown", handleUserInteraction);
+      window.removeEventListener("touchstart", handleUserInteraction);
+    };
+    window.addEventListener("click", handleUserInteraction);
+    window.addEventListener("keydown", handleUserInteraction);
+    window.addEventListener("touchstart", handleUserInteraction);
+    return () => {
+      window.removeEventListener("click", handleUserInteraction);
+      window.removeEventListener("keydown", handleUserInteraction);
+      window.removeEventListener("touchstart", handleUserInteraction);
+    };
+  }, [cookieConsentGiven]);
+
+  const handleCookieOkay = () => {
+    localStorage.setItem("cookieConsent", "true");
+    setShowCookiePopup(false);
+    setCookieConsentGiven(true);
+  };
+
   if (location.pathname === "/blocked") {
     if (!isBlocked && geoChecked) {
       // If not blocked and geolocation check is done, redirect to home
@@ -240,6 +272,24 @@ function App() {
           </Routes>
         </AnimatePresence>
       </div>
+      {/* Cookie Consent Popup with animation */}
+      <AnimatePresence>
+        {showCookiePopup && !cookieConsentGiven && (
+          <motion.div
+            className="cookie-consent-popup"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ duration: 0.3 }}
+          >
+            <span>
+              We use local storage + Google Analytics to improve your
+              experience. No ads or tracking.{" "}
+            </span>
+            <button onClick={handleCookieOkay}>Okay</button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

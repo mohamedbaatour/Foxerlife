@@ -137,6 +137,14 @@ li {
   margin-top: 0.25rem;
 }
 
+.navbar-hamburger {
+  display: none;
+  cursor: pointer;
+  align-items: center;
+  margin-left: 1rem;
+  z-index: 101;
+}
+
 /* Responsive Styles */
 @media (max-width: 1172px) {
   .navbar-main {
@@ -151,6 +159,18 @@ li {
   }
 }
 
+@media (max-width: 800px) {
+  .navbar-center-section {
+    display: none !important;
+  }
+  .navbar-hamburger {
+    display: flex !important;
+  }
+  .navbar-hide-mobile {
+    display: none !important;
+  }
+}
+/* 
 @media (max-width: 768px) {
   .navbar-main {
     flex-direction: column;
@@ -181,8 +201,8 @@ li {
   .navbar-hide-mobile {
     display: none !important;
   }
-}
-
+} */
+/* 
 @media (max-width: 480px) {
   .navbar-main {
     flex-direction: column;
@@ -264,5 +284,71 @@ li {
     width: 16px;
     height: 16px;
     margin-right: 0.25rem;
+  }
+} */
+
+/* Mobile menu drawer */
+.navbar-mobile-menu {
+  position: fixed;
+  top: 70px;
+  right: 18px;
+  background: var(--color-surface-1, #222);
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem 2.5rem 2rem 2rem;
+  z-index: 2000;
+  min-width: 180px;
+  max-width: 90vw;
+}
+
+.navbar-mobile-menu .navbar-menu-link {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  text-decoration: none;
+  padding: 0.5rem 0;
+  transition: color 0.2s;
+}
+
+.navbar-mobile-menu .navbar-menu-link.active {
+  color: var(--color-primary, #1fa2ff);
+}
+
+@media (min-width: 901px) {
+  .navbar-mobile-menu {
+    display: none !important;
+  }
+  .navbar-hamburger {
+    display: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar-mobile-menu {
+    padding: 1.2rem 1.2rem 1.2rem 1.2rem;
+    min-width: 120px;
+    font-size: 0.95rem;
+  }
+  .navbar-mobile-menu .navbar-menu-link {
+    font-size: 1rem;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .navbar-mobile-menu {
+    padding: 0.7rem 0.7rem 0.7rem 0.7rem;
+    min-width: 90px;
+    font-size: 0.85rem;
+  }
+  .navbar-mobile-menu .navbar-menu-link {
+    font-size: 0.85rem;
+    gap: 0.4rem;
   }
 }
