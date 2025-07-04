@@ -12,6 +12,7 @@ import { ReactComponent as ArchiveIcon } from "../icones/archive.svg";
 import { ReactComponent as BinIcon } from "../icones/bin.svg";
 import { ReactComponent as LogoIcon } from "../icones/icon.svg";
 import { ReactComponent as AIIcon } from "../icones/AI.svg";
+import { SoundManager } from '../utils/soundManager';
 
 import {
   DndContext,
@@ -149,7 +150,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     });
 
     const data = await res.json();
-    console.log("GPT API response:", data);
+
 
     let content = data.choices?.[0]?.message?.content?.trim() || "";
 
@@ -210,7 +211,6 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     });
 
     const data = await res.json();
-    console.log("Emoji response:", data);
 
     let content = data.choices?.[0]?.message?.content?.trim() || "";
 
@@ -238,7 +238,6 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     });
 
     const data = await res.json();
-    console.log("Duration response:", data);
 
     let content = data.choices?.[0]?.message?.content?.trim() || "";
 
@@ -496,6 +495,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
             prevFiltered.filter((task) => task.id !== taskId)
           );
           showNotification("Task deleted");
+          SoundManager.play('deleteTask');
           setIsMenuOpen(false);
 
       } else {
@@ -1023,6 +1023,8 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     };
 
     setLaterTasks((prevTasks) => [newTask, ...prevTasks]);
+    SoundManager.play('taskAdd'); // Play sound
+    showNotification("Task added!");
     setFormSubmitted(false);
     closeModal(true);
   };
@@ -1378,6 +1380,10 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     const maxDescriptionLength = " task's description is long, so long...".length;
 
     const [isEditingDescription, setIsEditingDescription] = useState(false);
+
+    SoundManager.play('deleteTask'); // Play sound on delete
+    showNotification("Task deleted");
+    setIsMenuOpen(false);
 
     return (
       <div

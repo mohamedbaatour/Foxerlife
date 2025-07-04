@@ -39,6 +39,11 @@ const Settings = () => {
       return savedCustomCursor ? savedCustomCursor : "off"; // Default to on if not found
     });
     
+    const [soundEffects, setSoundEffects] = useState(() => {
+      const saved = localStorage.getItem("soundEffects");
+      return saved ? saved : "off"; 
+    });
+
     const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
@@ -56,6 +61,10 @@ const Settings = () => {
     useEffect(() => {
       localStorage.setItem("autoArchive", autoArchive);
     }, [autoArchive]);
+
+    useEffect(() => {
+      localStorage.setItem("soundEffects", soundEffects);
+    }, [soundEffects]);
 
     // Helper to show notification
     const showNotification = (message) => {
@@ -244,6 +253,17 @@ const Settings = () => {
               <option value="dark">Dark</option>
             </select>
           </div>
+          <div className="settings-option">
+    <p className="settings-option-text">Sound Effects</p>
+    <select
+      className="settings-dropdown"
+      value={soundEffects}
+      onChange={e => setSoundEffects(e.target.value)}
+    >
+      <option value="on">ON</option>
+      <option value="off">OFF</option>
+    </select>
+  </div>
           {!/Mobi|Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent) && (
   <div className="settings-option">
     <p className="settings-option-text">Custom Cursor</p>

@@ -2,10 +2,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2.5rem;
   background-color: var(--color-surface-1);
   z-index: 100;
-  width: 1072px;
+  width: 1070px;
   border-radius: 999px;
   margin-top: 1rem;
   min-height: 5.375rem;
@@ -31,6 +30,7 @@ p.navbar-brand-version {
   flex-direction: row;
   gap: 0.5rem;
   margin-top: 0.25rem;
+  margin-left: 40px;
 }
 
 .logo,
@@ -134,7 +134,7 @@ li {
   flex-direction: row;
   gap: 1rem;
   align-items: center;
-  margin-top: 0.25rem;
+  margin-right: 40px;
 }
 
 .navbar-hamburger {
@@ -168,6 +168,9 @@ li {
   }
   .navbar-hide-mobile {
     display: none !important;
+  }
+  .navbar-left-section {
+    margin-left: 0.5rem;
   }
 }
 
