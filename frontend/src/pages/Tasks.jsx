@@ -39,6 +39,9 @@ import DurationPicker from 'react-duration-picker';
 
 
 
+
+
+
 const Tasks = ({ isTimerActive }) => {
 
   const parseDuration = (str) => {
@@ -56,7 +59,10 @@ const Tasks = ({ isTimerActive }) => {
     };
   };
 
-
+  const withClickSound = (handler) => (e) => {
+    SoundManager.play('click');
+    if (handler) handler(e);
+  };
 
 
 // helper to convert { hours: 1, minutes: 30 } to "1h 30m"
@@ -464,6 +470,12 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [isConfirmationClosing, setIsConfirmationClosing] = useState(false);
 
+    useEffect(() => {
+      if (showDeleteConfirmation) {
+        SoundManager.play('popupAlert');
+      }
+    }, [showDeleteConfirmation]);
+
     const showDeleteConfirm = (e) => {
       e.stopPropagation();
       setShowDeleteConfirmation(true);
@@ -812,6 +824,9 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
   const [filteredResults, setFilteredResults] = useState([]);
 
   const openModal = () => {
+
+    SoundManager.play('deleteTask');
+
     setTaskTitle(localStorage.getItem("taskTitle") || "");
     setTaskDescription(localStorage.getItem("taskDescription") || "");
 
@@ -901,7 +916,11 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     };
   }, [openModal]);
 
-  const closeModal = (shouldReset = false) => {
+  const closeModal = (shouldReset = false, playSound = true) => {
+    if (playSound) {
+      SoundManager.play('deleteTask');
+    }
+
     setIsClosing(true);
 
     setShowModal(false);
@@ -1026,7 +1045,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     SoundManager.play('taskAdd'); // Play sound
     showNotification("Task added!");
     setFormSubmitted(false);
-    closeModal(true);
+    closeModal(true, false); // Don't play the sound after adding a task
   };
 
   useEffect(() => {
@@ -1375,15 +1394,25 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       );
       showNotification("Task deleted");
       setIsMenuOpen(false);
+      SoundManager.play('deleteTask'); // Play sound on delete
     };
 
     const maxDescriptionLength = " task's description is long, so long...".length;
 
     const [isEditingDescription, setIsEditingDescription] = useState(false);
 
-    SoundManager.play('deleteTask'); // Play sound on delete
-    showNotification("Task deleted");
-    setIsMenuOpen(false);
+    useEffect(() => {
+      if (showDeleteConfirmation) {
+        SoundManager.play('popupAlert');
+      }
+    }, [showDeleteConfirmation]);
+
+    useEffect(() => {
+      if (showDeleteConfirmation) {
+        SoundManager.play('popupAlert');
+      }
+    }, [showDeleteConfirmation]);
+
 
     return (
       <div
@@ -2140,7 +2169,7 @@ const [animateSort, setAnimateSort] = useState(false);
                   <button
                     type="button"
                     className="cancel-button"
-                    onClick={() => closeModal(true)}
+                    onClick={() => closeModal(true, true)} // Cancel should play the sound
                   >
                     Cancel
                   </button>

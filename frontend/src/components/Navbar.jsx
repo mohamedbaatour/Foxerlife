@@ -207,7 +207,7 @@ const Navbar = () => {
           />
         )}
         <p className="navbar-brand-name">Foxerlife</p>
-        <p className="navbar-brand-version">Alpha</p>
+        <p className="navbar-brand-version">BETA</p>
       </div>
 
       {/* Hamburger for mobile */}

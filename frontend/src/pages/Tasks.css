@@ -422,23 +422,6 @@ background-color: transparent;
   gap: 4px;
 }
 
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0px);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-20px);
-    filter: blur(8px);
-  }
-}
-
-.filter-menu.fading-out {
-  animation: fadeOut 0.3s ease-out forwards;
-}
-
 .filter-menu-header {
   color: var(--text-muted);
   font-size: 12px;
@@ -859,29 +842,6 @@ background-color: transparent;
 .tasks-arrow-down-icon.rotated {
   transform: rotate(180deg); /* Rotate 180 degrees */
   margin-bottom: 20px;
-}
-
-/* Styles for the task card menu */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    filter: blur(8px);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0px);
-  }
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-    filter: blur(0px);
-  }
-  to {
-    opacity: 0;
-    filter: blur(8px);
-  }
 }
 
 #priority {

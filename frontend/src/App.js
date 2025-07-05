@@ -23,6 +23,7 @@ import Blocked from "./pages/Blocked";
 import NotFound from "./pages/NotFound";
 
 import ThankYou from "./pages/ThankYou.jsx";
+import { SoundManager } from "./utils/soundManager";
 
 function App() {
   const location = useLocation();
@@ -235,6 +236,31 @@ function App() {
     setCookieConsentGiven(true);
   };
 
+  React.useEffect(() => {
+    const handleClick = (event) => {
+      // Check if the clicked element or any of its parents is a button or an li
+      let targetElement = event.target;
+      while (targetElement != null) {
+        if (targetElement.tagName === 'BUTTON' || targetElement.tagName === 'LI' || targetElement.tagName === 'select') {
+          SoundManager.play("click");
+          break;
+        }
+        targetElement = targetElement.parentElement;
+      }
+    };
+
+    document.addEventListener("click", handleClick);
+
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  }, []);
+
+  // Effect to play deleteTask sound on URL change
+  React.useEffect(() => {
+    SoundManager.play("deleteTask");
+  }, [location.pathname]);
+
   if (location.pathname === "/blocked") {
     if (!isBlocked && geoChecked) {
       // If not blocked and geolocation check is done, redirect to home
@@ -293,5 +319,7 @@ function App() {
     </div>
   );
 }
+
+
 
 export default App;

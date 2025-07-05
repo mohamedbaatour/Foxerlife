@@ -31,6 +31,7 @@ import "react-circular-progressbar/dist/styles.css";
 import { useNavigate } from "react-router-dom"; // Add this import
 
 import {motion, AnimatePresence} from "framer-motion";
+import { SoundManager } from "../utils/soundManager"; // Add this import at the top
 
 // Define sounds array with their properties
 const sounds = [
@@ -819,6 +820,13 @@ const TimerWhiteNoises = ({ nowTask, onTimerActiveChange }) => {
 
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
+
+  // Play popup sound when reset or end confirmation popup appears
+  useEffect(() => {
+    if (showResetConfirm || showEndConfirm) {
+      SoundManager.play('popupAlert');
+    }
+  }, [showResetConfirm, showEndConfirm]);
 
   return (
     <div className="tasks-main-content-left-column">
