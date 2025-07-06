@@ -309,8 +309,8 @@ function App() {
             transition={{ duration: 0.3 }}
           >
             <span>
-              We use local storage + GA4 to improve your experience. No ads or
-              tracking.{" "}
+              We use local storage and Google Analytics (GA4) to improve the
+              experience - no ads, no data sold.{" "}
             </span>
             <button onClick={handleCookieOkay}>Okay</button>
           </motion.div>
