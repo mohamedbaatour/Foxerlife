@@ -63,6 +63,14 @@ p.navbar-brand-version {
   transition: fill 0.2s ease-in-out;
 }
 
+.weather-icon-svg {
+  color: #808080;
+}
+
+.weather-icon-svg.moon {
+  margin-right: -4px;
+}
+
 .navbar-menu-item {
   position: relative;
   display: inline-block;

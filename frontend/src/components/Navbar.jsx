@@ -10,9 +10,10 @@ import { ReactComponent as CloudIcon } from "../icones/cloud.svg";
 import { ReactComponent as RainIcon } from "../icones/rain.svg";
 import { ReactComponent as SunIcon } from "../icones/sun.svg";
 import { ReactComponent as SnowIcon } from "../icones/snow.svg";
+import { ReactComponent as MoonIcon } from "../icones/moon.svg";
 import { ReactComponent as HamburgerIcon } from "../icones/hamburger.svg";
 
-import {motion , AnimatePresence} from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const [location, setLocation] = useState("Loading...");
@@ -47,7 +48,13 @@ const Navbar = () => {
           setWeatherDescription(getWeatherDescriptionForCode(weatherCode));
 
           if (weatherCode === 0) {
-            setWeatherIcon(<SunIcon className="weather-icon-svg" />);
+            const currentHour = new Date().getHours();
+            if (currentHour >= 20 || currentHour < 6) {
+              // Assuming night time is between 8 PM and 6 AM
+              setWeatherIcon(<MoonIcon className="weather-icon-svg moon" />);
+            } else {
+              setWeatherIcon(<SunIcon className="weather-icon-svg" />);
+            }
           } else if ([1, 2].includes(weatherCode)) {
             setWeatherIcon(<SunIcon className="weather-icon-svg" />);
           } else if (weatherCode === 3) {
@@ -59,13 +66,13 @@ const Navbar = () => {
           ) {
             setWeatherIcon(<RainIcon className="weather-icon-svg" />);
           } else if ([45, 48].includes(weatherCode)) {
-            setWeatherIcon(<CloudIcon className="weather-icon-svg" />); 
+            setWeatherIcon(<CloudIcon className="weather-icon-svg" />);
           } else if ([71, 73, 75, 77, 85, 86].includes(weatherCode)) {
             setWeatherIcon(<SnowIcon className="weather-icon-svg" />);
           } else if ([95, 96, 99].includes(weatherCode)) {
-            setWeatherIcon(<RainIcon className="weather-icon-svg" />); 
+            setWeatherIcon(<RainIcon className="weather-icon-svg" />);
           } else {
-            setWeatherIcon(<CloudIcon className="weather-icon-svg" />); 
+            setWeatherIcon(<CloudIcon className="weather-icon-svg" />);
           }
         } else {
           setWeatherDescription("Weather data unavailable");
@@ -106,10 +113,7 @@ const Navbar = () => {
         const ipGeoData = await ipGeoResponse.json();
         console.log("IP Geolocation Data:", ipGeoData);
 
-        if (
-          ipGeoData.country === "Israel" || 
-          ipGeoData.country_code === "IL"
-        ) {
+        if (ipGeoData.country === "Israel" || ipGeoData.country_code === "IL") {
           setLocation("Palestine.");
           return;
         }
@@ -135,8 +139,8 @@ const Navbar = () => {
     };
 
     const updateLocalTime = () => {
-      const storedTimeFormat = localStorage.getItem('timeFormat');
-      const hour12 = storedTimeFormat === '12';
+      const storedTimeFormat = localStorage.getItem("timeFormat");
+      const hour12 = storedTimeFormat === "12";
 
       const localTime = new Date().toLocaleTimeString([], {
         hour: "2-digit",
@@ -152,16 +156,16 @@ const Navbar = () => {
     const intervalId = setInterval(updateLocalTime, 60 * 1000);
 
     const handleStorageChange = (event) => {
-      if (event.key === 'timeFormat') {
+      if (event.key === "timeFormat") {
         updateLocalTime();
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     return () => {
       clearInterval(intervalId);
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
@@ -200,18 +204,17 @@ const Navbar = () => {
             className="animated-logo"
           />
         ) : (
-          <img
-            src={LogoIcon}
-            alt="Foxerlife Logo"
-            className="logo"
-          />
+          <img src={LogoIcon} alt="Foxerlife Logo" className="logo" />
         )}
         <p className="navbar-brand-name">Foxerlife</p>
         <p className="navbar-brand-version">BETA</p>
       </div>
 
       {/* Hamburger for mobile */}
-      <div className="navbar-hamburger" onClick={() => setIsMenuOpen((v) => !v)}>
+      <div
+        className="navbar-hamburger"
+        onClick={() => setIsMenuOpen((v) => !v)}
+      >
         <HamburgerIcon />
       </div>
 
@@ -242,28 +245,41 @@ const Navbar = () => {
 
       {/* Mobile menu drawer */}
       <AnimatePresence>
-      {isMenuOpen && (
-        <motion.div 
-        initial={{ opacity: 0, y: -40 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -40 }}
-        transition={{ duration: 0.3 }}
-        className="navbar-mobile-menu"
-        ref={mobileMenuRef}>
-          <NavLink to="/" className={getLinkClassName} onClick={() => setIsMenuOpen(false)}>
-            <TaskIcon className="navbar-menu-icon" />
-            Tasks
-          </NavLink>
-          <NavLink to="/stats" className={getLinkClassName} onClick={() => setIsMenuOpen(false)}>
-            <StatsIcon className="navbar-menu-icon" />
-            Stats
-          </NavLink>
-          <NavLink to="/settings" className={getLinkClassName} onClick={() => setIsMenuOpen(false)}>
-            <SettingsIcon className="navbar-menu-icon" />
-            Settings
-          </NavLink>
-        </motion.div>
-      )}
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -40 }}
+            transition={{ duration: 0.3 }}
+            className="navbar-mobile-menu"
+            ref={mobileMenuRef}
+          >
+            <NavLink
+              to="/"
+              className={getLinkClassName}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <TaskIcon className="navbar-menu-icon" />
+              Tasks
+            </NavLink>
+            <NavLink
+              to="/stats"
+              className={getLinkClassName}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <StatsIcon className="navbar-menu-icon" />
+              Stats
+            </NavLink>
+            <NavLink
+              to="/settings"
+              className={getLinkClassName}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <SettingsIcon className="navbar-menu-icon" />
+              Settings
+            </NavLink>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       <div className="navbar-right-section navbar-hide-mobile">
