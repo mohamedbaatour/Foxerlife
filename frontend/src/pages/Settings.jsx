@@ -259,13 +259,16 @@ const Settings = () => {
             <option value="off">ON</option>
           </select>
         </div>
-        <button
-          onClick={() => window.open("https://buymeacoffee.com/foxerlife")}
+        {/* <button
+          onClick={() => {
+            const bmcButton = document.getElementById("bmc-wbtn");
+            if (bmcButton) bmcButton.click();
+          }}
           className="settings-support"
         >
           <BmcIcon className="settings-support-icon" />
           Buy me a coffee
-        </button>
+        </button> */}
         <div className="settings-seperator">
           <ColorLensIcon className="settings-seperator-icon" />
           <p className="settings-seperator-text">Personalization</p>

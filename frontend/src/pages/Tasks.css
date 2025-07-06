@@ -156,7 +156,7 @@ background-color: transparent;
   margin-bottom: 16px;
   position: relative;
   background-color: var(--color-surface-1);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .task-card-menu {
@@ -243,6 +243,7 @@ background-color: transparent;
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  overflow: visible;
 }
 
 .tasks-arrow-down-icon {
@@ -930,7 +931,7 @@ background-color: transparent;
 .delete-confirmation-popup {
   position: absolute;
   bottom: 100%;
-  left: -118%;
+  left: -57%;
   transform: translateX(-50%);
   margin-bottom: 6px;
   background-color: var(--color-surface-2);

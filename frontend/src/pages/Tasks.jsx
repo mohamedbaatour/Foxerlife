@@ -436,6 +436,39 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isEditingDescription, setIsEditingDescription] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Add this line
+    const emojiPickerRef = useRef(null);
+    
+    const emojiContainerRef = useRef(null);
+    
+    // Add this useEffect to handle clicks outside and ESC key
+    useEffect(() => {
+      if (showEmojiPicker) {
+        const handleClickOutside = (event) => {
+          if (
+            emojiPickerRef.current && 
+            !emojiPickerRef.current.contains(event.target) &&
+            (!emojiContainerRef.current || !emojiContainerRef.current.contains(event.target))
+          ) {
+            setShowEmojiPicker(false);
+          }
+        };
+        
+        const handleEscKey = (event) => {
+          if (event.key === "Escape") {
+            setShowEmojiPicker(false);
+          }
+        };
+        
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("keydown", handleEscKey);
+        
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+          document.removeEventListener("keydown", handleEscKey);
+        };
+      }
+    }, [showEmojiPicker]);
 
     const handleContentChange = (e, field) => {
       const updatedValue = e.target.innerText;
@@ -445,7 +478,6 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       setLaterTasks(updatedTasks);
       localStorage.setItem("laterTasks", JSON.stringify(updatedTasks));
     };
-    
 
     const handleMoveToNow = (taskId) => {
       setRemovingTaskId(taskId);
@@ -472,9 +504,11 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
 
     useEffect(() => {
       if (showDeleteConfirmation) {
-        SoundManager.play('popupAlert');
+        SoundManager.play("popupAlert");
       }
     }, [showDeleteConfirmation]);
+
+
 
     const showDeleteConfirm = (e) => {
       e.stopPropagation();
@@ -484,11 +518,30 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     const hideDeleteConfirm = () => {
       setIsConfirmationClosing(true);
 
-        setShowDeleteConfirmation(false);
-        setIsConfirmationClosing(false);
-
+      setShowDeleteConfirmation(false);
+      setIsConfirmationClosing(false);
     };
 
+useEffect(() => {
+  if (showDeleteConfirmation) {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        hideDeleteConfirm();
+      }
+    };
+    
+    // Add event listener when component mounts
+    document.addEventListener("keydown", handleKeyDown);
+    
+    // Remove event listener when component unmounts
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }
+}, [showDeleteConfirmation]);
+    
     const confirmDelete = (taskId) => {
       const menuElement = document.querySelector(
         `#task-${taskId} .task-card-menu`
@@ -496,20 +549,19 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       if (menuElement) {
         menuElement.classList.add("fading-out");
 
-          // Update laterTasks, searchResults, and filteredResults
-          setLaterTasks((prevTasks) =>
-            prevTasks.filter((task) => task.id !== taskId)
-          );
-          setSearchResults((prevResults) =>
-            prevResults.filter((task) => task.id !== taskId)
-          );
-          setFilteredResults((prevFiltered) =>
-            prevFiltered.filter((task) => task.id !== taskId)
-          );
-          showNotification("Task deleted");
-          SoundManager.play('deleteTask');
-          setIsMenuOpen(false);
-
+        // Update laterTasks, searchResults, and filteredResults
+        setLaterTasks((prevTasks) =>
+          prevTasks.filter((task) => task.id !== taskId)
+        );
+        setSearchResults((prevResults) =>
+          prevResults.filter((task) => task.id !== taskId)
+        );
+        setFilteredResults((prevFiltered) =>
+          prevFiltered.filter((task) => task.id !== taskId)
+        );
+        showNotification("Task deleted");
+        SoundManager.play("deleteTask");
+        setIsMenuOpen(false);
       } else {
         setLaterTasks((prevTasks) =>
           prevTasks.filter((task) => task.id !== taskId)
@@ -541,8 +593,9 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       }
     };
 
-    const maxDescriptionLength =
-      "My second task's description is long is so lo".length;
+    const maxDescriptionLength = "My second task's description is long is so lo"
+      .length;
+
 
     return (
       <div
@@ -550,7 +603,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
         style={style}
         {...attributes}
         className={isDragging ? "is-dragging" : ""}
-      > 
+      >
         <div
           className={`later-tasks-card`}
           key={task.id}
@@ -561,100 +614,138 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
             if (!isEditingDescription) setIsMenuOpen(false);
           }}
         >
-            <div className="later-tasks-card-emoji-text-container">
-              <div className="later-tasks-card-emoji-container">
-                <SixDotsIcon
-                  className="later-tasks-card-emoji-dots"
-                  {...listeners}
+          <div className="later-tasks-card-emoji-text-container">
+            <div className="later-tasks-card-emoji-container">
+              <SixDotsIcon
+                className="later-tasks-card-emoji-dots"
+                {...listeners}
+              />
+              {typeof task.emoji === "string" &&
+              task.emoji.startsWith("http") ? (
+                <img
+                  className="later-tasks-card-emoji"
+                  src={task.emoji}
+                  alt="emoji"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Add this line
+                    setShowEmojiPicker(!showEmojiPicker);
+                  }}
+                    style={{ cursor: "pointer" }}
+                    ref={emojiContainerRef}
                 />
-                {typeof task.emoji === "string" &&
-                task.emoji.startsWith("http") ? (
-                  <img
-                    className="later-tasks-card-emoji"
-                    src={task.emoji}
-                    alt="emoji"
+              ) : (
+                <span
+                  className="later-tasks-card-emoji-text"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Add this line
+                    setShowEmojiPicker(!showEmojiPicker);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  {task.emoji}
+                </span>
+              )}
+
+              {showEmojiPicker && (
+                <div
+                  ref={emojiPickerRef}
+                  style={{
+                    position: "absolute",
+                    zIndex: 1000,
+                    bottom: "100px",
+                    left: "0px",
+                  }}
+                >
+                  <EmojiPicker
+                    onEmojiClick={(emojiData) => {
+                      const updatedTasks = laterTasks.map((t) =>
+                        t.id === task.id ? { ...t, emoji: emojiData.emoji } : t
+                      );
+                      setLaterTasks(updatedTasks);
+                      setShowEmojiPicker(false);
+                    }}
+                    width={300}
+                    height={400}
+                    searchPlaceholder="Search emoji..."
                   />
-                ) : (
-                  <span className="later-tasks-card-emoji-text">
-                    {task.emoji}
-                  </span>
-                )}
-              </div>
-              <div className="later-tasks-card-text">
-                <div className="later-tasks-card-title-div">
+                </div>
+              )}
+            </div>
+            <div className="later-tasks-card-text">
+              <div className="later-tasks-card-title-div">
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
                   <div
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
+                      color:
+                        task.priority === "High"
+                          ? "#801220"
+                          : task.priority === "Medium"
+                          ? "#675C21"
+                          : "#666666",
+                      // backgroundColor:
+                      //   task.priority === "High"
+                      //     ? "#cc4d4d"
+                      //     : task.priority === "Medium"
+                      //     ? "#675C21"
+                      //     : "#a1a1a1",
                     }}
+                    className="task-priority-container"
                   >
                     <div
                       style={{
-                        color:
+                        backgroundColor:
                           task.priority === "High"
                             ? "#801220"
                             : task.priority === "Medium"
                             ? "#675C21"
                             : "#666666",
-                        // backgroundColor:
-                        //   task.priority === "High"
-                        //     ? "#cc4d4d"
-                        //     : task.priority === "Medium"
-                        //     ? "#675C21"
-                        //     : "#a1a1a1",
                       }}
-                      className="task-priority-container"
-                    >
-                      <div
-                        style={{
-                          backgroundColor:
-                            task.priority === "High"
-                              ? "#801220"
-                              : task.priority === "Medium"
-                              ? "#675C21"
-                              : "#666666",
-                        }}
-                        className="task-priority-indecator"
-                      />
-                      {task.priority}
-                    </div>
-                    <p
-                      suppressContentEditableWarning
-                      contentEditable
-                      onBlur={(e) => handleContentChange(e, "title")}
-                      className="later-tasks-card-title"
-                    >
-                      {task.title}
-                    </p>
+                      className="task-priority-indecator"
+                    />
+                    {task.priority}
                   </div>
                   <p
-                    className="later-tasks-card-time"
-                    contentEditable
                     suppressContentEditableWarning
-                    onBlur={(e) => handleContentChange(e, "time")}
+                    contentEditable
+                    onBlur={(e) => handleContentChange(e, "title")}
+                    className="later-tasks-card-title"
                   >
-                    {task.time}
+                    {task.title}
                   </p>
                 </div>
                 <p
-  className="later-tasks-card-description"
-  contentEditable
-  suppressContentEditableWarning
-  onFocus={() => setIsEditingDescription(true)}
-  onBlur={e => {
-    setIsEditingDescription(false);
-    handleContentChange(e, "description");
-  }}
->
-  {(isMenuOpen || isEditingDescription || task.description.length <= maxDescriptionLength)
-    ? task.description
-    : `${task.description.substring(0, maxDescriptionLength)}...`}
-</p>
+                  className="later-tasks-card-time"
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleContentChange(e, "time")}
+                >
+                  {task.time}
+                </p>
               </div>
+              <p
+                className="later-tasks-card-description"
+                contentEditable
+                suppressContentEditableWarning
+                onFocus={() => setIsEditingDescription(true)}
+                onBlur={(e) => {
+                  setIsEditingDescription(false);
+                  handleContentChange(e, "description");
+                }}
+              >
+                {isMenuOpen ||
+                isEditingDescription ||
+                task.description.length <= maxDescriptionLength
+                  ? task.description
+                  : `${task.description.substring(0, maxDescriptionLength)}...`}
+              </p>
             </div>
-
-
+          </div>
 
           <AnimatePresence>
             {isMenuOpen && (
@@ -665,7 +756,6 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                 exit="hidden"
                 variants={menuVariants}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
-                
               >
                 <button
                   className="menu-item"
@@ -696,7 +786,9 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                         exit={{ opacity: 0, scale: 0.95 }}
                         transition={{ duration: 0.2, ease: "easeInOut" }}
                       >
-                        <p className="delete-confirmation-text">Are you sure?</p>
+                        <p className="delete-confirmation-text">
+                          Are you sure?
+                        </p>
                         <div className="delete-confirmation-buttons">
                           <button
                             className="cancel-delete-button"
@@ -721,7 +813,6 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
         </div>
       </div>
     );
-
   };
 
   const sensors = useSensors(useSensor(PointerSensor));
@@ -758,10 +849,16 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     }
 
     // Reorder within Later
-    const laterTaskIndex = laterTasks.findIndex((task) => task.id === active.id);
-    const overLaterTaskIndex = laterTasks.findIndex((task) => task.id === over.id);
+    const laterTaskIndex = laterTasks.findIndex(
+      (task) => task.id === active.id
+    );
+    const overLaterTaskIndex = laterTasks.findIndex(
+      (task) => task.id === over.id
+    );
     if (laterTaskIndex !== -1 && overLaterTaskIndex !== -1) {
-      setLaterTasks((tasks) => arrayMove(tasks, laterTaskIndex, overLaterTaskIndex));
+      setLaterTasks((tasks) =>
+        arrayMove(tasks, laterTaskIndex, overLaterTaskIndex)
+      );
     }
   };
 
@@ -780,9 +877,9 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
   useEffect(() => {
     localStorage.setItem("taskDescription", taskDescription);
   }, [taskDescription]);
-  
+
   useEffect(() => {
-  localStorage.setItem("taskDuration", duration.format("HH:mm"));
+    localStorage.setItem("taskDuration", duration.format("HH:mm"));
   }, [duration]);
 
   useEffect(() => {
@@ -824,8 +921,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
   const [filteredResults, setFilteredResults] = useState([]);
 
   const openModal = () => {
-
-    SoundManager.play('deleteTask');
+    SoundManager.play("deleteTask");
 
     setTaskTitle(localStorage.getItem("taskTitle") || "");
     setTaskDescription(localStorage.getItem("taskDescription") || "");
@@ -866,7 +962,6 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     ) {
       durationObjFromStorage = { hours: 3, minutes: 45 };
     }
-
 
     setTaskPriority(localStorage.getItem("taskPriority") || "Low");
     setTaskEmoji(localStorage.getItem("taskEmoji") || "😃");
@@ -918,7 +1013,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
 
   const closeModal = (shouldReset = false, playSound = true) => {
     if (playSound) {
-      SoundManager.play('deleteTask');
+      SoundManager.play("deleteTask");
     }
 
     setIsClosing(true);
@@ -1005,12 +1100,10 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       isValid = false;
     }
 
-
     if (!duration || (duration.hour() === 0 && duration.minute() === 0)) {
       newErrors.duration = "Please enter a valid duration";
       isValid = false;
     }
-    
 
     // if (!taskDuration.trim()) {
     //   newErrors.duration = "Please enter a task duration";
@@ -1034,7 +1127,8 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     const newTask = {
       id: Date.now(),
       title: taskTitle,
-      description: taskDescription.trim() || "There is no description for this task.",
+      description:
+        taskDescription.trim() || "There is no description for this task.",
       time: formatDuration(duration),
       emoji: taskEmoji,
       priority: taskPriority,
@@ -1042,7 +1136,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     };
 
     setLaterTasks((prevTasks) => [newTask, ...prevTasks]);
-    SoundManager.play('taskAdd'); // Play sound
+    SoundManager.play("taskAdd"); // Play sound
     showNotification("Task added!");
     setFormSubmitted(false);
     closeModal(true, false); // Don't play the sound after adding a task
@@ -1073,8 +1167,10 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     // If the user is selecting text inside an input or textarea, don't close
     const active = document.activeElement;
     if (
-      (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA")) &&
-      (typeof active.selectionStart === "number" && typeof active.selectionEnd === "number") &&
+      active &&
+      (active.tagName === "INPUT" || active.tagName === "TEXTAREA") &&
+      typeof active.selectionStart === "number" &&
+      typeof active.selectionEnd === "number" &&
       active.selectionStart !== active.selectionEnd
     ) {
       return;
@@ -1085,8 +1181,9 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     if (
       selection &&
       selection.toString().length > 0 &&
-      (selection.anchorNode && selection.anchorNode.parentElement &&
-        selection.anchorNode.parentElement.closest('.modal-content'))
+      selection.anchorNode &&
+      selection.anchorNode.parentElement &&
+      selection.anchorNode.parentElement.closest(".modal-content")
     ) {
       return;
     }
@@ -1098,7 +1195,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
 
     // Prevent closing if click is inside the TimePicker popup
     if (
-      event.target.closest('.ant-picker-dropdown') // AntD TimePicker popup
+      event.target.closest(".ant-picker-dropdown") // AntD TimePicker popup
     ) {
       return;
     }
@@ -1313,6 +1410,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [isConfirmationClosing, setIsConfirmationClosing] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Add this state
 
     const toggleMenu = () => {
       if (isMenuOpen) {
@@ -1323,8 +1421,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
         if (menuElement) {
           menuElement.classList.add("fading-out");
 
-            setIsMenuOpen(false);
-
+          setIsMenuOpen(false);
         } else {
           setIsMenuOpen(false);
         }
@@ -1340,6 +1437,16 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       );
       setArchivedTasks(updatedTasks);
       localStorage.setItem("archivedTasks", JSON.stringify(updatedTasks));
+    };
+
+    // Add this function to handle emoji selection
+    const handleEmojiSelect = (emojiObject) => {
+      const updatedTasks = archivedTasks.map((t) =>
+        t.id === task.id ? { ...t, emoji: emojiObject.emoji } : t
+      );
+      setArchivedTasks(updatedTasks);
+      localStorage.setItem("archivedTasks", JSON.stringify(updatedTasks));
+      setShowEmojiPicker(false);
     };
 
     const handleRestoreToLater = (taskId) => {
@@ -1380,13 +1487,33 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       e.stopPropagation();
       setShowDeleteConfirmation(true);
     };
+    
     const hideDeleteConfirm = () => {
       setIsConfirmationClosing(true);
 
-        setShowDeleteConfirmation(false);
-        setIsConfirmationClosing(false);
-
+      setShowDeleteConfirmation(false);
+      setIsConfirmationClosing(false);
     };
+
+    useEffect(() => {
+      if (showDeleteConfirmation) {
+        const handleKeyDown = (e) => {
+          if (e.key === "Escape") {
+            e.preventDefault();
+            e.stopPropagation();
+            hideDeleteConfirm();
+          }
+        };
+
+        // Add event listener when component mounts
+        document.addEventListener("keydown", handleKeyDown);
+
+        // Remove event listener when component unmounts
+        return () => {
+          document.removeEventListener("keydown", handleKeyDown);
+        };
+      }
+    }, [showDeleteConfirmation]);
 
     const confirmDelete = (taskId) => {
       setArchivedTasks((prevTasks) =>
@@ -1394,25 +1521,28 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       );
       showNotification("Task deleted");
       setIsMenuOpen(false);
-      SoundManager.play('deleteTask'); // Play sound on delete
+      SoundManager.play("deleteTask"); // Play sound on delete
     };
 
-    const maxDescriptionLength = " task's description is long, so long...".length;
+    const maxDescriptionLength = " task's description is long, so long..."
+      .length;
 
     const [isEditingDescription, setIsEditingDescription] = useState(false);
 
     useEffect(() => {
       if (showDeleteConfirmation) {
-        SoundManager.play('popupAlert');
+        SoundManager.play("popupAlert");
       }
     }, [showDeleteConfirmation]);
 
     useEffect(() => {
       if (showDeleteConfirmation) {
-        SoundManager.play('popupAlert');
+        SoundManager.play("popupAlert");
       }
     }, [showDeleteConfirmation]);
 
+    const emojiPickerRef = useRef(null)
+    const emojiContainerRef = useRef(null)
 
     return (
       <div
@@ -1427,7 +1557,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
           id={`archive-task-${task.id}`}
           onMouseEnter={() => !isDragging && setIsMenuOpen(true)}
           onMouseLeave={() => {
-            if (!isEditingDescription) setIsMenuOpen(false);
+            if (!isEditingDescription && !showEmojiPicker) setIsMenuOpen(false);
           }}
         >
           <div className="later-tasks-card-top-row">
@@ -1436,7 +1566,6 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                 <SixDotsIcon
                   className="later-tasks-card-emoji-dots"
                   {...listeners}
-                  
                 />
                 {typeof task.emoji === "string" &&
                 task.emoji.startsWith("http") ? (
@@ -1444,11 +1573,51 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                     className="later-tasks-card-emoji"
                     src={task.emoji}
                     alt="emoji"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Add this line
+                      setShowEmojiPicker(!showEmojiPicker);
+                    }}
+                    style={{ cursor: "pointer" }}
+                    ref={emojiContainerRef}
                   />
                 ) : (
-                  <span className="later-tasks-card-emoji-text">
+                  <span
+                    className="later-tasks-card-emoji-text"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Add this line
+                      setShowEmojiPicker(!showEmojiPicker);
+                    }}
+                    style={{ cursor: "pointer" }}
+                    ref={emojiContainerRef}
+                  >
                     {task.emoji}
                   </span>
+                )}
+
+                {showEmojiPicker && (
+                  <div
+                    ref={emojiPickerRef}
+                    style={{
+                      position: "absolute",
+                      zIndex: 1000,
+                      bottom: "100px",
+                      left: "0px",
+                    }}
+                  >
+                    <EmojiPicker
+                      onEmojiClick={(emojiData) => {
+                        const updatedTasks = archivedTasks.map((t) =>
+                          t.id === task.id ? { ...t, emoji: emojiData.emoji } : t
+                        );
+                        setArchivedTasks(updatedTasks);
+                        localStorage.setItem("archivedTasks", JSON.stringify(updatedTasks));
+                        setShowEmojiPicker(false);
+                      }}
+                      width={300}
+                      height={400}
+                      searchPlaceholder="Search emoji..."
+                    />
+                  </div>
                 )}
               </div>
               <div className="later-tasks-card-text">
@@ -1502,84 +1671,86 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                   <p className="later-tasks-card-time">{task.time}</p>
                 </div>
                 <p
-  className="later-tasks-card-description"
-  contentEditable
-  suppressContentEditableWarning
-  onFocus={() => setIsEditingDescription(true)}
-  onBlur={e => {
-    setIsEditingDescription(false);
-    handleContentChange(e, "description");
-  }}
->
-  {(isMenuOpen || isEditingDescription || task.description.length <= maxDescriptionLength)
-    ? task.description
-    : `${task.description.substring(0, maxDescriptionLength)}...`}
-</p>
+                  className="later-tasks-card-description"
+                  contentEditable
+                  suppressContentEditableWarning
+                  onFocus={() => setIsEditingDescription(true)}
+                  onBlur={(e) => {
+                    setIsEditingDescription(false);
+                    handleContentChange(e, "description");
+                  }}
+                >
+                  {isMenuOpen ||
+                  isEditingDescription ||
+                  task.description.length <= maxDescriptionLength
+                    ? task.description
+                    : `${task.description.substring(
+                        0,
+                        maxDescriptionLength
+                      )}...`}
+                </p>
               </div>
             </div>
-
           </div>
 
           <AnimatePresence>
-          {isMenuOpen && (
-                          <motion.div
-                          className="task-card-menu"
-                          initial="hidden"
-                          animate="visible"
-                          exit="hidden"
-                          variants={menuVariants}
-                          transition={{ duration: 0.3, ease: "easeInOut" }}
-                          
-                        >
-              <button
-                className="menu-item"
-                onClick={() => handleMoveToNowFromArchive(task.id)}
+            {isMenuOpen && (
+              <motion.div
+                className="task-card-menu"
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                variants={menuVariants}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
               >
-                <NowIcon className="menu-icon" /> Do Now
-              </button>
-              <button
-                className="menu-item"
-                onClick={() => handleRestoreToLater(task.id)}
-              >
-                <LaterIcon className="menu-icon" /> Later
-              </button>
-              <div style={{ position: "relative" }}>
                 <button
-                  className="menu-item delete"
-                  onClick={showDeleteConfirm}
+                  className="menu-item"
+                  onClick={() => handleMoveToNowFromArchive(task.id)}
                 >
-                  <BinIcon className="menu-icon" /> Delete
+                  <NowIcon className="menu-icon" /> Do Now
                 </button>
-
-                {showDeleteConfirmation && (
-                  <motion.div
-                  className={`delete-confirmation-popup`}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                <button
+                  className="menu-item"
+                  onClick={() => handleRestoreToLater(task.id)}
                 >
-                    <p className="delete-confirmation-text">Are you sure?</p>
-                    <div className="delete-confirmation-buttons">
-                      <button
-                        className="cancel-delete-button"
-                        onClick={hideDeleteConfirm}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        className="confirm-delete-button"
-                        onClick={() => confirmDelete(task.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-            </motion.div>
-            
-          )}
+                  <LaterIcon className="menu-icon" /> Later
+                </button>
+                <div style={{ position: "relative" }}>
+                  <button
+                    className="menu-item delete"
+                    onClick={showDeleteConfirm}
+                  >
+                    <BinIcon className="menu-icon" /> Delete
+                  </button>
+
+                  {showDeleteConfirmation && (
+                    <motion.div
+                      className={`delete-confirmation-popup`}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.2, ease: "easeInOut" }}
+                    >
+                      <p className="delete-confirmation-text">Are you sure?</p>
+                      <div className="delete-confirmation-buttons">
+                        <button
+                          className="cancel-delete-button"
+                          onClick={hideDeleteConfirm}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className="confirm-delete-button"
+                          onClick={() => confirmDelete(task.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
       </div>
@@ -1603,17 +1774,17 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [activeFilter]); // Add activeFilter as dependency
 
   const [descChroma, setDescChroma] = useState(false);
-const [durationChroma, setDurationChroma] = useState(false);
-const [priorityChroma, setPriorityChroma] = useState(false);
-const [aiIconActive, setAiIconActive] = useState(false);
-const [animateSort, setAnimateSort] = useState(false);
+  const [durationChroma, setDurationChroma] = useState(false);
+  const [priorityChroma, setPriorityChroma] = useState(false);
+  const [aiIconActive, setAiIconActive] = useState(false);
+  const [animateSort, setAnimateSort] = useState(false);
 
   const handleAISort = () => {
     const priorityOrder = { High: 0, Medium: 1, Low: 2 };
@@ -1633,20 +1804,19 @@ const [animateSort, setAnimateSort] = useState(false);
   useEffect(() => {
     const input = timePickerInputRef.current;
     if (!input) return;
-  
+
     const handleAnimationEnd = () => {
       setDurationChroma(false);
     };
-  
+
     if (durationChroma) {
       input.addEventListener("animationend", handleAnimationEnd);
     }
-  
+
     return () => {
       input.removeEventListener("animationend", handleAnimationEnd);
     };
   }, [durationChroma]);
-
 
   return (
     <motion.div
@@ -1680,7 +1850,11 @@ const [animateSort, setAnimateSort] = useState(false);
             <p className="now-tasks">Now</p>
           </div>
           {nowTask ? (
-            <div className={`now-tasks-card${isTimerActive && nowTask ? " timer-active" : ""}`}>
+            <div
+              className={`now-tasks-card${
+                isTimerActive && nowTask ? " timer-active" : ""
+              }`}
+            >
               <div className="now-tasks-card-emoji-text-container">
                 {typeof nowTask.emoji === "string" &&
                 nowTask.emoji.startsWith("http") ? (
@@ -1760,16 +1934,18 @@ const [animateSort, setAnimateSort] = useState(false);
             </div>
             <div className="later-tasks-CTA">
               <div className="search-filter-container">
-                
                 <div className="tooltip-wrap">
                   <div className="tooltip-button">S</div>
                   <div className="search-container" ref={searchContainerRef}>
                     <div
                       ref={searchButtonRef}
-                      className={`search-button ${isSearchExpanded ? "expanded" : ""}`}
+                      className={`search-button ${
+                        isSearchExpanded ? "expanded" : ""
+                      }`}
                       onClick={() => {
                         if (!isSearchExpanded) toggleSearch();
-                        if (searchInputRef.current) searchInputRef.current.focus();
+                        if (searchInputRef.current)
+                          searchInputRef.current.focus();
                       }}
                       style={{ cursor: "pointer" }}
                     >
@@ -1777,11 +1953,13 @@ const [animateSort, setAnimateSort] = useState(false);
                       <input
                         ref={searchInputRef}
                         type="text"
-                        className={`search-input ${isSearchExpanded ? "visible" : ""}`}
+                        className={`search-input ${
+                          isSearchExpanded ? "visible" : ""
+                        }`}
                         placeholder="Search tasks..."
                         value={searchQuery}
                         onChange={handleSearchInput}
-                        onClick={e => e.stopPropagation()} // Prevent parent div click
+                        onClick={(e) => e.stopPropagation()} // Prevent parent div click
                       />
                     </div>
                   </div>
@@ -1794,7 +1972,9 @@ const [animateSort, setAnimateSort] = useState(false);
                   >
                     <button
                       ref={filterButtonRef}
-                      className={`filter-button ${activeFilter ? "active" : ""}`}
+                      className={`filter-button ${
+                        activeFilter ? "active" : ""
+                      }`}
                       onClick={handleFilterClick}
                     >
                       <FilterIcon className="filter-icon" />
@@ -1858,10 +2038,14 @@ const [animateSort, setAnimateSort] = useState(false);
                   </div>
                 </div>
                 <div className="tooltip-wrap">
-                <div className="tooltip-button">Sort By Priority</div>
-                <button className="ai-button" onClick={handleAISort}>
-                  <AIIcon className={`ai-icon${aiIconActive ? " ai-icon-active" : ""}`} />
-                </button>
+                  <div className="tooltip-button">Sort By Priority</div>
+                  <button className="ai-button" onClick={handleAISort}>
+                    <AIIcon
+                      className={`ai-icon${
+                        aiIconActive ? " ai-icon-active" : ""
+                      }`}
+                    />
+                  </button>
                 </div>
               </div>
 
@@ -1897,21 +2081,21 @@ const [animateSort, setAnimateSort] = useState(false);
               onDragStart={(event) => {
                 setIsDragging(true);
                 // Force close any open menus
-                const openMenus = document.querySelectorAll('.task-card');
-                openMenus.forEach(card => {
-                  card.style.pointerEvents = 'none';
-                  const menu = card.querySelector('.task-card-menu');
+                const openMenus = document.querySelectorAll(".task-card");
+                openMenus.forEach((card) => {
+                  card.style.pointerEvents = "none";
+                  const menu = card.querySelector(".task-card-menu");
                   if (menu) {
-                    menu.classList.remove('visible');
+                    menu.classList.remove("visible");
                   }
                 });
               }}
               onDragEnd={(event) => {
                 setIsDragging(false);
                 // Re-enable pointer events
-                const cards = document.querySelectorAll('.task-card');
-                cards.forEach(card => {
-                  card.style.pointerEvents = 'auto';
+                const cards = document.querySelectorAll(".task-card");
+                cards.forEach((card) => {
+                  card.style.pointerEvents = "auto";
                 });
                 handleDragEnd(event);
               }}
@@ -1930,7 +2114,9 @@ const [animateSort, setAnimateSort] = useState(false);
                           initial={{ opacity: 0, y: 30 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -30 }}
-                          transition={isDragging ? { duration: 0 } : { duration: 0.3 }}
+                          transition={
+                            isDragging ? { duration: 0 } : { duration: 0.3 }
+                          }
                         >
                           <SortableItem task={task} />
                         </motion.div>
@@ -1955,7 +2141,7 @@ const [animateSort, setAnimateSort] = useState(false);
             marginTop: "24px",
             display: "flex",
             alignItems: "center",
-            marginBottom: "20px",
+            marginBottom: "8px",
           }}
         >
           <p className="archive-header-text" onClick={toggleArchive}>
@@ -1965,7 +2151,7 @@ const [animateSort, setAnimateSort] = useState(false);
 
         <motion.div
           className={`archive-section${isArchiveOpen ? " visible" : " hidden"}`}
-          initial={{ height: 0, opacity: 0 }}
+          initial={{ height: 0, opacity: 0, overflow: "visible" }}
           animate={{
             height: isArchiveOpen ? "auto" : 0,
             opacity: isArchiveOpen ? 1 : 0,
@@ -2058,22 +2244,24 @@ const [animateSort, setAnimateSort] = useState(false);
                   <div className="form-group">
                     <label>Description</label>
                     <div className="text-area-wrapper">
-                    <textarea
-                      placeholder={
-                        isDescriptionSuggested
-                          ? suggestionText
-                          : "Enter task description..."
-                      }
-               className={`modal-input${descChroma ? " chroma-text" : ""}`}
-                      rows="2"
-                      maxLength={100}
-                      value={taskDescription}
-                      onChange={handleDescriptionChange}
-                      onKeyDown={handleDescriptionKeyDown}
-                      ref={descriptionInputRef}
-                    ></textarea>
+                      <textarea
+                        placeholder={
+                          isDescriptionSuggested
+                            ? suggestionText
+                            : "Enter task description..."
+                        }
+                        className={`modal-input${
+                          descChroma ? " chroma-text" : ""
+                        }`}
+                        rows="2"
+                        maxLength={100}
+                        value={taskDescription}
+                        onChange={handleDescriptionChange}
+                        onKeyDown={handleDescriptionKeyDown}
+                        ref={descriptionInputRef}
+                      ></textarea>
                     </div>
-       
+
                     {formSubmitted && errors.description && (
                       <p className="error-message">{errors.description}</p>
                     )}
@@ -2083,48 +2271,49 @@ const [animateSort, setAnimateSort] = useState(false);
                     <div className="form-group half">
                       <label>Duration</label>
                       <div className="text-area-wrapper">
-                      <TimePicker
-  style={{ width: "100%", height: "45px" }}
-  className={`time-picker${durationChroma ? " chroma-animate" : ""}`}
-  value={duration}
-  onChange={setDuration}
-  format="HH:mm"
-  minuteStep={5}
-  showNow={false}
-  allowClear={false}
-  inputReadOnly
-  popupClassName="dark-timepicker"
-
-  ref={node => {
-    durationInputRef.current = node;
-    // AntD TimePicker input is nested, so get the real input:
-    if (node && node.input) timePickerInputRef.current = node.input;
-  }
-  }
-/>
-</div>
+                        <TimePicker
+                          style={{ width: "100%", height: "45px" }}
+                          className={`time-picker${
+                            durationChroma ? " chroma-animate" : ""
+                          }`}
+                          value={duration}
+                          onChange={setDuration}
+                          format="HH:mm"
+                          minuteStep={5}
+                          showNow={false}
+                          allowClear={false}
+                          inputReadOnly
+                          popupClassName="dark-timepicker"
+                          ref={(node) => {
+                            durationInputRef.current = node;
+                            // AntD TimePicker input is nested, so get the real input:
+                            if (node && node.input)
+                              timePickerInputRef.current = node.input;
+                          }}
+                        />
+                      </div>
 
                       {formSubmitted && errors.duration && (
                         <p className="error-message">{errors.duration}</p>
                       )}
-                      
-
                     </div>
 
                     <div className="form-group half">
                       <label htmlFor="priority">Priority</label>
                       <div className="text-area-wrapper">
-                      <select
-                        id="priority"
-                        className={`modal-input${priorityChroma ? " chroma-text" : ""}`}
-                        value={taskPriority}
-                        onChange={(e) => setTaskPriority(e.target.value)}
-                      >
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                      </select>
-                    </div>
+                        <select
+                          id="priority"
+                          className={`modal-input${
+                            priorityChroma ? " chroma-text" : ""
+                          }`}
+                          value={taskPriority}
+                          onChange={(e) => setTaskPriority(e.target.value)}
+                        >
+                          <option value="Low">Low</option>
+                          <option value="Medium">Medium</option>
+                          <option value="High">High</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
 

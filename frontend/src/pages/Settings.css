@@ -169,3 +169,6 @@
 .settings-support-icon {
   height: 20px;
 }
+#bmc-wbtn {
+  display: none !important;
+}
