@@ -132,7 +132,7 @@ const Settings = () => {
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
 
-    showNotification("Your tasks are packed and ready to go!");
+    showNotification("Tasks exported successfully");
   };
 
   const handleImportTasks = (event) => {
@@ -163,17 +163,13 @@ const Settings = () => {
             localStorage.removeItem("nowTask");
           }
 
-          showNotification("Fox unpacked your tasks—you're all set!");
+          showNotification("Tasks imported successfully");
           setTimeout(() => window.location.reload(), 1200); // Give user time to see notification
         } else {
-          showNotification(
-            "Hmm… Fox can't read this file. Try a valid task file"
-          );
+          showNotification("Invalid file format. Please try again");
         }
       } catch (err) {
-        showNotification(
-          "Fox couldn't read the file... Mind double-checking it?"
-        );
+        showNotification("Could not read the file. Please check and try again");
       }
     };
     reader.readAsText(file);

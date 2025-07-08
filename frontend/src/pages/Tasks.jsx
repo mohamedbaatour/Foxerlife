@@ -438,31 +438,32 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     const [isEditingDescription, setIsEditingDescription] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Add this line
     const emojiPickerRef = useRef(null);
-    
+
     const emojiContainerRef = useRef(null);
-    
+
     // Add this useEffect to handle clicks outside and ESC key
     useEffect(() => {
       if (showEmojiPicker) {
         const handleClickOutside = (event) => {
           if (
-            emojiPickerRef.current && 
+            emojiPickerRef.current &&
             !emojiPickerRef.current.contains(event.target) &&
-            (!emojiContainerRef.current || !emojiContainerRef.current.contains(event.target))
+            (!emojiContainerRef.current ||
+              !emojiContainerRef.current.contains(event.target))
           ) {
             setShowEmojiPicker(false);
           }
         };
-        
+
         const handleEscKey = (event) => {
           if (event.key === "Escape") {
             setShowEmojiPicker(false);
           }
         };
-        
+
         document.addEventListener("mousedown", handleClickOutside);
         document.addEventListener("keydown", handleEscKey);
-        
+
         return () => {
           document.removeEventListener("mousedown", handleClickOutside);
           document.removeEventListener("keydown", handleEscKey);
@@ -489,7 +490,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
         const taskToMove = laterTasks.find((task) => task.id === taskId);
         if (taskToMove) {
           setNowTask(taskToMove);
-          showNotification("Nice pick buddy!");
+          showNotification("Task moved to Now");
           setIsMenuOpen(false);
           window.dispatchEvent(
             new CustomEvent("nowTaskUpdated", { detail: taskToMove })
@@ -508,8 +509,6 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       }
     }, [showDeleteConfirmation]);
 
-
-
     const showDeleteConfirm = (e) => {
       e.stopPropagation();
       setShowDeleteConfirmation(true);
@@ -522,26 +521,26 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       setIsConfirmationClosing(false);
     };
 
-useEffect(() => {
-  if (showDeleteConfirmation) {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        e.stopPropagation();
-        hideDeleteConfirm();
+    useEffect(() => {
+      if (showDeleteConfirmation) {
+        const handleKeyDown = (e) => {
+          if (e.key === "Escape") {
+            e.preventDefault();
+            e.stopPropagation();
+            hideDeleteConfirm();
+          }
+        };
+
+        // Add event listener when component mounts
+        document.addEventListener("keydown", handleKeyDown);
+
+        // Remove event listener when component unmounts
+        return () => {
+          document.removeEventListener("keydown", handleKeyDown);
+        };
       }
-    };
-    
-    // Add event listener when component mounts
-    document.addEventListener("keydown", handleKeyDown);
-    
-    // Remove event listener when component unmounts
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }
-}, [showDeleteConfirmation]);
-    
+    }, [showDeleteConfirmation]);
+
     const confirmDelete = (taskId) => {
       const menuElement = document.querySelector(
         `#task-${taskId} .task-card-menu`
@@ -596,7 +595,6 @@ useEffect(() => {
     const maxDescriptionLength = "My second task's description is long is so lo"
       .length;
 
-
     return (
       <div
         ref={setNodeRef}
@@ -630,8 +628,8 @@ useEffect(() => {
                     e.stopPropagation(); // Add this line
                     setShowEmojiPicker(!showEmojiPicker);
                   }}
-                    style={{ cursor: "pointer" }}
-                    ref={emojiContainerRef}
+                  style={{ cursor: "pointer" }}
+                  ref={emojiContainerRef}
                 />
               ) : (
                 <span
@@ -831,7 +829,7 @@ useEffect(() => {
       if (movedTask) {
         setNowTask(movedTask);
         setLaterTasks((tasks) => tasks.filter((t) => t.id !== active.id));
-        showNotification("Nice pick buddy!");
+        showNotification("Task moved to Now");
       }
       return;
     }
@@ -844,7 +842,7 @@ useEffect(() => {
     ) {
       setLaterTasks((tasks) => [nowTask, ...tasks]);
       setNowTask(null);
-      showNotification("Moved back to Later");
+      showNotification("Task moved back to Later");
       return;
     }
 
@@ -1137,7 +1135,7 @@ useEffect(() => {
 
     setLaterTasks((prevTasks) => [newTask, ...prevTasks]);
     SoundManager.play("taskAdd"); // Play sound
-    showNotification("Task added!");
+    showNotification("Task added");
     setFormSubmitted(false);
     closeModal(true, false); // Don't play the sound after adding a task
   };
@@ -1329,7 +1327,8 @@ useEffect(() => {
 
     setFilteredResults(filteredTasks);
     setIsFilterMenuOpen(false);
-    showNotification(`Fox filtered your focus: ${filterRange}`);
+
+    showNotification(`Tasks filtered: ${filterRange}`);
   };
 
   const handleSearchInput = (e) => {
@@ -1473,7 +1472,7 @@ useEffect(() => {
         setArchivedTasks((prevTasks) =>
           prevTasks.filter((task) => task.id !== taskId)
         );
-        showNotification("Task revived!");
+        showNotification("Task restored to Now");
         setIsMenuOpen(false);
         window.dispatchEvent(
           new CustomEvent("nowTaskUpdated", {
@@ -1487,7 +1486,7 @@ useEffect(() => {
       e.stopPropagation();
       setShowDeleteConfirmation(true);
     };
-    
+
     const hideDeleteConfirm = () => {
       setIsConfirmationClosing(true);
 
@@ -1541,8 +1540,8 @@ useEffect(() => {
       }
     }, [showDeleteConfirmation]);
 
-    const emojiPickerRef = useRef(null)
-    const emojiContainerRef = useRef(null)
+    const emojiPickerRef = useRef(null);
+    const emojiContainerRef = useRef(null);
 
     return (
       <div
@@ -1607,10 +1606,15 @@ useEffect(() => {
                     <EmojiPicker
                       onEmojiClick={(emojiData) => {
                         const updatedTasks = archivedTasks.map((t) =>
-                          t.id === task.id ? { ...t, emoji: emojiData.emoji } : t
+                          t.id === task.id
+                            ? { ...t, emoji: emojiData.emoji }
+                            : t
                         );
                         setArchivedTasks(updatedTasks);
-                        localStorage.setItem("archivedTasks", JSON.stringify(updatedTasks));
+                        localStorage.setItem(
+                          "archivedTasks",
+                          JSON.stringify(updatedTasks)
+                        );
                         setShowEmojiPicker(false);
                       }}
                       width={300}
@@ -1788,13 +1792,37 @@ useEffect(() => {
 
   const handleAISort = () => {
     const priorityOrder = { High: 0, Medium: 1, Low: 2 };
+
+    if (laterTasks.length === 0) {
+      showNotification("No tasks to sort");
+      return;
+    }
+
+    if (laterTasks.length === 1) {
+      showNotification("Only one task available, sorting is not required");
+      return;
+    }
+
+    const isAlreadySorted = laterTasks.every((task, index, arr) => {
+      if (index === 0) return true;
+      return (
+        (priorityOrder[task.priority] ?? 3) >=
+        (priorityOrder[arr[index - 1].priority] ?? 3)
+      );
+    });
+
+    if (isAlreadySorted) {
+      showNotification("Tasks are already sorted by priority");
+      return;
+    }
+
     setLaterTasks((prev) =>
       [...prev].sort(
         (a, b) =>
           (priorityOrder[a.priority] ?? 3) - (priorityOrder[b.priority] ?? 3)
       )
     );
-    showNotification("Tasks sorted");
+    showNotification("Tasks sorted by priority");
     setAiIconActive(true);
     setTimeout(() => setAiIconActive(false), 2000);
   };
