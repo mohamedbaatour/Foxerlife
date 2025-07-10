@@ -12,6 +12,10 @@ const ThankYou = () => {
 
   const reddit = [
     {
+      name: "Luke C",
+      link: "https://www.reddit.com/user/No_Illustrator9802/",
+    },
+    {
       name: "angelabuildsinpublic",
       link: "https://www.reddit.com/user/angelabuildsinpublic/",
     },
@@ -19,7 +23,10 @@ const ThankYou = () => {
       name: "juliluna_1969",
       link: "https://www.reddit.com/user/Enough-Muffin-5054/",
     },
-    { name: "idesigntech07", link: "https://www.reddit.com/user/idesigntech07/" },
+    {
+      name: "idesigntech07",
+      link: "https://www.reddit.com/user/idesigntech07/",
+    },
     {
       name: "believer-200",
       link: "https://www.reddit.com/user/believer-200/",
@@ -35,7 +42,7 @@ const ThankYou = () => {
     {
       name: "Tauser",
       link: "https://www.reddit.com/user/Appropriate-Farmer56/",
-    }
+    },
   ];
 
   return (

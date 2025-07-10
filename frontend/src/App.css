@@ -35,7 +35,7 @@ p {
   height: 100vh;
   transition: 0.3s all ease-in-out;
 }
-
+/* 
 @media screen and (max-width: 625px) {
   .main-content-container {
     transform: scale(0.9);
@@ -95,7 +95,7 @@ p {
     transition: 0.3s all ease-in-out;
     margin-top: -7rem;
   }
-}
+} */
 
 .cookie-consent-popup {
   position: fixed;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./Tasks.css";
 import { ReactComponent as NowIcon } from "../icones/now.svg";
@@ -251,39 +251,62 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     return content.match(/^(\d+h\s*)?(\d+m)?$/) ? content : "1h";
   };
 
+  const [priorityManuallySet, setPriorityManuallySet] = useState(false);
+  const [emojiManuallySet, setEmojiManuallySet] = useState(false);
+  const [durationManuallySet, setDurationManuallySet] = useState(false);
+
+  // When user changes priority, emoji, or duration manually:
+  const handlePriorityChange = (value) => {
+    setTaskPriority(value);
+    setPriorityManuallySet(true);
+  };
+  const handleEmojiChange = (emoji) => {
+    setTaskEmoji(emoji);
+    setEmojiManuallySet(true);
+  };
+  const handleDurationChange = (value) => {
+    setDuration(value);
+    setDurationManuallySet(true);
+  };
+
   const handleTitleChange = (e) => {
     const value = e.target.value;
     setTaskTitle(value);
-
     clearTimeout(debounceTimeout.current);
     debounceTimeout.current = setTimeout(async () => {
-      if (value.length > 3 && taskDescription.trim() === "") {
-        setIsGeneratingDesc(true);
-        const suggestion = await generateDescription(value);
-        setSuggestionText(suggestion);
-        setTaskDescription("");
-        setIsDescriptionSuggested(true);
-        setIsGeneratingDesc(false);
-        setDescChroma(true);
-        setTimeout(() => setDescChroma(false), 900); // Reset after animation
-      }
-
-      const suggestedEmoji = await generateEmoji(value);
-      setTaskEmoji(suggestedEmoji);
-
       if (value.length > 3) {
-        const suggestedDuration = await estimateDuration(value);
-        // Parse "1h 30m" to dayjs object
-        const parsed = parseDuration(suggestedDuration);
-        setDuration(dayjs().hour(parsed.hours).minute(parsed.minutes));
-        setDurationChroma(true);
-        setTimeout(() => setDurationChroma(false), 900);
+        const [description, emoji, duration, priority] = await Promise.all([
+          taskDescription.trim() === ""
+            ? generateDescription(value)
+            : Promise.resolve(""),
+          generateEmoji(value),
+          estimateDuration(value),
+          generatePriority(value),
+        ]);
+        if (description && taskDescription.trim() === "") {
+          setSuggestionText(description);
+          setTaskDescription("");
+          setIsDescriptionSuggested(true);
+          setIsGeneratingDesc(false);
+          setDescChroma(true);
+          setTimeout(() => setDescChroma(false), 900);
+        }
+        if (!emojiManuallySet) {
+          setTaskEmoji(emoji);
+        }
+        if (!durationManuallySet && value.length > 3) {
+          const parsed = parseDuration(duration);
+          setDuration(dayjs().hour(parsed.hours).minute(parsed.minutes));
+          setDurationChroma(true);
+          setTimeout(() => setDurationChroma(false), 900);
+        }
+        if (!priorityManuallySet) {
+          setTaskPriority(priority);
+          localStorage.setItem("taskPriority", priority);
+          setPriorityChroma(true);
+          setTimeout(() => setPriorityChroma(false), 900);
+        }
       }
-      const aiPriority = await generatePriority(value);
-      setTaskPriority(aiPriority);
-      localStorage.setItem("taskPriority", aiPriority);
-      setPriorityChroma(true);
-      setTimeout(() => setPriorityChroma(false), 900);
     }, 1000);
   };
 
@@ -417,7 +440,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     exit: { opacity: 0, pointerEvents: "none" },
   };
 
-  const SortableItem = ({ task }) => {
+  const SortableItem = React.memo(({ task }) => {
     const {
       attributes,
       listeners,
@@ -440,30 +463,31 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     const emojiPickerRef = useRef(null);
 
     const emojiContainerRef = useRef(null);
+    const ignoreNextEmojiToggle = useRef(false);
 
-    // Add this useEffect to handle clicks outside and ESC key
     useEffect(() => {
       if (showEmojiPicker) {
         const handleClickOutside = (event) => {
           if (
-            emojiPickerRef.current &&
-            !emojiPickerRef.current.contains(event.target) &&
-            (!emojiContainerRef.current ||
-              !emojiContainerRef.current.contains(event.target))
+            emojiPickerRef.current && emojiPickerRef.current.contains(event.target)
           ) {
-            setShowEmojiPicker(false);
+            return;
           }
+          if (
+            emojiContainerRef.current && emojiContainerRef.current.contains(event.target)
+          ) {
+            // Let the onClick handler handle closing
+            return;
+          }
+          setShowEmojiPicker(false);
         };
-
         const handleEscKey = (event) => {
           if (event.key === "Escape") {
             setShowEmojiPicker(false);
           }
         };
-
         document.addEventListener("mousedown", handleClickOutside);
         document.addEventListener("keydown", handleEscKey);
-
         return () => {
           document.removeEventListener("mousedown", handleClickOutside);
           document.removeEventListener("keydown", handleEscKey);
@@ -471,16 +495,22 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       }
     }, [showEmojiPicker]);
 
-    const handleContentChange = (e, field) => {
+    useEffect(() => {
+      if (ignoreNextEmojiToggle.current) {
+        ignoreNextEmojiToggle.current = false;
+      }
+    });
+
+    const handleContentChange = useCallback((e, field) => {
       const updatedValue = e.target.innerText;
       const updatedTasks = laterTasks.map((t) =>
         t.id === task.id ? { ...t, [field]: updatedValue } : t
       );
       setLaterTasks(updatedTasks);
       localStorage.setItem("laterTasks", JSON.stringify(updatedTasks));
-    };
+    }, [laterTasks, task.id])
 
-    const handleMoveToNow = (taskId) => {
+    const handleMoveToNow = useCallback((taskId) => {
       setRemovingTaskId(taskId);
       setTimeout(() => {
         setLaterTasks((prevTasks) => {
@@ -498,7 +528,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
         }
         setRemovingTaskId(null);
       }, 300);
-    };
+    }, [laterTasks, nowTask]);
 
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [isConfirmationClosing, setIsConfirmationClosing] = useState(false);
@@ -635,10 +665,16 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                 <span
                   className="later-tasks-card-emoji-text"
                   onClick={(e) => {
-                    e.stopPropagation(); // Add this line
-                    setShowEmojiPicker(!showEmojiPicker);
+                    e.stopPropagation();
+                    if (showEmojiPicker) {
+                      ignoreNextEmojiToggle.current = true;
+                      setShowEmojiPicker(false);
+                    } else {
+                      setShowEmojiPicker(true);
+                    }
                   }}
                   style={{ cursor: "pointer" }}
+                  ref={emojiContainerRef}
                 >
                   {task.emoji}
                 </span>
@@ -811,7 +847,8 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
         </div>
       </div>
     );
-  };
+  }
+)
 
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -1030,6 +1067,9 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       });
       setIsDescriptionSuggested(false);
       setSuggestionText("");
+      setPriorityManuallySet(false);
+      setEmojiManuallySet(false);
+      setDurationManuallySet(false);
     }
     window.dispatchEvent(
       new CustomEvent("modal-state-change", {
@@ -1389,7 +1429,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     }
   };
 
-  const SortableArchiveItem = ({ task }) => {
+  const SortableArchiveItem = React.memo(({ task }) => {
     const {
       attributes,
       listeners,
@@ -1411,23 +1451,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     const [isConfirmationClosing, setIsConfirmationClosing] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Add this state
 
-    const toggleMenu = () => {
-      if (isMenuOpen) {
-        setIsClosing(true);
-        const menuElement = document.querySelector(
-          `#archive-task-${task.id} .task-card-menu`
-        );
-        if (menuElement) {
-          menuElement.classList.add("fading-out");
 
-          setIsMenuOpen(false);
-        } else {
-          setIsMenuOpen(false);
-        }
-      } else {
-        setIsMenuOpen(true);
-      }
-    };
 
     const handleContentChange = (e, field) => {
       const updatedValue = e.target.innerText;
@@ -1439,14 +1463,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     };
 
     // Add this function to handle emoji selection
-    const handleEmojiSelect = (emojiObject) => {
-      const updatedTasks = archivedTasks.map((t) =>
-        t.id === task.id ? { ...t, emoji: emojiObject.emoji } : t
-      );
-      setArchivedTasks(updatedTasks);
-      localStorage.setItem("archivedTasks", JSON.stringify(updatedTasks));
-      setShowEmojiPicker(false);
-    };
+
 
     const handleRestoreToLater = (taskId) => {
       const taskToRestore = archivedTasks.find((task) => task.id === taskId);
@@ -1542,6 +1559,46 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
 
     const emojiPickerRef = useRef(null);
     const emojiContainerRef = useRef(null);
+    
+    useEffect(() => {
+      if (showEmojiPicker) {
+        const handleClickOutside = (event) => {
+          if (
+            emojiPickerRef.current &&
+            emojiPickerRef.current.contains(event.target)
+          ) {
+            return;
+          }
+          if (
+            emojiContainerRef.current &&
+            emojiContainerRef.current.contains(event.target)
+          ) {
+            // Let the onClick handler handle closing
+            return;
+          }
+          setShowEmojiPicker(false);
+        };
+        const handleEscKey = (event) => {
+          if (event.key === "Escape") {
+            setShowEmojiPicker(false);
+          }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("keydown", handleEscKey);
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+          document.removeEventListener("keydown", handleEscKey);
+        };
+      }
+    }, [showEmojiPicker]);
+
+    const ignoreNextEmojiToggle = useRef(false);
+
+    useEffect(() => {
+      if (ignoreNextEmojiToggle.current) {
+        ignoreNextEmojiToggle.current = false;
+      }
+    });
 
     return (
       <div
@@ -1605,16 +1662,12 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                   >
                     <EmojiPicker
                       onEmojiClick={(emojiData) => {
-                        const updatedTasks = archivedTasks.map((t) =>
+                        const updatedTasks = laterTasks.map((t) =>
                           t.id === task.id
                             ? { ...t, emoji: emojiData.emoji }
                             : t
                         );
-                        setArchivedTasks(updatedTasks);
-                        localStorage.setItem(
-                          "archivedTasks",
-                          JSON.stringify(updatedTasks)
-                        );
+                        setLaterTasks(updatedTasks);
                         setShowEmojiPicker(false);
                       }}
                       width={300}
@@ -1759,7 +1812,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
         </div>
       </div>
     );
-  };
+  });
 
   // Add new ref for filter menu
   const filterMenuRef = useRef(null);
@@ -2305,7 +2358,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                             durationChroma ? " chroma-animate" : ""
                           }`}
                           value={duration}
-                          onChange={setDuration}
+                          onChange={handleDurationChange}
                           format="HH:mm"
                           minuteStep={5}
                           showNow={false}
@@ -2335,7 +2388,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                             priorityChroma ? " chroma-text" : ""
                           }`}
                           value={taskPriority}
-                          onChange={(e) => setTaskPriority(e.target.value)}
+                          onChange={(e) => handlePriorityChange(e.target.value)}
                         >
                           <option value="Low">Low</option>
                           <option value="Medium">Medium</option>
@@ -2371,7 +2424,9 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                             }}
                           >
                             <EmojiPicker
-                              onEmojiClick={onEmojiClick}
+                              onEmojiClick={(emojiObject) =>
+                                handleEmojiChange(emojiObject.emoji)
+                              }
                               width={300}
                               height={400}
                               searchPlaceholder="Search emoji..."
