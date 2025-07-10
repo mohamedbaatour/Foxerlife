@@ -378,10 +378,10 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     }
   };
 
-  const onEmojiClick = (emojiObject) => {
-    setTaskEmoji(emojiObject.emoji);
-    setShowEmojiPicker(false);
-  };
+  // const onEmojiClick = (emojiObject) => {
+  //   setTaskEmoji(emojiObject.emoji);
+  //   setShowEmojiPicker(false);
+  // };
 
   const [nowTask, setNowTask] = useState(() => {
     const savedNowTask = localStorage.getItem("nowTask");
@@ -462,6 +462,59 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
     const [showEmojiPicker, setShowEmojiPicker] = useState(false); // Add this line
     const emojiPickerRef = useRef(null);
 
+    const [isPriorityDropdownOpen, setIsPriorityDropdownOpen] = useState(false);
+    const priorityOptions = ["Low", "Medium", "High"];
+    const priorityContainerRef = useRef(null);
+    const priorityDropdownRef = useRef(null);
+    const ignoreNextPriorityToggle = useRef(false);
+
+    const handlePriorityChange = (newPriority) => {
+      const updatedTasks = laterTasks.map((t) =>
+        t.id === task.id ? { ...t, priority: newPriority } : t
+      );
+      setLaterTasks(updatedTasks);
+      localStorage.setItem("laterTasks", JSON.stringify(updatedTasks));
+      setIsPriorityDropdownOpen(false);
+    };
+
+    useEffect(() => {
+      if (isPriorityDropdownOpen) {
+        const handleClickOutside = (event) => {
+          if (
+            priorityDropdownRef.current &&
+            priorityDropdownRef.current.contains(event.target)
+          ) {
+            return;
+          }
+          if (
+            priorityContainerRef.current &&
+            priorityContainerRef.current.contains(event.target)
+          ) {
+            // Let the onClick handler handle closing
+            return;
+          }
+          setIsPriorityDropdownOpen(false);
+        };
+        const handleEscKey = (event) => {
+          if (event.key === "Escape") {
+            setIsPriorityDropdownOpen(false);
+          }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("keydown", handleEscKey);
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+          document.removeEventListener("keydown", handleEscKey);
+        };
+      }
+    }, [isPriorityDropdownOpen]);
+
+    useEffect(() => {
+      if (ignoreNextPriorityToggle.current) {
+        ignoreNextPriorityToggle.current = false;
+      }
+    });
+
     const emojiContainerRef = useRef(null);
     const ignoreNextEmojiToggle = useRef(false);
 
@@ -469,12 +522,14 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       if (showEmojiPicker) {
         const handleClickOutside = (event) => {
           if (
-            emojiPickerRef.current && emojiPickerRef.current.contains(event.target)
+            emojiPickerRef.current &&
+            emojiPickerRef.current.contains(event.target)
           ) {
             return;
           }
           if (
-            emojiContainerRef.current && emojiContainerRef.current.contains(event.target)
+            emojiContainerRef.current &&
+            emojiContainerRef.current.contains(event.target)
           ) {
             // Let the onClick handler handle closing
             return;
@@ -501,34 +556,40 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       }
     });
 
-    const handleContentChange = useCallback((e, field) => {
-      const updatedValue = e.target.innerText;
-      const updatedTasks = laterTasks.map((t) =>
-        t.id === task.id ? { ...t, [field]: updatedValue } : t
-      );
-      setLaterTasks(updatedTasks);
-      localStorage.setItem("laterTasks", JSON.stringify(updatedTasks));
-    }, [laterTasks, task.id])
+    const handleContentChange = useCallback(
+      (e, field) => {
+        const updatedValue = e.target.innerText;
+        const updatedTasks = laterTasks.map((t) =>
+          t.id === task.id ? { ...t, [field]: updatedValue } : t
+        );
+        setLaterTasks(updatedTasks);
+        localStorage.setItem("laterTasks", JSON.stringify(updatedTasks));
+      },
+      [laterTasks, task.id]
+    );
 
-    const handleMoveToNow = useCallback((taskId) => {
-      setRemovingTaskId(taskId);
-      setTimeout(() => {
-        setLaterTasks((prevTasks) => {
-          const filtered = prevTasks.filter((task) => task.id !== taskId);
-          return nowTask ? [nowTask, ...filtered] : filtered;
-        });
-        const taskToMove = laterTasks.find((task) => task.id === taskId);
-        if (taskToMove) {
-          setNowTask(taskToMove);
-          showNotification("Task moved to Now");
-          setIsMenuOpen(false);
-          window.dispatchEvent(
-            new CustomEvent("nowTaskUpdated", { detail: taskToMove })
-          );
-        }
-        setRemovingTaskId(null);
-      }, 300);
-    }, [laterTasks, nowTask]);
+    const handleMoveToNow = useCallback(
+      (taskId) => {
+        setRemovingTaskId(taskId);
+        setTimeout(() => {
+          setLaterTasks((prevTasks) => {
+            const filtered = prevTasks.filter((task) => task.id !== taskId);
+            return nowTask ? [nowTask, ...filtered] : filtered;
+          });
+          const taskToMove = laterTasks.find((task) => task.id === taskId);
+          if (taskToMove) {
+            setNowTask(taskToMove);
+            showNotification("Task moved to Now");
+            setIsMenuOpen(false);
+            window.dispatchEvent(
+              new CustomEvent("nowTaskUpdated", { detail: taskToMove })
+            );
+          }
+          setRemovingTaskId(null);
+        }, 300);
+      },
+      [laterTasks, nowTask]
+    );
 
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [isConfirmationClosing, setIsConfirmationClosing] = useState(false);
@@ -722,6 +783,7 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                           : task.priority === "Medium"
                           ? "#675C21"
                           : "#666666",
+                      position: "relative",
                       // backgroundColor:
                       //   task.priority === "High"
                       //     ? "#cc4d4d"
@@ -730,6 +792,11 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                       //     : "#a1a1a1",
                     }}
                     className="task-priority-container"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsPriorityDropdownOpen((prev) => !prev);
+                    }}
+                    ref={priorityContainerRef}
                   >
                     <div
                       style={{
@@ -743,6 +810,47 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                       className="task-priority-indecator"
                     />
                     {task.priority}
+                    <AnimatePresence>
+                      {isPriorityDropdownOpen && (
+                        <motion.div
+                          initial={{ y: -20, opacity: 0, filter: "blur(8px)" }}
+                          animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                          exit={{ y: -20, opacity: 0, filter: "blur(8px)" }}
+                          className="custom-dropdown"
+                          useRef={priorityDropdownRef}
+                          // style={{
+                          //   position: "absolute",
+                          //   left: 0,
+                          //   top: "100%",
+                          //   zIndex: 100,
+                          //   background: "#fff",
+                          //   border: "1px solid #ccc",
+                          //   borderRadius: 4,
+                          //   minWidth: "100%",
+                          //   boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                          // }}
+                        >
+                          {priorityOptions.map((option) => (
+                            <div
+                              className="custom-dropdown-option"
+                              key={option}
+                              // style={{
+                              //   padding: "8px 12px",
+                              //   cursor: "pointer",
+                              //   background: "#f0f0f0",
+                              //   color: "#666",
+                              // }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePriorityChange(option);
+                              }}
+                            >
+                              {option}
+                            </div>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                   <p
                     suppressContentEditableWarning
@@ -1600,6 +1708,59 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
       }
     });
 
+    const [isPriorityDropdownOpen, setIsPriorityDropdownOpen] = useState(false);
+    const priorityOptions = ["Low", "Medium", "High"];
+    const priorityContainerRef = useRef(null);
+    const priorityDropdownRef = useRef(null);
+    const ignoreNextPriorityToggle = useRef(false);
+
+    const handlePriorityChange = (newPriority) => {
+      const updatedTasks = archivedTasks.map((t) =>
+        t.id === task.id ? { ...t, priority: newPriority } : t
+      );
+      setArchivedTasks(updatedTasks);
+      localStorage.setItem("archivedTasks", JSON.stringify(updatedTasks));
+      setIsPriorityDropdownOpen(false);
+    };
+
+    useEffect(() => {
+      if (isPriorityDropdownOpen) {
+        const handleClickOutside = (event) => {
+          if (
+            priorityDropdownRef.current &&
+            priorityDropdownRef.current.contains(event.target)
+          ) {
+            return;
+          }
+          if (
+            priorityContainerRef.current &&
+            priorityContainerRef.current.contains(event.target)
+          ) {
+            // Let the onClick handler handle closing
+            return;
+          }
+          setIsPriorityDropdownOpen(false);
+        };
+        const handleEscKey = (event) => {
+          if (event.key === "Escape") {
+            setIsPriorityDropdownOpen(false);
+          }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("keydown", handleEscKey);
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+          document.removeEventListener("keydown", handleEscKey);
+        };
+      }
+    }, [isPriorityDropdownOpen]);
+
+    useEffect(() => {
+      if (ignoreNextPriorityToggle.current) {
+        ignoreNextPriorityToggle.current = false;
+      }
+    });
+
     return (
       <div
         ref={setNodeRef}
@@ -1700,8 +1861,16 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                         //     : task.priority === "Medium"
                         //     ? "#675C21"
                         //     : "#a1a1a1",
+                        position: "relative",
                       }}
                       className="task-priority-container"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!ignoreNextPriorityToggle.current) {
+                          setIsPriorityDropdownOpen((prev) => !prev);
+                        }
+                      }}
+                      ref={priorityContainerRef}
                     >
                       <div
                         style={{
@@ -1715,6 +1884,36 @@ const formatDuration = (d) => `${d.hour()}h ${d.minute()}m`;
                         className="task-priority-indecator"
                       />
                       {task.priority}
+                      <AnimatePresence>
+                        {isPriorityDropdownOpen && (
+                          <motion.div
+                            initial={{
+                              y: -20,
+                              opacity: 0,
+                              filter: "blur(8px)",
+                            }}
+                            animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                            exit={{ y: -20, opacity: 0, filter: "blur(8px)" }}
+                            className="custom-dropdown"
+                            ref={priorityDropdownRef}
+                            // style={{ // ... existing code ...
+                          >
+                            {priorityOptions.map((option) => (
+                              <div
+                                className="custom-dropdown-option"
+                                key={option}
+                                // style={{ // ... existing code ...
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handlePriorityChange(option);
+                                }}
+                              >
+                                {option}
+                              </div>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                     <p
                       contentEditable
