@@ -77,8 +77,12 @@ const Settings = () => {
   };
 
   const handleTimeFormatChange = (event) => {
-    setTimeFormat(event.target.value);
-    window.location.reload(); // Recharge la page pour appliquer les changements
+    const newFormat = event.target.value;
+    setTimeFormat(newFormat);
+    localStorage.setItem("timeFormat", newFormat); // <-- update immediately!
+    window.dispatchEvent(
+      new CustomEvent("timeFormatChanged", { detail: newFormat })
+    );
   };
 
   const handleDefaultTaskLengthChange = (event) => {

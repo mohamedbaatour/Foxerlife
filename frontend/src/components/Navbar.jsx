@@ -22,6 +22,9 @@ const Navbar = () => {
   const [weatherDescription, setWeatherDescription] = useState("");
   const [isLogoHovered, setIsLogoHovered] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [timeFormat, setTimeFormat] = useState(
+    localStorage.getItem("timeFormat") || "24"
+  );
   const mobileMenuRef = useRef(null);
 
   const getLinkClassName = ({ isActive }) => {
@@ -65,7 +68,7 @@ const Navbar = () => {
             )
           ) {
             setWeatherIcon(<RainIcon className="weather-icon-svg" />);
-          } else if ([45, 48].includes(weatherCode)) {
+          } else if (weatherCode === 45 || weatherCode === 48) {
             setWeatherIcon(<CloudIcon className="weather-icon-svg" />);
           } else if ([71, 73, 75, 77, 85, 86].includes(weatherCode)) {
             setWeatherIcon(<SnowIcon className="weather-icon-svg" />);
@@ -138,34 +141,37 @@ const Navbar = () => {
       }
     };
 
-    const updateLocalTime = () => {
-      const storedTimeFormat = localStorage.getItem("timeFormat");
-      const hour12 = storedTimeFormat === "12";
+    fetchWeatherByIP();
+  }, []);
 
+  // Update the useEffect that handles time:
+  useEffect(() => {
+    const updateLocalTime = () => {
+      const storedTimeFormat = localStorage.getItem("timeFormat") || "24";
+      setTimeFormat(storedTimeFormat); // <-- update state
+      const hour12 = storedTimeFormat === "12";
       const localTime = new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
-        hour12: hour12,
+        hour12,
       });
       setCurrentTime(localTime);
     };
 
-    fetchWeatherByIP();
-
-    updateLocalTime(); // Set initially
+    updateLocalTime();
     const intervalId = setInterval(updateLocalTime, 60 * 1000);
 
-    const handleStorageChange = (event) => {
-      if (event.key === "timeFormat") {
-        updateLocalTime();
-      }
+    const handleTimeFormatChange = () => {
+      updateLocalTime();
     };
 
-    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("timeFormatChanged", handleTimeFormatChange);
+    window.addEventListener("storage", handleTimeFormatChange);
 
     return () => {
       clearInterval(intervalId);
-      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("timeFormatChanged", handleTimeFormatChange);
+      window.removeEventListener("storage", handleTimeFormatChange);
     };
   }, []);
 
@@ -285,7 +291,18 @@ const Navbar = () => {
       <div className="navbar-right-section navbar-hide-mobile">
         {weatherIcon}
         <div className="navbar-time-details">
-          <span className="navbar-current-time">{currentTime || "N/A"}</span>{" "}
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={timeFormat}
+              className="navbar-current-time"
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+            >
+              {currentTime || "N/A"}
+            </motion.span>
+          </AnimatePresence>
           <br />
           <span className="navbar-current-location">{location}</span>
         </div>

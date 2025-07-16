@@ -5,7 +5,7 @@
   background-color: var(--color-surface-1);
   z-index: 100;
   width: 1070px;
-  border-radius: 999px;
+  border-radius: 12px;
   margin-top: 1rem;
   min-height: 5.375rem;
   max-height: 5.375rem;
@@ -14,6 +14,7 @@
   left: 50%;
   transform: translateX(-50%);
   backdrop-filter: blur(8px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
 p.navbar-brand-version {

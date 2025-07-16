@@ -304,8 +304,7 @@ background-color: transparent;
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   border-radius: 4px;
-min-width: 100%;
-
+  min-width: 100%;
 }
 
 .custom-dropdown-option {
@@ -323,10 +322,6 @@ min-width: 100%;
 .custom-dropdown-option:hover {
   background: var(--color-surface-3);
 }
-
-
-
-
 
 .later-tasks-card-title {
   color: var(--text-primary);
@@ -1054,7 +1049,6 @@ min-width: 100%;
   border-radius: 99px;
   font-size: 0.875rem;
   font-weight: 500;
-  border-bottom: 1px solid var(--color-border);
   pointer-events: none;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
