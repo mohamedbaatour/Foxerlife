@@ -12,12 +12,20 @@ const ThankYou = () => {
 
   const reddit = [
     {
-      name: "Luke C",
-      link: "https://www.reddit.com/user/No_Illustrator9802/",
+      name: "Decent-Ad-869",
+      link: "https://www.reddit.com/user/Decent-Ad-869/",
+    },
+    {
+      name: "89dpi",
+      link: "https://www.reddit.com/user/89dpi/",
     },
     {
       name: "angelabuildsinpublic",
       link: "https://www.reddit.com/user/angelabuildsinpublic/",
+    },
+    {
+      name: "Luke C",
+      link: "https://www.reddit.com/user/No_Illustrator9802/",
     },
     {
       name: "juliluna_1969",
@@ -32,16 +40,16 @@ const ThankYou = () => {
       link: "https://www.reddit.com/user/believer-200/",
     },
     {
+      name: "Tauser",
+      link: "https://www.reddit.com/user/Appropriate-Farmer56/",
+    },
+    {
       name: "little_marzipan_2087",
       link: "https://www.reddit.com/user/Little_Marzipan_2087/",
     },
     {
       name: "gunasekaran R",
       link: "https://www.reddit.com/user/Own_Driver329/",
-    },
-    {
-      name: "Tauser",
-      link: "https://www.reddit.com/user/Appropriate-Farmer56/",
     },
   ];
 
