@@ -206,13 +206,13 @@ const Navbar = () => {
         {isLogoHovered ? (
           <img
             src={LogoGIF}
-            alt="Foxerlife Animated Logo"
+            alt="Foxer Animated Logo"
             className="animated-logo"
           />
         ) : (
-          <img src={LogoIcon} alt="Foxerlife Logo" className="logo" />
+          <img src={LogoIcon} alt="Foxer Logo" className="logo" />
         )}
-        <p className="navbar-brand-name">Foxerlife</p>
+        <p className="navbar-brand-name">Foxer</p>
         <p className="navbar-brand-version">BETA</p>
       </div>
 

@@ -131,7 +131,7 @@ const Settings = () => {
       encodeURIComponent(JSON.stringify(exportData, null, 2));
     const downloadAnchorNode = document.createElement("a");
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "foxerlife_tasks_export.json");
+    downloadAnchorNode.setAttribute("download", "foxer_tasks_export.json");
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
