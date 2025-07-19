@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import "./Timer-WhiteNoise.css";
 import { ReactComponent as StartIcon } from "../icones/start.svg";
 import { ReactComponent as EndIcon } from "../icones/end.svg";
@@ -574,83 +574,41 @@ const TimerWhiteNoises = ({ nowTask, onTimerActiveChange }) => {
   };
 
   // Change to next sound
-  const handleNextSound = () => {
-    // Store the next index
+  const handleNextSound = useCallback(async () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
     const nextIndex = (currentSoundIndex + 1) % sounds.length;
-
-    // If currently playing, we need to handle the promise properly
-    if (isNoisePlaying && audioRef.current) {
-      // First pause the current audio
-      audioRef.current.pause();
-      // Update the index
-      setCurrentSoundIndex(nextIndex);
-      // Set the new source
-      audioRef.current.src = sounds[nextIndex].src;
-      // Load the audio
-      audioRef.current.load();
-      // Play with promise handling
-      const playPromise = audioRef.current.play();
-
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            // Playback started successfully
-          })
-          .catch((error) => {
-            // Auto-play was prevented or another error occurred
-            console.log("Play error:", error);
-            // Update UI to reflect that audio isn't playing
-            setIsNoisePlaying(false);
-          });
+    setCurrentSoundIndex(nextIndex);
+    audioRef.current.src = sounds[nextIndex].src;
+    try {
+      await audioRef.current.load();
+      // Automatically play the sound if it was playing before or if it's the first sound
+      if (isNoisePlaying) {
+        await audioRef.current.play();
       }
-    } else {
-      // If not playing, just update the source
-      setCurrentSoundIndex(nextIndex);
-      if (audioRef.current) {
-        audioRef.current.src = sounds[nextIndex].src;
-        audioRef.current.load();
-      }
+    } catch (error) {
+      console.error("Error loading or playing audio:", error);
     }
-  };
+  }, [currentSoundIndex, sounds, isNoisePlaying]);
 
-  const handlePreviousSound = () => {
-    // Store the previous index
+  const handlePreviousSound = useCallback(async () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
     const prevIndex = (currentSoundIndex - 1 + sounds.length) % sounds.length;
-
-    // If currently playing, we need to handle the promise properly
-    if (isNoisePlaying && audioRef.current) {
-      // First pause the current audio
-      audioRef.current.pause();
-      // Update the index
-      setCurrentSoundIndex(prevIndex);
-      // Set the new source
-      audioRef.current.src = sounds[prevIndex].src;
-      // Load the audio
-      audioRef.current.load();
-      // Play with promise handling
-      const playPromise = audioRef.current.play();
-
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            // Playback started successfully
-          })
-          .catch((error) => {
-            // Auto-play was prevented or another error occurred
-            console.log("Play error:", error);
-            // Update UI to reflect that audio isn't playing
-            setIsNoisePlaying(false);
-          });
+    setCurrentSoundIndex(prevIndex);
+    audioRef.current.src = sounds[prevIndex].src;
+    try {
+      await audioRef.current.load();
+      // Automatically play the sound if it was playing before or if it's the first sound
+      if (isNoisePlaying) {
+        await audioRef.current.play();
       }
-    } else {
-      // If not playing, just update the source
-      setCurrentSoundIndex(prevIndex);
-      if (audioRef.current) {
-        audioRef.current.src = sounds[prevIndex].src;
-        audioRef.current.load();
-      }
+    } catch (error) {
+      console.error("Error loading or playing audio:", error);
     }
-  };
+  }, [currentSoundIndex, sounds, isNoisePlaying]);
 
   // Also update the toggleWhiteNoise function to handle promises
   const toggleWhiteNoise = () => {
